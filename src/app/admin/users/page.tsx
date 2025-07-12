@@ -147,27 +147,27 @@ export default function AdminUsersPage() {
     <>
       {/* Header */}
       <header className="border-b bg-white px-6 py-4 shadow-[0_1px_2px_rgba(17,24,39,0.05)]">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <SidebarTrigger className="lg:hidden" />
-            <h1 className="text-2xl font-serif font-bold">Users</h1>
-          </div>
-          <div className="text-sm text-muted-foreground">
-            {filteredUsers.length} users
-          </div>
+        <div className="flex items-center gap-4">
+          <SidebarTrigger className="lg:hidden" />
+          <h1 className="text-2xl font-serif font-bold">Users</h1>
         </div>
       </header>
 
       {/* Search Bar */}
       <div className="bg-white border-b px-6 py-4">
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search users by name, email, or organization..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
-          />
+        <div className="flex items-center justify-between gap-4">
+          <div className="relative max-w-md flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search users by name, email, or organization..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+          <div className="text-sm text-muted-foreground">
+            {filteredUsers.length} users
+          </div>
         </div>
       </div>
 
