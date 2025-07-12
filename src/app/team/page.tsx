@@ -43,7 +43,6 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -55,7 +54,6 @@ import {
 import {
   Search,
   TrendingUp,
-  FileText,
   Bookmark,
   Settings,
   CreditCard,
@@ -89,8 +87,6 @@ export default function TeamPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [inviteEmails, setInviteEmails] = useState("");
-  const [bulkAction, setBulkAction] = useState<"invite" | "import" | null>(null);
-  const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
 
   // Mock data for team members
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
@@ -461,7 +457,7 @@ export default function TeamPage() {
                     <div>
                       <CardTitle>Team Members</CardTitle>
                       <CardDescription>
-                        Manage your firm's users and their access levels
+                        Manage your firm&apos;s users and their access levels
                       </CardDescription>
                     </div>
                     <div className="flex gap-2">
@@ -473,9 +469,7 @@ export default function TeamPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                          <DropdownMenuItem
-                            onClick={() => setBulkAction("import")}
-                          >
+                          <DropdownMenuItem>
                             <Upload className="mr-2 h-4 w-4" />
                             Import CSV
                           </DropdownMenuItem>

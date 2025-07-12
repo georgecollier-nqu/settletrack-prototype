@@ -66,10 +66,12 @@ export default function OnboardingPage() {
     <div className="min-h-screen bg-background relative">
       {/* Background Image - Replace src with your image path */}
       <div className="absolute inset-0 z-0">
-        <img
+        <Image
           src="/onboarding_background.jpg"
           alt=""
-          className="w-full h-full object-cover grayscale contrast-50"
+          fill
+          className="object-cover grayscale contrast-50"
+          priority
         />
       </div>
       {/* Header */}

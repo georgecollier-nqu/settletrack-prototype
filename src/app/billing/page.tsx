@@ -42,7 +42,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -56,7 +55,6 @@ import { Progress } from "@/components/ui/progress";
 import {
   Search,
   TrendingUp,
-  FileText,
   Bookmark,
   Settings,
   CreditCard,
@@ -68,7 +66,6 @@ import {
   Download,
   AlertCircle,
   Calendar,
-  Shield,
   CheckCircle,
   XCircle,
   RefreshCw,
@@ -404,7 +401,7 @@ export default function BillingPage() {
                         <Progress value={seatUsagePercentage} className="h-2" />
                         {seatUsagePercentage > 80 && (
                           <p className="text-xs text-warning mt-1">
-                            You're approaching your seat limit
+                            You&apos;re approaching your seat limit
                           </p>
                         )}
                       </div>
@@ -556,7 +553,7 @@ export default function BillingPage() {
                           <DialogHeader>
                             <DialogTitle>Cancel Subscription</DialogTitle>
                             <DialogDescription>
-                              Are you sure you want to cancel your subscription? You'll
+                              Are you sure you want to cancel your subscription? You&apos;ll
                               lose access to all features at the end of your billing
                               period.
                             </DialogDescription>

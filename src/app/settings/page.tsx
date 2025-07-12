@@ -47,7 +47,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Search,
   TrendingUp,
-  FileText,
   Bookmark,
   Settings,
   CreditCard,
@@ -57,13 +56,9 @@ import {
   HelpCircle,
   Bell,
   Shield,
-  User,
-  Building,
-  Mail,
   Lock,
   Save,
   Camera,
-  AlertCircle,
   CheckCircle,
 } from "lucide-react";
 
@@ -432,7 +427,7 @@ export default function SettingsPage() {
                     <CardHeader>
                       <CardTitle>Firm Information</CardTitle>
                       <CardDescription>
-                        Manage your firm's details and preferences
+                        Manage your firm&apos;s details and preferences
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
@@ -558,7 +553,7 @@ export default function SettingsPage() {
                     <CardHeader>
                       <CardTitle>Email Notifications</CardTitle>
                       <CardDescription>
-                        Choose which emails you'd like to receive
+                        Choose which emails you&apos;d like to receive
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
