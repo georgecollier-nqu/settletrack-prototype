@@ -13,7 +13,15 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { BarChart, Users, FileText, Shield } from "lucide-react";
+import {
+  BarChart,
+  Users,
+  FileText,
+  Shield,
+  Building,
+  CreditCard,
+  Upload,
+} from "lucide-react";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -84,6 +92,39 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   >
                     <FileText className="h-5 w-5" />
                     Cases
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild className="w-full">
+                  <Link
+                    href="/admin/organizations"
+                    className={getActiveClasses("/admin/organizations")}
+                  >
+                    <Building className="h-5 w-5" />
+                    Organizations
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild className="w-full">
+                  <Link
+                    href="/admin/plans"
+                    className={getActiveClasses("/admin/plans")}
+                  >
+                    <CreditCard className="h-5 w-5" />
+                    Plans
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild className="w-full">
+                  <Link
+                    href="/admin/import"
+                    className={getActiveClasses("/admin/import")}
+                  >
+                    <Upload className="h-5 w-5" />
+                    Import
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
