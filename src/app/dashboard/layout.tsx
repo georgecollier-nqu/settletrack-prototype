@@ -22,6 +22,7 @@ import {
   Users,
   LayoutDashboard,
   HelpCircle,
+  Shield,
 } from "lucide-react";
 
 interface DashboardLayoutProps {
@@ -159,6 +160,22 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     >
                       <HelpCircle className="h-5 w-5" />
                       Help & Support
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </div>
+
+              {/* Admin Link - Only show for admins */}
+              {/* In a real app, this would check user role */}
+              <div className="pt-2">
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild className="w-full">
+                    <Link
+                      href="/admin"
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-secondary/50 text-muted-foreground"
+                    >
+                      <Shield className="h-5 w-5" />
+                      Admin Panel
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
