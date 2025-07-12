@@ -470,7 +470,9 @@ export default function TeamPage() {
                             )}
                           </TableCell>
                           <TableCell className="text-muted-foreground">
-                            {new Date(member.joinedDate).toLocaleDateString()}
+                            {new Date(member.joinedDate).toLocaleDateString(
+                              "en-US",
+                            )}
                           </TableCell>
                           <TableCell className="text-muted-foreground">
                             {member.lastActive}

@@ -42,6 +42,7 @@ import {
 } from "@/components/ui/table";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
+import { toast } from "sonner";
 import {
   Settings,
   CreditCard,
@@ -66,7 +67,6 @@ interface Invoice {
 
 export default function BillingPage() {
   const [updateCardDialogOpen, setUpdateCardDialogOpen] = useState(false);
-  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Mock subscription data
@@ -150,13 +150,10 @@ export default function BillingPage() {
     }, 2000);
   };
 
-  const handleCancelSubscription = () => {
-    setIsProcessing(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsProcessing(false);
-      setCancelDialogOpen(false);
-    }, 2000);
+  const handleManageSubscription = () => {
+    toast.info(
+      "In production, this will open the Stripe subscription management portal where you can update your plan, payment method, or cancel your subscription.",
+    );
   };
 
   const seatUsagePercentage =
@@ -277,7 +274,7 @@ export default function BillingPage() {
                         <Calendar className="h-4 w-4" />
                         {new Date(
                           subscription.nextBillingDate,
-                        ).toLocaleDateString()}
+                        ).toLocaleDateString("en-US")}
                       </p>
                     </div>
                     <div>
@@ -405,64 +402,13 @@ export default function BillingPage() {
                 </Dialog>
 
                 <div className="pt-4 border-t">
-                  <Dialog
-                    open={cancelDialogOpen}
-                    onOpenChange={setCancelDialogOpen}
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={handleManageSubscription}
                   >
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full text-destructive"
-                      >
-                        Cancel Subscription
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Cancel Subscription</DialogTitle>
-                        <DialogDescription>
-                          Are you sure you want to cancel your subscription?
-                          You&apos;ll lose access to all features at the end of
-                          your billing period.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="py-4">
-                        <Alert variant="destructive">
-                          <AlertCircle className="h-4 w-4" />
-                          <AlertDescription>
-                            This action cannot be undone. Your access will end
-                            on{" "}
-                            {new Date(
-                              subscription.nextBillingDate,
-                            ).toLocaleDateString()}
-                            .
-                          </AlertDescription>
-                        </Alert>
-                      </div>
-                      <DialogFooter>
-                        <Button
-                          variant="outline"
-                          onClick={() => setCancelDialogOpen(false)}
-                        >
-                          Keep Subscription
-                        </Button>
-                        <Button
-                          variant="destructive"
-                          onClick={handleCancelSubscription}
-                          disabled={isProcessing}
-                        >
-                          {isProcessing ? (
-                            <>
-                              <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                              Processing...
-                            </>
-                          ) : (
-                            "Cancel Subscription"
-                          )}
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
+                    Manage Subscription
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -478,7 +424,7 @@ export default function BillingPage() {
                     Download past invoices for your records
                   </CardDescription>
                 </div>
-                <Button variant="outline">
+                <Button variant="outline" disabled>
                   <Download className="mr-2 h-4 w-4" />
                   Export All
                 </Button>
@@ -504,7 +450,7 @@ export default function BillingPage() {
                           {invoice.id}
                         </TableCell>
                         <TableCell>
-                          {new Date(invoice.date).toLocaleDateString()}
+                          {new Date(invoice.date).toLocaleDateString("en-US")}
                         </TableCell>
                         <TableCell className="text-muted-foreground">
                           {invoice.description}
