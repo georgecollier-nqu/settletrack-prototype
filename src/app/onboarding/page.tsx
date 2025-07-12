@@ -67,7 +67,7 @@ export default function OnboardingPage() {
       {/* Background Image - Replace src with your image path */}
       <div className="absolute inset-0 z-0">
         <img
-          src="/onboarding-background.jpg"
+          src="/onboarding_background.jpg"
           alt=""
           className="w-full h-full object-cover opacity-10 grayscale"
         />
