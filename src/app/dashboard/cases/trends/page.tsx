@@ -22,12 +22,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   LineChart,
   Line,
@@ -36,16 +36,8 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from "recharts";
-import {
-  TrendingUp,
-  Calendar,
-  DollarSign,
-  Users,
-  Filter,
-  ChevronDown,
-} from "lucide-react";
+import { TrendingUp, Plus, X } from "lucide-react";
 import { mockCases, filterOptions, type Case } from "@/lib/mock-data";
 
 // Form schema for trend filters
@@ -98,16 +90,14 @@ interface TrendDataPoint {
 }
 
 export default function CaseTrendsPage() {
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    timeConfig: true,
-    filters: false,
-  });
+  const [filterPopoverOpen, setFilterPopoverOpen] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState<string>("");
 
   const form = useForm<TrendFilterValues>({
     resolver: zodResolver(trendFilterSchema),
     defaultValues: {
       metric: "avgSettlement",
-      timeGrouping: "year",
+      timeGrouping: "month",
       states: [],
       courts: [],
       piiAffected: [],
@@ -328,574 +318,524 @@ export default function CaseTrendsPage() {
         return {
           label: "Average Settlement Amount",
           format: formatCurrency,
-          color: "#4CAF82",
+          color: "#2E7D5B", // Primary 700
         };
       case "totalSettlement":
         return {
           label: "Total Settlement Amount",
           format: formatCurrency,
-          color: "#5AA5DA",
+          color: "#3B9671", // Primary 600
         };
       case "caseCount":
         return {
           label: "Number of Cases",
           format: formatNumber,
-          color: "#F4AF3D",
+          color: "#4CAF82", // Primary 500
         };
       case "avgClassSize":
         return {
           label: "Average Class Size",
           format: formatNumber,
-          color: "#B45309",
+          color: "#80CFA3", // Primary 300
         };
       case "medianSettlement":
         return {
           label: "Median Settlement Amount",
           format: formatCurrency,
-          color: "#2E86DE",
+          color: "#2E7D5B", // Primary 700
         };
       default:
-        return { label: "Value", format: formatNumber, color: "#4CAF82" };
+        return { label: "Value", format: formatNumber, color: "#2E7D5B" };
     }
   };
 
   const currentMetricInfo = getMetricInfo(form.watch("metric"));
 
+  // Calculate summary statistics
+  const summaryStats = useMemo(() => {
+    if (trendData.length === 0) return null;
+
+    const values = trendData.map((d) => d.value);
+    const sortedValues = [...values].sort((a, b) => a - b);
+    const average = values.reduce((a, b) => a + b, 0) / values.length;
+    const median =
+      sortedValues.length % 2 === 0
+        ? (sortedValues[sortedValues.length / 2 - 1] +
+            sortedValues[sortedValues.length / 2]) /
+          2
+        : sortedValues[Math.floor(sortedValues.length / 2)];
+
+    const totalCases = trendData.reduce((sum, d) => sum + d.count, 0);
+
+    return {
+      average,
+      median,
+      min: Math.min(...values),
+      max: Math.max(...values),
+      totalCases,
+      periods: trendData.length,
+    };
+  }, [trendData]);
+
+  // Get active filters for display
+  const activeFilters = useMemo(() => {
+    const filters: {
+      label: string;
+      value: string;
+      field: keyof TrendFilterValues;
+    }[] = [];
+    const values = form.getValues();
+
+    if (values.states && values.states.length > 0) {
+      values.states.forEach((state) =>
+        filters.push({ label: "State", value: state, field: "states" }),
+      );
+    }
+    if (values.courts && values.courts.length > 0) {
+      values.courts.forEach((court) =>
+        filters.push({ label: "Court", value: court, field: "courts" }),
+      );
+    }
+    if (values.isMultiDistrictLitigation) {
+      filters.push({
+        label: "Multi-District",
+        value: "Yes",
+        field: "isMultiDistrictLitigation",
+      });
+    }
+    if (values.creditMonitoring) {
+      filters.push({
+        label: "Credit Monitoring",
+        value: "Yes",
+        field: "creditMonitoring",
+      });
+    }
+    if (values.dateRange?.from || values.dateRange?.to) {
+      const from = values.dateRange.from || "Any";
+      const to = values.dateRange.to || "Any";
+      filters.push({
+        label: "Year Range",
+        value: `${from}-${to}`,
+        field: "dateRange",
+      });
+    }
+
+    return filters;
+  }, [form.watch()]);
+
+  const removeFilter = (field: keyof TrendFilterValues, value?: string) => {
+    const currentValues = form.getValues();
+
+    if (
+      field === "states" ||
+      field === "courts" ||
+      field === "piiAffected" ||
+      field === "causeOfBreach" ||
+      field === "classType" ||
+      field === "settlementType"
+    ) {
+      const array = currentValues[field] as string[];
+      form.setValue(
+        field,
+        array.filter((v) => v !== value),
+      );
+    } else if (
+      field === "isMultiDistrictLitigation" ||
+      field === "creditMonitoring" ||
+      field === "hasMinorSubclass"
+    ) {
+      form.setValue(field, undefined);
+    } else if (field === "dateRange") {
+      form.setValue(field, undefined);
+    }
+  };
+
   return (
-    <>
-      {/* Header */}
-      <header className="border-b bg-white px-6 py-4 shadow">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <SidebarTrigger className="lg:hidden" />
-            <h1 className="text-2xl font-serif font-bold">Case Trends</h1>
-          </div>
+    <div className="flex-1 overflow-y-auto bg-neutral-50">
+      <div className="max-w-7xl mx-auto p-6 space-y-6">
+        {/* Page Title */}
+        <div>
+          <h1 className="text-3xl font-serif font-bold text-neutral-900">
+            Case Trends Analysis
+          </h1>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-y-auto p-6 bg-muted/30">
-        <div className="max-w-7xl mx-auto space-y-6">
-          {/* Configuration Sidebar */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-1 bg-white rounded-lg border shadow-sm h-fit">
-              <div className="p-6">
-                <h2 className="text-lg font-semibold mb-6">Configuration</h2>
-                <Form {...form}>
-                  <div className="space-y-4">
-                    {/* Time Configuration Section */}
-                    <Collapsible
-                      open={openSections.timeConfig}
-                      onOpenChange={(open) =>
-                        setOpenSections((prev) => ({
-                          ...prev,
-                          timeConfig: open,
-                        }))
-                      }
-                    >
-                      <CollapsibleTrigger className="flex items-center justify-between w-full hover:text-primary transition-colors group cursor-pointer">
-                        <div className="flex items-center gap-2">
-                          <TrendingUp className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
-                          <span className="text-sm font-medium">
-                            Time & Metric
-                          </span>
-                        </div>
-                        <ChevronDown
-                          className={`h-4 w-4 transition-transform text-muted-foreground group-hover:text-primary ${
-                            openSections.timeConfig ? "rotate-180" : ""
-                          }`}
+        {/* Filter Controls */}
+        <Card className="p-4 bg-white border shadow-sm">
+          <Form {...form}>
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="flex items-center gap-4 flex-1">
+                  <FormField
+                    control={form.control}
+                    name="metric"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center gap-2 space-y-0">
+                        <FormLabel className="font-medium whitespace-nowrap">
+                          Metric:
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="w-[200px]">
+                              <SelectValue placeholder="Select metric..." />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="avgSettlement">
+                              Average Payout
+                            </SelectItem>
+                            <SelectItem value="totalSettlement">
+                              Total Settlement
+                            </SelectItem>
+                            <SelectItem value="caseCount">
+                              Case Count
+                            </SelectItem>
+                            <SelectItem value="avgClassSize">
+                              Average Class Size
+                            </SelectItem>
+                            <SelectItem value="medianSettlement">
+                              Median Settlement
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="timeGrouping"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center gap-2 space-y-0">
+                        <FormLabel className="font-medium whitespace-nowrap">
+                          Period:
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="w-[150px]">
+                              <SelectValue placeholder="Select period..." />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="month">Monthly</SelectItem>
+                            <SelectItem value="quarter">Quarterly</SelectItem>
+                            <SelectItem value="year">Yearly</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <Popover
+                  open={filterPopoverOpen}
+                  onOpenChange={setFilterPopoverOpen}
+                >
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Plus className="h-4 w-4" />
+                      Add Filter
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80" align="end">
+                    <div className="space-y-3">
+                      <h4 className="font-medium">Add Filters</h4>
+
+                      <Select
+                        value={selectedFilter}
+                        onValueChange={setSelectedFilter}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose filter type..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="states">State</SelectItem>
+                          <SelectItem value="courts">Federal Court</SelectItem>
+                          <SelectItem value="dateRange">Year Range</SelectItem>
+                          <SelectItem value="isMultiDistrictLitigation">
+                            Multi-District Litigation
+                          </SelectItem>
+                          <SelectItem value="creditMonitoring">
+                            Credit Monitoring
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      {selectedFilter === "states" && (
+                        <FormField
+                          control={form.control}
+                          name="states"
+                          render={({ field }) => (
+                            <FormItem>
+                              <Select
+                                onValueChange={(value) => {
+                                  const current = field.value || [];
+                                  if (!current.includes(value)) {
+                                    field.onChange([...current, value]);
+                                    setSelectedFilter("");
+                                  }
+                                }}
+                              >
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select state..." />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {filterOptions.states.map((state) => (
+                                    <SelectItem key={state} value={state}>
+                                      {state}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </FormItem>
+                          )}
                         />
-                      </CollapsibleTrigger>
-                      <CollapsibleContent>
-                        <div className="space-y-3 mt-3">
+                      )}
+
+                      {selectedFilter === "dateRange" && (
+                        <div className="grid grid-cols-2 gap-2">
                           <FormField
                             control={form.control}
-                            name="metric"
+                            name="dateRange.from"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-sm">
-                                  Metric to Analyze
-                                </FormLabel>
-                                <Select
-                                  onValueChange={field.onChange}
-                                  defaultValue={field.value}
-                                >
-                                  <FormControl>
-                                    <SelectTrigger className="h-9">
-                                      <SelectValue placeholder="Select metric..." />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    <SelectItem value="avgSettlement">
-                                      Average Settlement
-                                    </SelectItem>
-                                    <SelectItem value="totalSettlement">
-                                      Total Settlement
-                                    </SelectItem>
-                                    <SelectItem value="caseCount">
-                                      Case Count
-                                    </SelectItem>
-                                    <SelectItem value="avgClassSize">
-                                      Average Class Size
-                                    </SelectItem>
-                                    <SelectItem value="medianSettlement">
-                                      Median Settlement
-                                    </SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </FormItem>
-                            )}
-                          />
-
-                          <FormField
-                            control={form.control}
-                            name="timeGrouping"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-sm">
-                                  Time Grouping
-                                </FormLabel>
-                                <Select
-                                  onValueChange={field.onChange}
-                                  defaultValue={field.value}
-                                >
-                                  <FormControl>
-                                    <SelectTrigger className="h-9">
-                                      <SelectValue placeholder="Select grouping..." />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    <SelectItem value="year">
-                                      By Year
-                                    </SelectItem>
-                                    <SelectItem value="quarter">
-                                      By Quarter
-                                    </SelectItem>
-                                    <SelectItem value="month">
-                                      By Month
-                                    </SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </FormItem>
-                            )}
-                          />
-
-                          <div className="grid grid-cols-2 gap-2">
-                            <FormField
-                              control={form.control}
-                              name="dateRange.from"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-sm">
-                                    From Year
-                                  </FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      type="number"
-                                      placeholder="2020"
-                                      min={2020}
-                                      max={2030}
-                                      className="h-9"
-                                      value={field.value || ""}
-                                      onChange={(e) =>
-                                        field.onChange(
-                                          e.target.value
-                                            ? parseInt(e.target.value)
-                                            : undefined,
-                                        )
-                                      }
-                                    />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-
-                            <FormField
-                              control={form.control}
-                              name="dateRange.to"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-sm">
-                                    To Year
-                                  </FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      type="number"
-                                      placeholder="2024"
-                                      min={2020}
-                                      max={2030}
-                                      className="h-9"
-                                      value={field.value || ""}
-                                      onChange={(e) =>
-                                        field.onChange(
-                                          e.target.value
-                                            ? parseInt(e.target.value)
-                                            : undefined,
-                                        )
-                                      }
-                                    />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                        </div>
-                      </CollapsibleContent>
-                    </Collapsible>
-
-                    <div className="h-px bg-border" />
-
-                    {/* Filters Section */}
-                    <Collapsible
-                      open={openSections.filters}
-                      onOpenChange={(open) =>
-                        setOpenSections((prev) => ({ ...prev, filters: open }))
-                      }
-                    >
-                      <CollapsibleTrigger className="flex items-center justify-between w-full hover:text-primary transition-colors group cursor-pointer">
-                        <div className="flex items-center gap-2">
-                          <Filter className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
-                          <span className="text-sm font-medium">Filters</span>
-                        </div>
-                        <ChevronDown
-                          className={`h-4 w-4 transition-transform text-muted-foreground group-hover:text-primary ${
-                            openSections.filters ? "rotate-180" : ""
-                          }`}
-                        />
-                      </CollapsibleTrigger>
-                      <CollapsibleContent>
-                        <div className="space-y-3 mt-3">
-                          {/* States Filter */}
-                          <FormField
-                            control={form.control}
-                            name="states"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-sm">
-                                  States
-                                </FormLabel>
-                                <Select
-                                  onValueChange={(value) => {
-                                    const current = field.value || [];
-                                    if (!current.includes(value)) {
-                                      field.onChange([...current, value]);
+                                <FormLabel className="text-sm">From</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    placeholder="2020"
+                                    min={2020}
+                                    max={2030}
+                                    value={field.value || ""}
+                                    onChange={(e) =>
+                                      field.onChange(
+                                        e.target.value
+                                          ? parseInt(e.target.value)
+                                          : undefined,
+                                      )
                                     }
-                                  }}
-                                >
-                                  <FormControl>
-                                    <SelectTrigger className="h-9">
-                                      <SelectValue placeholder="Select states..." />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    {filterOptions.states.map((state) => (
-                                      <SelectItem key={state} value={state}>
-                                        {state}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                                {field.value && field.value.length > 0 && (
-                                  <div className="flex flex-wrap gap-1 mt-2">
-                                    {field.value.map((state) => (
-                                      <Badge
-                                        key={state}
-                                        variant="secondary"
-                                        className="text-xs py-0.5"
-                                      >
-                                        {state}
-                                        <button
-                                          type="button"
-                                          onClick={() =>
-                                            field.onChange(
-                                              field.value?.filter(
-                                                (s) => s !== state,
-                                              ),
-                                            )
-                                          }
-                                          className="ml-1 hover:text-destructive"
-                                        >
-                                          ×
-                                        </button>
-                                      </Badge>
-                                    ))}
-                                  </div>
-                                )}
+                                  />
+                                </FormControl>
                               </FormItem>
                             )}
                           />
-
-                          {/* Settlement Range */}
-                          <div className="grid grid-cols-2 gap-2">
-                            <FormField
-                              control={form.control}
-                              name="settlementAmountRange.from"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-sm">
-                                    Min Settlement
-                                  </FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      type="number"
-                                      placeholder="0"
-                                      min={0}
-                                      className="h-9"
-                                      value={field.value || ""}
-                                      onChange={(e) =>
-                                        field.onChange(
-                                          e.target.value
-                                            ? parseInt(e.target.value)
-                                            : undefined,
-                                        )
-                                      }
-                                    />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-
-                            <FormField
-                              control={form.control}
-                              name="settlementAmountRange.to"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-sm">
-                                    Max Settlement
-                                  </FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      type="number"
-                                      placeholder="∞"
-                                      min={0}
-                                      className="h-9"
-                                      value={field.value || ""}
-                                      onChange={(e) =>
-                                        field.onChange(
-                                          e.target.value
-                                            ? parseInt(e.target.value)
-                                            : undefined,
-                                        )
-                                      }
-                                    />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-
-                          {/* Checkboxes */}
-                          <div className="space-y-2">
-                            <FormField
-                              control={form.control}
-                              name="isMultiDistrictLitigation"
-                              render={({ field }) => (
-                                <label className="flex items-center space-x-3 cursor-pointer">
-                                  <Checkbox
-                                    checked={field.value}
-                                    onCheckedChange={field.onChange}
+                          <FormField
+                            control={form.control}
+                            name="dateRange.to"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-sm">To</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    placeholder="2024"
+                                    min={2020}
+                                    max={2030}
+                                    value={field.value || ""}
+                                    onChange={(e) =>
+                                      field.onChange(
+                                        e.target.value
+                                          ? parseInt(e.target.value)
+                                          : undefined,
+                                      )
+                                    }
                                   />
-                                  <span className="text-sm font-normal">
-                                    Multi-District Litigation
-                                  </span>
-                                </label>
-                              )}
-                            />
-
-                            <FormField
-                              control={form.control}
-                              name="hasMinorSubclass"
-                              render={({ field }) => (
-                                <label className="flex items-center space-x-3 cursor-pointer">
-                                  <Checkbox
-                                    checked={field.value}
-                                    onCheckedChange={field.onChange}
-                                  />
-                                  <span className="text-sm font-normal">
-                                    Has Minor Subclass
-                                  </span>
-                                </label>
-                              )}
-                            />
-
-                            <FormField
-                              control={form.control}
-                              name="creditMonitoring"
-                              render={({ field }) => (
-                                <label className="flex items-center space-x-3 cursor-pointer">
-                                  <Checkbox
-                                    checked={field.value}
-                                    onCheckedChange={field.onChange}
-                                  />
-                                  <span className="text-sm font-normal">
-                                    Credit Monitoring
-                                  </span>
-                                </label>
-                              )}
-                            />
-                          </div>
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
                         </div>
-                      </CollapsibleContent>
-                    </Collapsible>
-                  </div>
-                </Form>
+                      )}
+
+                      {(selectedFilter === "isMultiDistrictLitigation" ||
+                        selectedFilter === "creditMonitoring") && (
+                        <FormField
+                          control={form.control}
+                          name={
+                            selectedFilter as
+                              | "isMultiDistrictLitigation"
+                              | "creditMonitoring"
+                          }
+                          render={({ field }) => (
+                            <FormItem>
+                              <label className="flex items-center space-x-3 cursor-pointer">
+                                <Checkbox
+                                  checked={field.value || false}
+                                  onCheckedChange={(checked) => {
+                                    field.onChange(checked);
+                                    setSelectedFilter("");
+                                    setFilterPopoverOpen(false);
+                                  }}
+                                />
+                                <span className="text-sm font-normal">
+                                  {selectedFilter ===
+                                  "isMultiDistrictLitigation"
+                                    ? "Multi-District Litigation Only"
+                                    : "Credit Monitoring Offered"}
+                                </span>
+                              </label>
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
-            </div>
 
-            {/* Trend Chart */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Summary Statistics */}
-              {trendData.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <Card className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-muted-foreground">
-                          Time Periods
-                        </p>
-                        <p className="text-2xl font-bold mt-1">
-                          {trendData.length}
-                        </p>
-                      </div>
-                      <Calendar className="h-6 w-6 text-primary" />
-                    </div>
-                  </Card>
-
-                  <Card className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-muted-foreground">
-                          Total Cases
-                        </p>
-                        <p className="text-2xl font-bold mt-1">
-                          {formatNumber(
-                            trendData.reduce(
-                              (sum, point) => sum + point.count,
-                              0,
-                            ),
-                          )}
-                        </p>
-                      </div>
-                      <Users className="h-6 w-6 text-primary" />
-                    </div>
-                  </Card>
-
-                  <Card className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-muted-foreground">
-                          Highest Value
-                        </p>
-                        <p className="text-2xl font-bold mt-1">
-                          {currentMetricInfo.format(
-                            Math.max(...trendData.map((d) => d.value)),
-                          )}
-                        </p>
-                      </div>
-                      <TrendingUp className="h-6 w-6 text-primary" />
-                    </div>
-                  </Card>
-
-                  <Card className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-muted-foreground">
-                          Average Value
-                        </p>
-                        <p className="text-2xl font-bold mt-1">
-                          {currentMetricInfo.format(
-                            trendData.reduce(
-                              (sum, point) => sum + point.value,
-                              0,
-                            ) / trendData.length,
-                          )}
-                        </p>
-                      </div>
-                      <DollarSign className="h-6 w-6 text-primary" />
-                    </div>
-                  </Card>
+              {/* Active Filters Display */}
+              {activeFilters.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {activeFilters.map((filter, index) => (
+                    <Badge key={index} variant="secondary" className="gap-1">
+                      <span className="text-xs font-medium">
+                        {filter.label}:
+                      </span>
+                      <span className="text-xs">{filter.value}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeFilter(filter.field, filter.value)}
+                        className="ml-1 hover:text-destructive"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  ))}
                 </div>
               )}
-
-              <Card className="p-6">
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold">
-                    {currentMetricInfo.label} Trends
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    {trendData.length > 0
-                      ? `Showing trends across ${trendData.length} time periods`
-                      : "No data available for the selected filters"}
-                  </p>
-                </div>
-                {trendData.length > 0 ? (
-                  <div className="h-96">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={trendData}>
-                        <CartesianGrid strokeDasharray="3 3" opacity={0.4} />
-                        <XAxis
-                          dataKey="period"
-                          tick={{ fontSize: 12 }}
-                          angle={-45}
-                          textAnchor="end"
-                          height={60}
-                        />
-                        <YAxis
-                          tick={{ fontSize: 12 }}
-                          tickFormatter={(value) => {
-                            if (currentMetricInfo.label.includes("Amount")) {
-                              return formatCurrency(value);
-                            }
-                            return formatNumber(value);
-                          }}
-                        />
-                        <Tooltip
-                          formatter={(value: number) => [
-                            currentMetricInfo.format(value),
-                            currentMetricInfo.label,
-                          ]}
-                          labelFormatter={(label) => `Period: ${label}`}
-                          contentStyle={{
-                            backgroundColor: "white",
-                            border: "1px solid #e2e8f0",
-                            borderRadius: "8px",
-                            boxShadow: "0 4px 8px rgba(17, 24, 39, 0.08)",
-                          }}
-                        />
-                        <Legend />
-                        <Line
-                          type="monotone"
-                          dataKey="value"
-                          stroke={currentMetricInfo.color}
-                          strokeWidth={3}
-                          dot={{
-                            fill: currentMetricInfo.color,
-                            strokeWidth: 2,
-                            r: 6,
-                          }}
-                          activeDot={{ r: 8, fill: currentMetricInfo.color }}
-                          name={currentMetricInfo.label}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-lg font-medium">
-                      No trend data available
-                    </p>
-                    <p className="text-muted-foreground">
-                      Try adjusting your filters or date range to see trend
-                      analysis
-                    </p>
-                  </div>
-                )}
-              </Card>
             </div>
+          </Form>
+        </Card>
+
+        {/* Main Chart */}
+        <Card className="p-6 bg-white border shadow-sm">
+          <div className="space-y-6">
+            {trendData.length > 0 ? (
+              <>
+                <div className="h-[400px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart
+                      data={trendData}
+                      margin={{ top: 5, right: 30, left: 20, bottom: 60 }}
+                    >
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="#D1D5DB"
+                        opacity={0.4}
+                      />
+                      <XAxis
+                        dataKey="period"
+                        tick={{ fontSize: 12, fill: "#374151" }}
+                        angle={-45}
+                        textAnchor="end"
+                        height={80}
+                      />
+                      <YAxis
+                        tick={{ fontSize: 12, fill: "#374151" }}
+                        tickFormatter={(value) => {
+                          if (currentMetricInfo.label.includes("Amount")) {
+                            return formatCurrency(value);
+                          }
+                          return formatNumber(value);
+                        }}
+                      />
+                      <Tooltip
+                        formatter={(value: number) => [
+                          currentMetricInfo.format(value),
+                          "",
+                        ]}
+                        labelFormatter={(label) => `${label}`}
+                        contentStyle={{
+                          backgroundColor: "white",
+                          border: "1px solid #D1D5DB",
+                          borderRadius: "8px",
+                          boxShadow: "0 4px 8px rgba(17, 24, 39, 0.08)",
+                          padding: "8px 12px",
+                        }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="value"
+                        stroke={currentMetricInfo.color}
+                        strokeWidth={3}
+                        dot={{
+                          fill: currentMetricInfo.color,
+                          strokeWidth: 2,
+                          r: 4,
+                        }}
+                        activeDot={{ r: 6, fill: currentMetricInfo.color }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-16">
+                <TrendingUp className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
+                <p className="text-lg font-medium text-neutral-700">
+                  No trend data available
+                </p>
+                <p className="text-neutral-500 mt-1">
+                  Try adjusting your filters to see trend analysis
+                </p>
+              </div>
+            )}
           </div>
-        </div>
-      </main>
-    </>
+        </Card>
+
+        {/* Summary Statistics */}
+        {summaryStats && (
+          <Card className="p-6 bg-white border shadow-sm">
+            <h3 className="text-lg font-semibold mb-4">Summary Statistics</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              <div>
+                <p className="text-sm text-neutral-500">Average</p>
+                <p className="text-xl font-semibold text-neutral-900">
+                  {currentMetricInfo.format(summaryStats.average)}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-neutral-500">Median</p>
+                <p className="text-xl font-semibold text-neutral-900">
+                  {currentMetricInfo.format(summaryStats.median)}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-neutral-500">Minimum</p>
+                <p className="text-xl font-semibold text-neutral-900">
+                  {currentMetricInfo.format(summaryStats.min)}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-neutral-500">Maximum</p>
+                <p className="text-xl font-semibold text-neutral-900">
+                  {currentMetricInfo.format(summaryStats.max)}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-neutral-500">Total Cases</p>
+                <p className="text-xl font-semibold text-neutral-900">
+                  {formatNumber(summaryStats.totalCases)}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-neutral-500">Time Periods</p>
+                <p className="text-xl font-semibold text-neutral-900">
+                  {summaryStats.periods}
+                </p>
+              </div>
+            </div>
+          </Card>
+        )}
+      </div>
+    </div>
   );
 }
