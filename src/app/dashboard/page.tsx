@@ -24,49 +24,19 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { NotificationsDropdown } from "@/components/ui/notifications-dropdown";
 import {
   Search,
-  TrendingUp,
   FileText,
   Bookmark,
   Settings,
   Users,
   LogOut,
   HelpCircle,
-  ArrowUpRight,
-  Calendar,
   DollarSign,
-  Briefcase,
   Clock,
   ChevronRight,
 } from "lucide-react";
 
 export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const isTeamLeader = true; // This would come from auth context
-
-  // Mock data for recent activity
-  const recentCases = [
-    {
-      id: "1",
-      name: "In re Christie's Data Breach",
-      court: "S.D.N.Y.",
-      date: "2024-12-15",
-      amount: "$8.5M",
-    },
-    {
-      id: "2",
-      name: "Smith v. TechCorp Privacy",
-      court: "N.D. Cal.",
-      date: "2024-12-10",
-      amount: "$12.3M",
-    },
-    {
-      id: "3",
-      name: "Johnson Class Action",
-      court: "E.D. Tex.",
-      date: "2024-12-08",
-      amount: "$5.2M",
-    },
-  ];
 
   const savedSearches = [
     { id: "1", name: "Data Breach > $10M", count: 156 },
@@ -237,210 +207,110 @@ export default function DashboardPage() {
             </Card>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Recent Cases */}
-            <div className="lg:col-span-2">
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>Recently Viewed Cases</CardTitle>
-                    <Button variant="ghost" size="sm" asChild>
-                      <Link href="/history">
-                        View All
-                        <ChevronRight className="ml-1 h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {recentCases.map((case_) => (
-                      <div
-                        key={case_.id}
-                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-secondary/50 transition-colors"
-                      >
-                        <div className="space-y-1">
-                          <Link
-                            href={`/dashboard/cases/${case_.id}`}
-                            className="font-medium hover:text-primary"
-                          >
-                            {case_.name}
-                          </Link>
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <Briefcase className="h-3 w-3" />
-                              {case_.court}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Calendar className="h-3 w-3" />
-                              {case_.date}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-semibold text-primary">
-                            {case_.amount}
-                          </p>
-                          <Button variant="ghost" size="sm" asChild>
-                            <Link href={`/dashboard/cases/${case_.id}`}>
-                              View
-                              <ArrowUpRight className="ml-1 h-3 w-3" />
-                            </Link>
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Saved Searches */}
-            <div>
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>Saved Searches</CardTitle>
-                    <Button variant="ghost" size="sm" asChild>
-                      <Link href="/dashboard/saved-searches">
-                        Manage
-                        <ChevronRight className="ml-1 h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {savedSearches.map((search) => (
-                      <Link
-                        key={search.id}
-                        href={`/dashboard/cases/search?saved=${search.id}`}
-                        className="block p-3 border rounded-lg hover:bg-secondary/50 transition-colors"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="font-medium text-sm">{search.name}</p>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {search.count} matching cases
-                            </p>
-                          </div>
-                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                  <Button variant="outline" className="w-full mt-4" asChild>
-                    <Link href="/dashboard/cases/search">
-                      <Search className="mr-2 h-4 w-4" />
-                      Create New Search
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle>Saved Searches</CardTitle>
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link href="/dashboard/saved-searches">
+                      Manage
+                      <ChevronRight className="ml-1 h-4 w-4" />
                     </Link>
                   </Button>
-                </CardContent>
-              </Card>
-
-              {/* Quick Actions */}
-              <Card className="mt-6">
-                <CardHeader>
-                  <CardTitle>Quick Actions</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start"
-                    asChild
-                  >
-                    <Link href="/dashboard/cases/search">
-                      <Search className="mr-2 h-4 w-4" />
-                      Search Cases
-                    </Link>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start"
-                    asChild
-                  >
-                    <Link href="/dashboard/cases/trends">
-                      <TrendingUp className="mr-2 h-4 w-4" />
-                      View Trends
-                    </Link>
-                  </Button>
-                  {isTeamLeader && (
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start"
-                      asChild
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {savedSearches.map((search) => (
+                    <Link
+                      key={search.id}
+                      href={`/dashboard/cases/search?saved=${search.id}`}
+                      className="block p-3 border rounded-lg hover:bg-secondary/50 transition-colors"
                     >
-                      <Link href="/dashboard/team">
-                        <Users className="mr-2 h-4 w-4" />
-                        Invite Team Member
-                      </Link>
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-          </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium text-sm">{search.name}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {search.count} matching cases
+                          </p>
+                        </div>
+                        <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+                <Button variant="outline" className="w-full mt-4" asChild>
+                  <Link href="/dashboard/cases/search">
+                    <Search className="mr-2 h-4 w-4" />
+                    Create New Search
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
 
-          {/* Activity Feed */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
-              <CardDescription>
-                What&apos;s happening in your firm
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-start gap-4">
-                  <div className="p-2 bg-secondary rounded-full">
-                    <Clock className="h-4 w-4 text-primary" />
+            {/* Activity Feed */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Activity</CardTitle>
+                <CardDescription>
+                  What&apos;s happening in your firm
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-4">
+                    <div className="p-2 bg-secondary rounded-full">
+                      <Clock className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm">
+                        <span className="font-medium">Sarah Johnson</span> saved
+                        a new search for
+                        <span className="font-medium">
+                          {" "}
+                          &quot;2024 Data Breach Settlements&quot;
+                        </span>
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        2 hours ago
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-sm">
-                      <span className="font-medium">Sarah Johnson</span> saved a
-                      new search for
-                      <span className="font-medium">
-                        {" "}
-                        &quot;2024 Data Breach Settlements&quot;
-                      </span>
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      2 hours ago
-                    </p>
+                  <div className="flex items-start gap-4">
+                    <div className="p-2 bg-secondary rounded-full">
+                      <FileText className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm">
+                        New case added:{" "}
+                        <span className="font-medium">Wilson v. DataCorp</span>{" "}
+                        - $15.2M settlement
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        5 hours ago
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="p-2 bg-secondary rounded-full">
+                      <Users className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm">
+                        <span className="font-medium">Michael Chen</span> joined
+                        your team
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Yesterday
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-start gap-4">
-                  <div className="p-2 bg-secondary rounded-full">
-                    <FileText className="h-4 w-4 text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm">
-                      New case added:{" "}
-                      <span className="font-medium">Wilson v. DataCorp</span> -
-                      $15.2M settlement
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      5 hours ago
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="p-2 bg-secondary rounded-full">
-                    <Users className="h-4 w-4 text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm">
-                      <span className="font-medium">Michael Chen</span> joined
-                      your team
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Yesterday
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </main>
     </>
