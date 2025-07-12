@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,7 +17,6 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Progress } from "@/components/ui/progress";
 import {
-  Scale,
   ArrowRight,
   ArrowLeft,
   Briefcase,
@@ -76,19 +77,18 @@ export default function OnboardingPage() {
       <div className="border-b bg-white shadow-sm relative z-10">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Scale className="h-6 w-6 text-primary" />
-              <h1 className="text-xl font-serif font-bold text-primary">
-                SettleTrack
-              </h1>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => router.push("/dashboard")}
-            >
-              Skip for now
-            </Button>
+            <Image
+              src="/logo.png"
+              alt="SettleTrack"
+              width={223}
+              height={50}
+              className="h-10 w-auto"
+            />
+            <Link href="/dashboard">
+              <Button variant="ghost" size="sm">
+                Skip for now
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
@@ -99,14 +99,8 @@ export default function OnboardingPage() {
           {/* Step 1: Profile Setup */}
           {currentStep === 1 && (
             <Card>
-              <div className="p-6 pb-0">
-                <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
-                  <span>
-                    Step {currentStep} of {totalSteps}
-                  </span>
-                  <span>{Math.round(progress)}% complete</span>
-                </div>
-                <Progress value={progress} className="h-2 mb-6" />
+              <div className="px-6 pb-6">
+                <Progress value={progress} className="h-2" />
               </div>
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
@@ -175,14 +169,8 @@ export default function OnboardingPage() {
           {/* Step 2: Practice Areas */}
           {currentStep === 2 && (
             <Card>
-              <div className="p-6 pb-0">
-                <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
-                  <span>
-                    Step {currentStep} of {totalSteps}
-                  </span>
-                  <span>{Math.round(progress)}% complete</span>
-                </div>
-                <Progress value={progress} className="h-2 mb-6" />
+              <div className="px-6 pb-6">
+                <Progress value={progress} className="h-2" />
               </div>
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
@@ -281,14 +269,8 @@ export default function OnboardingPage() {
           {/* Step 3: Key Features Tour */}
           {currentStep === 3 && (
             <Card>
-              <div className="p-6 pb-0">
-                <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
-                  <span>
-                    Step {currentStep} of {totalSteps}
-                  </span>
-                  <span>{Math.round(progress)}% complete</span>
-                </div>
-                <Progress value={progress} className="h-2 mb-6" />
+              <div className="px-6 pb-6">
+                <Progress value={progress} className="h-2" />
               </div>
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
@@ -367,14 +349,8 @@ export default function OnboardingPage() {
           {/* Step 4: Ready to Go */}
           {currentStep === 4 && (
             <Card>
-              <div className="p-6 pb-0">
-                <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
-                  <span>
-                    Step {currentStep} of {totalSteps}
-                  </span>
-                  <span>{Math.round(progress)}% complete</span>
-                </div>
-                <Progress value={progress} className="h-2 mb-6" />
+              <div className="px-6 pb-6">
+                <Progress value={progress} className="h-2" />
               </div>
               <CardHeader className="text-center">
                 <div className="flex justify-center mb-4">

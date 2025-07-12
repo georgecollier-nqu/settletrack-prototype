@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Scale, ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -44,14 +45,14 @@ export default function LoginPage() {
       <div className="w-full max-w-md space-y-8">
         {/* Logo and Brand */}
         <div className="text-center">
-          <Link
-            href="/"
-            className="inline-flex items-center justify-center space-x-2"
-          >
-            <Scale className="h-8 w-8 text-primary" />
-            <h1 className="text-3xl font-serif font-bold text-primary">
-              SettleTrack
-            </h1>
+          <Link href="/" className="inline-flex justify-center">
+            <Image
+              src="/logo.png"
+              alt="SettleTrack"
+              width={298}
+              height={67}
+              className="h-12 w-auto"
+            />
           </Link>
           <p className="mt-2 text-muted-foreground">
             Legal Settlement Intelligence

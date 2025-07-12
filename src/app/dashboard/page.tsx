@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -31,7 +32,6 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import {
-  Scale,
   Search,
   TrendingUp,
   FileText,
@@ -92,11 +92,14 @@ export default function DashboardPage() {
         {/* Sidebar Navigation */}
         <Sidebar className="border-r bg-white">
           <SidebarHeader className="border-b px-6 py-4">
-            <Link href="/dashboard" className="flex items-center space-x-2">
-              <Scale className="h-6 w-6 text-primary" />
-              <span className="text-xl font-serif font-bold text-primary">
-                SettleTrack
-              </span>
+            <Link href="/dashboard">
+              <Image
+                src="/logo.png"
+                alt="SettleTrack"
+                width={186}
+                height={42}
+                className="h-8 w-auto"
+              />
             </Link>
           </SidebarHeader>
           <SidebarContent className="px-3 py-4">
