@@ -119,7 +119,7 @@ export default function SavedSearchesPage() {
       "with filters:",
       search.filters,
     );
-    window.open(`/cases/search?saved=${search.id}`, "_blank");
+    window.open(`/dashboard/cases/search?saved=${search.id}`, "_blank");
   };
 
   // Toggle alert for a search
@@ -255,7 +255,7 @@ export default function SavedSearchesPage() {
             <h1 className="text-2xl font-serif font-bold">Saved Searches</h1>
           </div>
           <Button asChild>
-            <Link href="/cases/search">
+            <Link href="/dashboard/cases/search">
               <Plus className="mr-2 h-4 w-4" />
               Create New Search
             </Link>
@@ -528,7 +528,7 @@ export default function SavedSearchesPage() {
                     favorite queries
                   </p>
                   <Button asChild>
-                    <Link href="/cases/search">
+                    <Link href="/dashboard/cases/search">
                       <Search className="mr-2 h-4 w-4" />
                       Create Your First Search
                     </Link>

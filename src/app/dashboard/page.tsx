@@ -261,7 +261,7 @@ export default function DashboardPage() {
                       >
                         <div className="space-y-1">
                           <Link
-                            href={`/cases/${case_.id}`}
+                            href={`/dashboard/cases/${case_.id}`}
                             className="font-medium hover:text-primary"
                           >
                             {case_.name}
@@ -282,7 +282,7 @@ export default function DashboardPage() {
                             {case_.amount}
                           </p>
                           <Button variant="ghost" size="sm" asChild>
-                            <Link href={`/cases/${case_.id}`}>
+                            <Link href={`/dashboard/cases/${case_.id}`}>
                               View
                               <ArrowUpRight className="ml-1 h-3 w-3" />
                             </Link>
@@ -302,7 +302,7 @@ export default function DashboardPage() {
                   <div className="flex items-center justify-between">
                     <CardTitle>Saved Searches</CardTitle>
                     <Button variant="ghost" size="sm" asChild>
-                      <Link href="/saved-searches">
+                      <Link href="/dashboard/saved-searches">
                         Manage
                         <ChevronRight className="ml-1 h-4 w-4" />
                       </Link>
@@ -314,7 +314,7 @@ export default function DashboardPage() {
                     {savedSearches.map((search) => (
                       <Link
                         key={search.id}
-                        href={`/cases/search?saved=${search.id}`}
+                        href={`/dashboard/cases/search?saved=${search.id}`}
                         className="block p-3 border rounded-lg hover:bg-secondary/50 transition-colors"
                       >
                         <div className="flex items-center justify-between">
@@ -330,7 +330,7 @@ export default function DashboardPage() {
                     ))}
                   </div>
                   <Button variant="outline" className="w-full mt-4" asChild>
-                    <Link href="/cases/search">
+                    <Link href="/dashboard/cases/search">
                       <Search className="mr-2 h-4 w-4" />
                       Create New Search
                     </Link>
@@ -349,7 +349,7 @@ export default function DashboardPage() {
                     className="w-full justify-start"
                     asChild
                   >
-                    <Link href="/cases/search">
+                    <Link href="/dashboard/cases/search">
                       <Search className="mr-2 h-4 w-4" />
                       Search Cases
                     </Link>
@@ -359,7 +359,7 @@ export default function DashboardPage() {
                     className="w-full justify-start"
                     asChild
                   >
-                    <Link href="/cases/trends">
+                    <Link href="/dashboard/cases/trends">
                       <TrendingUp className="mr-2 h-4 w-4" />
                       View Trends
                     </Link>

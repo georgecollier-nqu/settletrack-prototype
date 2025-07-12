@@ -76,8 +76,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild className="w-full">
                   <Link
-                    href="/cases/search"
-                    className={getActiveClasses("/cases/search")}
+                    href="/dashboard/cases/search"
+                    className={getActiveClasses("/dashboard/cases/search")}
                   >
                     <Search className="h-5 w-5" />
                     Case Search
@@ -87,8 +87,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild className="w-full">
                   <Link
-                    href="/cases/trends"
-                    className={getActiveClasses("/cases/trends")}
+                    href="/dashboard/cases/trends"
+                    className={getActiveClasses("/dashboard/cases/trends")}
                   >
                     <TrendingUp className="h-5 w-5" />
                     Case Trends
@@ -98,8 +98,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild className="w-full">
                   <Link
-                    href="/saved-searches"
-                    className={getActiveClasses("/saved-searches")}
+                    href="/dashboard/saved-searches"
+                    className={getActiveClasses("/dashboard/saved-searches")}
                   >
                     <Bookmark className="h-5 w-5" />
                     Saved Searches

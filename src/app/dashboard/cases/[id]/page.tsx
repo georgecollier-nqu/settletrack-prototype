@@ -482,7 +482,7 @@ export default function CaseDetailsPage({ params }: CaseDetailsPageProps) {
                     className="w-full justify-start"
                     asChild
                   >
-                    <a href={`/cases/search?similar=${case_.id}`}>
+                    <a href={`/dashboard/cases/search?similar=${case_.id}`}>
                       <FileText className="mr-2 h-4 w-4" />
                       Find Similar Cases
                     </a>
@@ -548,7 +548,7 @@ export default function CaseDetailsPage({ params }: CaseDetailsPageProps) {
                           className="border rounded-lg p-3 hover:bg-secondary/50 transition-colors"
                         >
                           <a
-                            href={`/cases/${relatedCase.id}`}
+                            href={`/dashboard/cases/${relatedCase.id}`}
                             className="block"
                           >
                             <p className="font-medium text-sm mb-1">

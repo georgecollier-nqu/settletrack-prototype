@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -358,7 +358,9 @@ export default function CaseSearchPage() {
 
   // Watch form changes and apply filters
   const watchedValues = form.watch();
-  useMemo(() => {
+  
+  // Apply filters when form values change
+  React.useEffect(() => {
     applyFilters(watchedValues);
   }, [watchedValues, applyFilters]);
 
@@ -962,7 +964,7 @@ export default function CaseSearchPage() {
                           <TableCell>
                             <Button variant="ghost" size="sm" asChild>
                               <a
-                                href={`/cases/${case_.id}`}
+                                href={`/dashboard/cases/${case_.id}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
