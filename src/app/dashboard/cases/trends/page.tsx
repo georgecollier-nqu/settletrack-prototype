@@ -63,7 +63,7 @@ export default function CaseTrendsPage() {
   const form = useForm<FormValues>({
     defaultValues: {
       metric: "avgSettlement",
-      timeGrouping: "quarter",
+      timeGrouping: "year",
       dateRange: { from: null, to: null },
       states: [],
       courts: [],
@@ -123,14 +123,16 @@ export default function CaseTrendsPage() {
 
     filteredCases.forEach((case_) => {
       let period: string;
+      const caseDate = new Date(case_.date);
+
       if (values.timeGrouping === "year") {
         period = case_.year.toString();
       } else if (values.timeGrouping === "quarter") {
-        const quarter = Math.floor((case_.date.getMonth() + 3) / 3);
+        const quarter = Math.floor((caseDate.getMonth() + 3) / 3);
         period = `${case_.year} Q${quarter}`;
       } else {
         // month
-        period = case_.date.toLocaleDateString("en-US", {
+        period = caseDate.toLocaleDateString("en-US", {
           year: "numeric",
           month: "short",
         });
@@ -343,11 +345,11 @@ export default function CaseTrendsPage() {
         <Form {...form}>
           {/* Filters Section */}
           <Card className="p-6 bg-white border shadow-sm">
-            <div className="space-y-4">
+            <div className="space-y-6">
               <h3 className="text-lg font-semibold">Filters</h3>
 
               {/* Metric and Period Selection */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
                   name="metric"
@@ -400,7 +402,6 @@ export default function CaseTrendsPage() {
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="month">Monthly</SelectItem>
-                          <SelectItem value="quarter">Quarterly</SelectItem>
                           <SelectItem value="year">Yearly</SelectItem>
                         </SelectContent>
                       </Select>
@@ -409,9 +410,13 @@ export default function CaseTrendsPage() {
                 />
               </div>
 
-              {/* Additional Filters */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {/* Date Range */}
+              <div className="border-t pt-4" />
+
+              {/* Date Range */}
+              <div className="space-y-4">
+                <h4 className="text-sm font-medium text-muted-foreground">
+                  Time Period
+                </h4>
                 <div className="space-y-2">
                   <FormLabel>Year Range</FormLabel>
                   <div className="flex items-center gap-2">
@@ -466,231 +471,258 @@ export default function CaseTrendsPage() {
                     />
                   </div>
                 </div>
-
-                {/* States */}
-                <FormField
-                  control={form.control}
-                  name="states"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>States</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              className="w-full justify-between font-normal"
-                            >
-                              {field.value?.length
-                                ? `${field.value.length} selected`
-                                : "Select states..."}
-                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[200px] p-0">
-                          <Command>
-                            <CommandInput placeholder="Search states..." />
-                            <CommandList>
-                              <CommandEmpty>No state found.</CommandEmpty>
-                              <CommandGroup>
-                                {filterOptions.states.map((state) => (
-                                  <CommandItem
-                                    key={state}
-                                    value={state}
-                                    onSelect={() => {
-                                      const current = field.value || [];
-                                      field.onChange(
-                                        current.includes(state)
-                                          ? current.filter((s) => s !== state)
-                                          : [...current, state],
-                                      );
-                                    }}
-                                  >
-                                    <Check
-                                      className={cn(
-                                        "mr-2 h-4 w-4",
-                                        field.value?.includes(state)
-                                          ? "opacity-100"
-                                          : "opacity-0",
-                                      )}
-                                    />
-                                    {state}
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                    </FormItem>
-                  )}
-                />
-
-                {/* Federal Courts */}
-                <FormField
-                  control={form.control}
-                  name="courts"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Federal Courts</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              className="w-full justify-between font-normal"
-                            >
-                              {field.value?.length
-                                ? `${field.value.length} selected`
-                                : "Select courts..."}
-                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[200px] p-0">
-                          <Command>
-                            <CommandInput placeholder="Search courts..." />
-                            <CommandList>
-                              <CommandEmpty>No court found.</CommandEmpty>
-                              <CommandGroup>
-                                {filterOptions.courts.map((court) => (
-                                  <CommandItem
-                                    key={court}
-                                    value={court}
-                                    onSelect={() => {
-                                      const current = field.value || [];
-                                      field.onChange(
-                                        current.includes(court)
-                                          ? current.filter((c) => c !== court)
-                                          : [...current, court],
-                                      );
-                                    }}
-                                  >
-                                    <Check
-                                      className={cn(
-                                        "mr-2 h-4 w-4",
-                                        field.value?.includes(court)
-                                          ? "opacity-100"
-                                          : "opacity-0",
-                                      )}
-                                    />
-                                    {court}
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                    </FormItem>
-                  )}
-                />
               </div>
 
-              {/* Checkbox Filters */}
-              <div className="flex flex-wrap gap-4">
-                <FormField
-                  control={form.control}
-                  name="isMultiDistrictLitigation"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <FormLabel className="font-normal">
-                        Multi-District Litigation
-                      </FormLabel>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="creditMonitoring"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <FormLabel className="font-normal">
-                        Credit Monitoring
-                      </FormLabel>
-                    </FormItem>
-                  )}
-                />
+              <div className="border-t pt-4" />
+
+              {/* Location Filters */}
+              <div className="space-y-4">
+                <h4 className="text-sm font-medium text-muted-foreground">
+                  Location & Courts
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* States */}
+                  <FormField
+                    control={form.control}
+                    name="states"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>States</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                className="w-full justify-between font-normal"
+                              >
+                                {field.value?.length
+                                  ? `${field.value.length} selected`
+                                  : "Select states..."}
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[200px] p-0">
+                            <Command>
+                              <CommandInput placeholder="Search states..." />
+                              <CommandList>
+                                <CommandEmpty>No state found.</CommandEmpty>
+                                <CommandGroup>
+                                  {filterOptions.states.map((state) => (
+                                    <CommandItem
+                                      key={state}
+                                      value={state}
+                                      onSelect={() => {
+                                        const current = field.value || [];
+                                        field.onChange(
+                                          current.includes(state)
+                                            ? current.filter((s) => s !== state)
+                                            : [...current, state],
+                                        );
+                                      }}
+                                    >
+                                      <Check
+                                        className={cn(
+                                          "mr-2 h-4 w-4",
+                                          field.value?.includes(state)
+                                            ? "opacity-100"
+                                            : "opacity-0",
+                                        )}
+                                      />
+                                      {state}
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Federal Courts */}
+                  <FormField
+                    control={form.control}
+                    name="courts"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Federal Courts</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                className="w-full justify-between font-normal"
+                              >
+                                {field.value?.length
+                                  ? `${field.value.length} selected`
+                                  : "Select courts..."}
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[200px] p-0">
+                            <Command>
+                              <CommandInput placeholder="Search courts..." />
+                              <CommandList>
+                                <CommandEmpty>No court found.</CommandEmpty>
+                                <CommandGroup>
+                                  {filterOptions.courts.map((court) => (
+                                    <CommandItem
+                                      key={court}
+                                      value={court}
+                                      onSelect={() => {
+                                        const current = field.value || [];
+                                        field.onChange(
+                                          current.includes(court)
+                                            ? current.filter((c) => c !== court)
+                                            : [...current, court],
+                                        );
+                                      }}
+                                    >
+                                      <Check
+                                        className={cn(
+                                          "mr-2 h-4 w-4",
+                                          field.value?.includes(court)
+                                            ? "opacity-100"
+                                            : "opacity-0",
+                                        )}
+                                      />
+                                      {court}
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              <div className="border-t pt-4" />
+
+              {/* Case Type Filters */}
+              <div className="space-y-4">
+                <h4 className="text-sm font-medium text-muted-foreground">
+                  Case Type
+                </h4>
+                <div className="flex flex-wrap gap-6">
+                  <FormField
+                    control={form.control}
+                    name="isMultiDistrictLitigation"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          Multi-District Litigation
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="creditMonitoring"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          Credit Monitoring
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
 
               {/* Active Filters Display */}
               {activeFilterCount > 0 && (
-                <div className="flex flex-wrap gap-2 pt-2">
-                  {(form.watch("dateRange.from") ||
-                    form.watch("dateRange.to")) && (
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => removeFilter("dateRange")}
-                      className="gap-1"
-                    >
-                      {form.watch("dateRange.from") || "Any"} -{" "}
-                      {form.watch("dateRange.to") || "Any"}
-                      <X className="h-3 w-3" />
-                    </Button>
-                  )}
-                  {form.watch("states")?.map((state) => (
-                    <Button
-                      key={state}
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => removeFilter("states", state)}
-                      className="gap-1"
-                    >
-                      {state}
-                      <X className="h-3 w-3" />
-                    </Button>
-                  ))}
-                  {form.watch("courts")?.map((court) => (
-                    <Button
-                      key={court}
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => removeFilter("courts", court)}
-                      className="gap-1"
-                    >
-                      {court}
-                      <X className="h-3 w-3" />
-                    </Button>
-                  ))}
-                  {form.watch("isMultiDistrictLitigation") && (
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => removeFilter("isMultiDistrictLitigation")}
-                      className="gap-1"
-                    >
-                      Multi-District Litigation
-                      <X className="h-3 w-3" />
-                    </Button>
-                  )}
-                  {form.watch("creditMonitoring") && (
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => removeFilter("creditMonitoring")}
-                      className="gap-1"
-                    >
-                      Credit Monitoring
-                      <X className="h-3 w-3" />
-                    </Button>
-                  )}
-                </div>
+                <>
+                  <div className="border-t pt-4" />
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium text-muted-foreground">
+                      Active Filters
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {(form.watch("dateRange.from") ||
+                        form.watch("dateRange.to")) && (
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => removeFilter("dateRange")}
+                          className="gap-1 h-7 px-2 text-xs"
+                        >
+                          {form.watch("dateRange.from") || "Any"} -{" "}
+                          {form.watch("dateRange.to") || "Any"}
+                          <X className="h-3 w-3 ml-1" />
+                        </Button>
+                      )}
+                      {form.watch("states")?.map((state) => (
+                        <Button
+                          key={state}
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => removeFilter("states", state)}
+                          className="gap-1 h-7 px-2 text-xs"
+                        >
+                          {state}
+                          <X className="h-3 w-3 ml-1" />
+                        </Button>
+                      ))}
+                      {form.watch("courts")?.map((court) => (
+                        <Button
+                          key={court}
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => removeFilter("courts", court)}
+                          className="gap-1 h-7 px-2 text-xs"
+                        >
+                          {court}
+                          <X className="h-3 w-3 ml-1" />
+                        </Button>
+                      ))}
+                      {form.watch("isMultiDistrictLitigation") && (
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() =>
+                            removeFilter("isMultiDistrictLitigation")
+                          }
+                          className="gap-1 h-7 px-2 text-xs"
+                        >
+                          Multi-District Litigation
+                          <X className="h-3 w-3 ml-1" />
+                        </Button>
+                      )}
+                      {form.watch("creditMonitoring") && (
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => removeFilter("creditMonitoring")}
+                          className="gap-1 h-7 px-2 text-xs"
+                        >
+                          Credit Monitoring
+                          <X className="h-3 w-3 ml-1" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </>
               )}
             </div>
           </Card>
