@@ -59,9 +59,12 @@ import {
   Shield,
   MapPin,
   FileText,
+  Building,
+  BarChart3,
 } from "lucide-react";
 
 import { mockCases, filterOptions, type Case } from "@/lib/mock-data";
+import { CaseDataOutput } from "@/components/case-data-output";
 
 // —————————————————————————————————————————————————————————————————————————————
 // SCHEMAS
@@ -76,11 +79,17 @@ const filterSchema = z.object({
   minClassSize: z.number().min(0).optional(),
   maxClassSize: z.number().min(0).optional(),
   states: z.array(z.string()).optional(),
+  courts: z.array(z.string()).optional(),
   piiAffected: z.array(z.string()).optional(),
   causeOfBreach: z.array(z.string()).optional(),
+  classType: z.array(z.string()).optional(),
   isMDL: z.boolean().optional(),
   hasMinor: z.boolean().optional(),
   creditMon: z.boolean().optional(),
+  defenseCounsel: z.array(z.string()).optional(),
+  plaintiffCounsel: z.array(z.string()).optional(),
+  judgeName: z.array(z.string()).optional(),
+  settlementType: z.array(z.string()).optional(),
 });
 
 type FilterValues = z.infer<typeof filterSchema>;
@@ -185,7 +194,7 @@ const filterGroups: FilterGroup[] = [
   },
   {
     id: "location",
-    label: "Location",
+    label: "Location & Court",
     icon: MapPin,
     defaultOpen: false,
     filters: [
@@ -194,6 +203,12 @@ const filterGroups: FilterGroup[] = [
         label: "States",
         type: "select",
         options: filterOptions.states,
+      },
+      {
+        name: "courts",
+        label: "Federal Courts",
+        type: "select",
+        options: filterOptions.courts,
       },
     ],
   },
@@ -206,6 +221,44 @@ const filterGroups: FilterGroup[] = [
       { name: "isMDL", label: "Multi-District Litigation", type: "checkbox" },
       { name: "hasMinor", label: "Has Minor Subclass", type: "checkbox" },
       { name: "creditMon", label: "Credit Monitoring", type: "checkbox" },
+      {
+        name: "settlementType",
+        label: "Settlement Type",
+        type: "select",
+        options: ["Preliminary", "Final"],
+      },
+      {
+        name: "classType",
+        label: "Class Type",
+        type: "select",
+        options: filterOptions.classTypes,
+      },
+    ],
+  },
+  {
+    id: "parties",
+    label: "Parties",
+    icon: Building,
+    defaultOpen: false,
+    filters: [
+      {
+        name: "defenseCounsel",
+        label: "Defense Counsel",
+        type: "select",
+        options: filterOptions.lawFirms,
+      },
+      {
+        name: "plaintiffCounsel",
+        label: "Plaintiff's Counsel",
+        type: "select",
+        options: filterOptions.lawFirms,
+      },
+      {
+        name: "judgeName",
+        label: "Judge Name",
+        type: "select",
+        options: Array.from(new Set(mockCases.map((c) => c.judgeName))).sort(),
+      },
     ],
   },
 ];
@@ -249,11 +302,17 @@ function useFilteredCases(cases: Case[]) {
         minClassSize,
         maxClassSize,
         states,
+        courts,
         piiAffected,
         causeOfBreach,
+        classType,
         isMDL,
         hasMinor,
         creditMon,
+        defenseCounsel,
+        plaintiffCounsel,
+        judgeName,
+        settlementType,
       } = values;
 
       if (
@@ -271,6 +330,7 @@ function useFilteredCases(cases: Case[]) {
       if (minClassSize && c.classSize < minClassSize) return false;
       if (maxClassSize && c.classSize > maxClassSize) return false;
       if (states?.length && !states.includes(c.state)) return false;
+      if (courts?.length && !courts.includes(c.court)) return false;
       if (
         piiAffected?.length &&
         !piiAffected.some((pt) => c.piiAffected.includes(pt))
@@ -278,11 +338,26 @@ function useFilteredCases(cases: Case[]) {
         return false;
       if (causeOfBreach?.length && !causeOfBreach.includes(c.causeOfBreach))
         return false;
+      if (
+        classType?.length &&
+        !classType.some((ct) => c.classType.includes(ct))
+      )
+        return false;
       if (isMDL !== undefined && c.isMultiDistrictLitigation !== isMDL)
         return false;
       if (hasMinor !== undefined && c.hasMinorSubclass !== hasMinor)
         return false;
       if (creditMon !== undefined && c.creditMonitoring !== creditMon)
+        return false;
+      if (defenseCounsel?.length && !defenseCounsel.includes(c.defenseCounsel))
+        return false;
+      if (
+        plaintiffCounsel?.length &&
+        !plaintiffCounsel.includes(c.plaintiffCounsel)
+      )
+        return false;
+      if (judgeName?.length && !judgeName.includes(c.judgeName)) return false;
+      if (settlementType?.length && !settlementType.includes(c.settlementType))
         return false;
       return true;
     });
@@ -329,6 +404,7 @@ export default function CaseSearchPage() {
   const { form, filtered } = useFilteredCases(mockCases);
   const stats = useStatistics(filtered);
   const [showSave, setShowSave] = React.useState(false);
+  const [showDataOutput, setShowDataOutput] = React.useState(false);
   const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(
     () =>
       filterGroups.reduce(
@@ -583,91 +659,112 @@ export default function CaseSearchPage() {
               />
             </div>
 
-            <Card className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <p className="font-medium">
-                  Search Results ({formatNumber(filtered.length)} cases)
-                </p>
-                <Button
-                  size="sm"
-                  disabled={!filtered.length}
-                  onClick={() => setShowSave(true)}
-                >
-                  <Save className="mr-2 h-4 w-4" />
-                  Save Search
-                </Button>
-              </div>
-              {filtered.length > 0 ? (
-                <div className="rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Case Name</TableHead>
-                        <TableHead>Court</TableHead>
-                        <TableHead>Year</TableHead>
-                        <TableHead className="text-right">Settlement</TableHead>
-                        <TableHead className="text-right">Class Size</TableHead>
-                        <TableHead>Type</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filtered.map((c) => (
-                        <TableRow
-                          key={c.id}
-                          className="hover:bg-muted/50 cursor-pointer"
-                          onClick={() =>
-                            router.push(`/dashboard/cases/${c.id}`)
-                          }
-                        >
-                          <TableCell>
-                            <div>
-                              <p className="font-medium">{c.name}</p>
-                              <p className="text-sm text-muted-foreground">
-                                {c.docketId}
-                              </p>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div>
-                              <p className="font-medium">{c.court}</p>
-                              <p className="text-sm text-muted-foreground">
-                                {c.state}
-                              </p>
-                            </div>
-                          </TableCell>
-                          <TableCell>{c.year}</TableCell>
-                          <TableCell className="text-right font-medium text-primary">
-                            {formatCurrency(c.settlementAmount)}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {formatNumber(c.classSize)}
-                          </TableCell>
-                          <TableCell>
-                            <Badge
-                              variant={
-                                c.settlementType === "Final"
-                                  ? "default"
-                                  : "secondary"
-                              }
-                            >
-                              {c.settlementType}
-                            </Badge>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-lg font-medium">No cases found</p>
-                  <p className="text-muted-foreground">
-                    Try adjusting your filters.
+            {showDataOutput ? (
+              <CaseDataOutput cases={filtered} />
+            ) : (
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <p className="font-medium">
+                    Search Results ({formatNumber(filtered.length)} cases)
                   </p>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setShowDataOutput(true)}
+                      disabled={!filtered.length}
+                    >
+                      <BarChart3 className="mr-2 h-4 w-4" />
+                      Data Output
+                    </Button>
+                    <div className="w-px h-6 bg-border" />
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={!filtered.length}
+                      onClick={() => setShowSave(true)}
+                    >
+                      <Save className="mr-2 h-4 w-4" />
+                      Save Search
+                    </Button>
+                  </div>
                 </div>
-              )}
-            </Card>
+                {filtered.length > 0 ? (
+                  <div className="rounded-md border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Case Name</TableHead>
+                          <TableHead>Court</TableHead>
+                          <TableHead>Year</TableHead>
+                          <TableHead className="text-right">
+                            Settlement
+                          </TableHead>
+                          <TableHead className="text-right">
+                            Class Size
+                          </TableHead>
+                          <TableHead>Type</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filtered.map((c) => (
+                          <TableRow
+                            key={c.id}
+                            className="hover:bg-muted/50 cursor-pointer"
+                            onClick={() =>
+                              router.push(`/dashboard/cases/${c.id}`)
+                            }
+                          >
+                            <TableCell>
+                              <div>
+                                <p className="font-medium">{c.name}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  {c.docketId}
+                                </p>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div>
+                                <p className="font-medium">{c.court}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  {c.state}
+                                </p>
+                              </div>
+                            </TableCell>
+                            <TableCell>{c.year}</TableCell>
+                            <TableCell className="text-right font-medium text-primary">
+                              {formatCurrency(c.settlementAmount)}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {formatNumber(c.classSize)}
+                            </TableCell>
+                            <TableCell>
+                              <Badge
+                                variant={
+                                  c.settlementType === "Final"
+                                    ? "default"
+                                    : "secondary"
+                                }
+                              >
+                                {c.settlementType}
+                              </Badge>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-lg font-medium">No cases found</p>
+                    <p className="text-muted-foreground">
+                      Try adjusting your filters.
+                    </p>
+                  </div>
+                )}
+              </Card>
+            )}
           </div>
         </div>
       </main>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -46,12 +46,18 @@ interface CaseDetailsPageProps {
   }>;
 }
 
-export default async function CaseDetailsPage({
-  params,
-}: CaseDetailsPageProps) {
-  const { id } = await params;
+export default function CaseDetailsPage({ params }: CaseDetailsPageProps) {
+  const [caseId, setCaseId] = React.useState<string | null>(null);
 
-  return <CaseDetailsPageContent caseId={id} />;
+  React.useEffect(() => {
+    params.then(({ id }) => setCaseId(id));
+  }, [params]);
+
+  if (!caseId) {
+    return <div>Loading...</div>;
+  }
+
+  return <CaseDetailsPageContent caseId={caseId} />;
 }
 
 function CaseDetailsPageContent({ caseId }: { caseId: string }) {
@@ -301,11 +307,14 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
               <Card>
                 <CardContent className="p-0">
                   <Tabs defaultValue="financial" className="w-full">
-                    <TabsList className="grid w-full grid-cols-4">
+                    <TabsList className="grid w-full grid-cols-5">
                       <TabsTrigger value="financial">Financial</TabsTrigger>
                       <TabsTrigger value="parties">Parties</TabsTrigger>
                       <TabsTrigger value="breach">Breach Details</TabsTrigger>
                       <TabsTrigger value="relief">Relief</TabsTrigger>
+                      <TabsTrigger value="reimbursements">
+                        Reimbursements
+                      </TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="financial" className="p-6 space-y-4">
@@ -315,6 +324,25 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                           <p className="text-2xl font-bold text-primary">
                             {formatCurrency(case_.settlementAmount)}
                           </p>
+                          {case_.baseSettlementAmount && (
+                            <div className="mt-1 space-y-1">
+                              <p className="text-sm text-muted-foreground">
+                                Base:{" "}
+                                {formatCurrency(case_.baseSettlementAmount)}
+                              </p>
+                              {case_.contingentSettlementAmount && (
+                                <p className="text-sm text-muted-foreground">
+                                  Contingent:{" "}
+                                  {formatCurrency(
+                                    case_.contingentSettlementAmount,
+                                  )}
+                                </p>
+                              )}
+                            </div>
+                          )}
+                          <Badge variant="outline" className="mt-2">
+                            {case_.isSettlementCapped ? "Capped" : "Uncapped"}
+                          </Badge>
                         </div>
 
                         <div>
@@ -326,6 +354,11 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                             {case_.attorneyFeesMethod === "Percentage"
                               ? `${case_.attorneyFeesPercentage}% of settlement`
                               : `Lodestar: ${formatCurrency(case_.lodestardAmount || 0)} × ${case_.multiplier}`}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {case_.attorneyFeesPaidFromFund
+                              ? "Paid from fund"
+                              : "Paid separately"}
                           </p>
                         </div>
 
@@ -348,6 +381,32 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                             {case_.claimsSubmittedPercent}% participation rate
                           </p>
                         </div>
+
+                        {case_.classRepServiceAwards && (
+                          <div>
+                            <h4 className="font-medium mb-2">
+                              Class Rep Awards
+                            </h4>
+                            <p className="text-lg font-semibold">
+                              {formatCurrency(case_.classRepServiceAwards)}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              Per named plaintiff
+                            </p>
+                          </div>
+                        )}
+
+                        {case_.claimsAdminCosts && (
+                          <div>
+                            <h4 className="font-medium mb-2">Admin Costs</h4>
+                            <p className="text-lg font-semibold">
+                              {formatCurrency(case_.claimsAdminCosts)}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              Claims administration
+                            </p>
+                          </div>
+                        )}
                       </div>
 
                       {case_.creditMonitoring &&
@@ -364,6 +423,17 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                             </p>
                           </div>
                         )}
+
+                      {case_.excessFundsDisposition && (
+                        <div className="pt-4 border-t">
+                          <h4 className="font-medium mb-2">
+                            Excess Funds Disposition
+                          </h4>
+                          <Badge variant="secondary">
+                            {case_.excessFundsDisposition}
+                          </Badge>
+                        </div>
+                      )}
                     </TabsContent>
 
                     <TabsContent value="parties" className="p-6 space-y-4">
@@ -429,6 +499,17 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                     </TabsContent>
 
                     <TabsContent value="relief" className="p-6 space-y-4">
+                      {case_.injunctiveReliefAmount && (
+                        <div className="mb-4">
+                          <h4 className="font-medium mb-2">
+                            Total Injunctive Relief Amount
+                          </h4>
+                          <p className="text-2xl font-bold text-primary">
+                            {formatCurrency(case_.injunctiveReliefAmount)}
+                          </p>
+                        </div>
+                      )}
+
                       <div>
                         <h4 className="font-medium mb-3 flex items-center gap-2">
                           <CheckCircle className="h-4 w-4" />
@@ -447,6 +528,22 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                         </div>
                       </div>
 
+                      {case_.thirdPartyAssessments &&
+                        case_.thirdPartyAssessments.length > 0 && (
+                          <div className="pt-4 border-t">
+                            <h4 className="font-medium mb-3">
+                              Third-Party Security Assessments
+                            </h4>
+                            <div className="flex flex-wrap gap-2">
+                              {case_.thirdPartyAssessments.map((assessment) => (
+                                <Badge key={assessment} variant="outline">
+                                  {assessment}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
                       {case_.creditMonitoring && (
                         <div className="pt-4 border-t">
                           <h4 className="font-medium mb-2">
@@ -463,6 +560,142 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                           </div>
                         </div>
                       )}
+                    </TabsContent>
+
+                    <TabsContent
+                      value="reimbursements"
+                      className="p-6 space-y-4"
+                    >
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {case_.baseCashCompensation !== undefined && (
+                          <div>
+                            <h4 className="font-medium mb-3">
+                              Base Cash Compensation
+                            </h4>
+                            <p className="text-xl font-semibold">
+                              {formatCurrency(case_.baseCashCompensation)}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              Per claimant who submits a claim
+                            </p>
+                          </div>
+                        )}
+
+                        {case_.maxReimbursementOutOfPocket !== undefined && (
+                          <div>
+                            <h4 className="font-medium mb-3">
+                              Out of Pocket Costs
+                            </h4>
+                            <p className="text-xl font-semibold">
+                              {formatCurrency(
+                                case_.maxReimbursementOutOfPocket,
+                              )}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              Maximum reimbursement per individual
+                            </p>
+                          </div>
+                        )}
+
+                        {case_.maxReimbursementDocumentedTime !== undefined && (
+                          <div>
+                            <h4 className="font-medium mb-3">
+                              Documented Time
+                            </h4>
+                            <p className="text-xl font-semibold">
+                              {formatCurrency(
+                                case_.maxReimbursementDocumentedTime,
+                              )}
+                            </p>
+                            <div className="mt-2 space-y-1">
+                              {case_.maxHoursDocumented && (
+                                <p className="text-sm text-muted-foreground">
+                                  Max hours: {case_.maxHoursDocumented}
+                                </p>
+                              )}
+                              {case_.ratePerHourDocumented && (
+                                <p className="text-sm text-muted-foreground">
+                                  Rate:{" "}
+                                  {formatCurrency(case_.ratePerHourDocumented)}
+                                  /hour
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {case_.maxReimbursementUndocumented !== undefined && (
+                          <div>
+                            <h4 className="font-medium mb-3">
+                              Undocumented Time
+                            </h4>
+                            <p className="text-xl font-semibold">
+                              {formatCurrency(
+                                case_.maxReimbursementUndocumented,
+                              )}
+                            </p>
+                            <div className="mt-2 space-y-1">
+                              {case_.maxHoursUndocumented && (
+                                <p className="text-sm text-muted-foreground">
+                                  Max hours: {case_.maxHoursUndocumented}
+                                </p>
+                              )}
+                              {case_.ratePerHourUndocumented && (
+                                <p className="text-sm text-muted-foreground">
+                                  Rate:{" "}
+                                  {formatCurrency(
+                                    case_.ratePerHourUndocumented,
+                                  )}
+                                  /hour
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <Separator />
+
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">
+                            Allow reimbursement for both documented and
+                            undocumented costs?
+                          </span>
+                          <Badge
+                            variant={
+                              case_.allowBothDocAndUndoc
+                                ? "default"
+                                : "secondary"
+                            }
+                          >
+                            {case_.allowBothDocAndUndoc ? "Yes" : "No"}
+                          </Badge>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">
+                            Pro rata adjustment provided?
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <Badge
+                              variant={
+                                case_.hasProRataAdjustment
+                                  ? "default"
+                                  : "secondary"
+                              }
+                            >
+                              {case_.hasProRataAdjustment ? "Yes" : "No"}
+                            </Badge>
+                            {case_.hasProRataAdjustment &&
+                              case_.proRataAmount && (
+                                <span className="text-sm text-muted-foreground">
+                                  ({formatCurrency(case_.proRataAmount)})
+                                </span>
+                              )}
+                          </div>
+                        </div>
+                      </div>
                     </TabsContent>
                   </Tabs>
                 </CardContent>
