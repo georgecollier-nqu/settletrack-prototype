@@ -26,7 +26,6 @@ import {
   TrendingUp,
   CheckCircle,
   Users,
-  Shield,
 } from "lucide-react";
 
 export default function OnboardingPage() {
@@ -368,23 +367,6 @@ export default function OnboardingPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-4">
-                  <Card className="bg-secondary/30 border-0">
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-3">
-                        <Shield className="h-5 w-5 text-primary mt-0.5" />
-                        <div>
-                          <h4 className="font-semibold mb-1">
-                            Your data is secure
-                          </h4>
-                          <p className="text-sm text-muted-foreground">
-                            Bank-level encryption and GDPR compliance protect
-                            your research
-                          </p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
                   {role === "team_leader" && (
                     <Card className="bg-secondary/30 border-0">
                       <CardContent className="p-4">
