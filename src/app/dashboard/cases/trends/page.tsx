@@ -42,7 +42,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useForm } from "react-hook-form";
-import { TrendingUp, Check, ChevronsUpDown, X } from "lucide-react";
+import { TrendingUp, Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { filterOptions, mockCases } from "@/lib/mock-data";
 
@@ -292,64 +292,27 @@ export default function CaseTrendsPage() {
 
   const currentMetricInfo = getMetricInfo(form.watch("metric"));
 
-  // Calculate active filter count
-  const activeFilterCount = useMemo(() => {
-    const values = form.getValues();
-    let count = 0;
-    if (values.dateRange.from || values.dateRange.to) count++;
-    if (values.states.length > 0) count++;
-    if (values.courts.length > 0) count++;
-    if (values.isMultiDistrictLitigation) count++;
-    if (values.creditMonitoring) count++;
-    return count;
-  }, [form.watch()]);
-
-  // Remove a specific filter
-  const removeFilter = (filterType: string, value?: string) => {
-    switch (filterType) {
-      case "dateRange":
-        form.setValue("dateRange", { from: null, to: null });
-        break;
-      case "states":
-        if (value) {
-          form.setValue(
-            "states",
-            form.getValues("states").filter((s) => s !== value),
-          );
-        } else {
-          form.setValue("states", []);
-        }
-        break;
-      case "courts":
-        if (value) {
-          form.setValue(
-            "courts",
-            form.getValues("courts").filter((c) => c !== value),
-          );
-        } else {
-          form.setValue("courts", []);
-        }
-        break;
-      case "isMultiDistrictLitigation":
-        form.setValue("isMultiDistrictLitigation", false);
-        break;
-      case "creditMonitoring":
-        form.setValue("creditMonitoring", false);
-        break;
-    }
-  };
-
   return (
     <div className="min-h-screen bg-muted/30">
       <div className="p-8 max-w-7xl mx-auto space-y-6">
         <Form {...form}>
           {/* Filters Section */}
-          <Card className="p-6 bg-white border shadow-sm">
-            <div className="space-y-6">
-              <h3 className="text-lg font-semibold">Filters</h3>
+          <Card className="p-4 bg-white border shadow-sm">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold">Filters</h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => form.reset()}
+                  className="h-8 px-2 text-xs"
+                >
+                  Clear all
+                </Button>
+              </div>
 
               {/* Metric and Period Selection */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="metric"
@@ -410,13 +373,8 @@ export default function CaseTrendsPage() {
                 />
               </div>
 
-              <div className="border-t pt-4" />
-
               {/* Date Range */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium text-muted-foreground">
-                  Time Period
-                </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <FormLabel>Year Range</FormLabel>
                   <div className="flex items-center gap-2">
@@ -471,259 +429,174 @@ export default function CaseTrendsPage() {
                     />
                   </div>
                 </div>
-              </div>
-
-              <div className="border-t pt-4" />
-
-              {/* Location Filters */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium text-muted-foreground">
-                  Location & Courts
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* States */}
-                  <FormField
-                    control={form.control}
-                    name="states"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>States</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant="outline"
-                                role="combobox"
-                                className="w-full justify-between font-normal"
-                              >
+                {/* States */}
+                <FormField
+                  control={form.control}
+                  name="states"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>States</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className="w-full justify-between font-normal text-left"
+                            >
+                              <span className="truncate">
                                 {field.value?.length
-                                  ? `${field.value.length} selected`
+                                  ? field.value.length === 1
+                                    ? field.value[0]
+                                    : `${field.value.length} states`
                                   : "Select states..."}
-                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-[200px] p-0">
-                            <Command>
-                              <CommandInput placeholder="Search states..." />
-                              <CommandList>
-                                <CommandEmpty>No state found.</CommandEmpty>
-                                <CommandGroup>
-                                  {filterOptions.states.map((state) => (
-                                    <CommandItem
-                                      key={state}
-                                      value={state}
-                                      onSelect={() => {
-                                        const current = field.value || [];
-                                        field.onChange(
-                                          current.includes(state)
-                                            ? current.filter((s) => s !== state)
-                                            : [...current, state],
-                                        );
-                                      }}
-                                    >
-                                      <Check
-                                        className={cn(
-                                          "mr-2 h-4 w-4",
-                                          field.value?.includes(state)
-                                            ? "opacity-100"
-                                            : "opacity-0",
-                                        )}
-                                      />
-                                      {state}
-                                    </CommandItem>
-                                  ))}
-                                </CommandGroup>
-                              </CommandList>
-                            </Command>
-                          </PopoverContent>
-                        </Popover>
-                      </FormItem>
-                    )}
-                  />
+                              </span>
+                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[200px] p-0">
+                          <Command>
+                            <CommandInput placeholder="Search states..." />
+                            <CommandList>
+                              <CommandEmpty>No state found.</CommandEmpty>
+                              <CommandGroup>
+                                {filterOptions.states.map((state) => (
+                                  <CommandItem
+                                    key={state}
+                                    value={state}
+                                    onSelect={() => {
+                                      const current = field.value || [];
+                                      field.onChange(
+                                        current.includes(state)
+                                          ? current.filter((s) => s !== state)
+                                          : [...current, state],
+                                      );
+                                    }}
+                                  >
+                                    <Check
+                                      className={cn(
+                                        "mr-2 h-4 w-4",
+                                        field.value?.includes(state)
+                                          ? "opacity-100"
+                                          : "opacity-0",
+                                      )}
+                                    />
+                                    {state}
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </FormItem>
+                  )}
+                />
 
-                  {/* Federal Courts */}
-                  <FormField
-                    control={form.control}
-                    name="courts"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Federal Courts</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant="outline"
-                                role="combobox"
-                                className="w-full justify-between font-normal"
-                              >
+                {/* Federal Courts */}
+                <FormField
+                  control={form.control}
+                  name="courts"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Federal Courts</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className="w-full justify-between font-normal text-left"
+                            >
+                              <span className="truncate">
                                 {field.value?.length
-                                  ? `${field.value.length} selected`
+                                  ? field.value.length === 1
+                                    ? field.value[0]
+                                    : `${field.value.length} courts`
                                   : "Select courts..."}
-                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-[200px] p-0">
-                            <Command>
-                              <CommandInput placeholder="Search courts..." />
-                              <CommandList>
-                                <CommandEmpty>No court found.</CommandEmpty>
-                                <CommandGroup>
-                                  {filterOptions.courts.map((court) => (
-                                    <CommandItem
-                                      key={court}
-                                      value={court}
-                                      onSelect={() => {
-                                        const current = field.value || [];
-                                        field.onChange(
-                                          current.includes(court)
-                                            ? current.filter((c) => c !== court)
-                                            : [...current, court],
-                                        );
-                                      }}
-                                    >
-                                      <Check
-                                        className={cn(
-                                          "mr-2 h-4 w-4",
-                                          field.value?.includes(court)
-                                            ? "opacity-100"
-                                            : "opacity-0",
-                                        )}
-                                      />
-                                      {court}
-                                    </CommandItem>
-                                  ))}
-                                </CommandGroup>
-                              </CommandList>
-                            </Command>
-                          </PopoverContent>
-                        </Popover>
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                              </span>
+                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[200px] p-0">
+                          <Command>
+                            <CommandInput placeholder="Search courts..." />
+                            <CommandList>
+                              <CommandEmpty>No court found.</CommandEmpty>
+                              <CommandGroup>
+                                {filterOptions.courts.map((court) => (
+                                  <CommandItem
+                                    key={court}
+                                    value={court}
+                                    onSelect={() => {
+                                      const current = field.value || [];
+                                      field.onChange(
+                                        current.includes(court)
+                                          ? current.filter((c) => c !== court)
+                                          : [...current, court],
+                                      );
+                                    }}
+                                  >
+                                    <Check
+                                      className={cn(
+                                        "mr-2 h-4 w-4",
+                                        field.value?.includes(court)
+                                          ? "opacity-100"
+                                          : "opacity-0",
+                                      )}
+                                    />
+                                    {court}
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </FormItem>
+                  )}
+                />
               </div>
-
-              <div className="border-t pt-4" />
 
               {/* Case Type Filters */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium text-muted-foreground">
-                  Case Type
-                </h4>
-                <div className="flex flex-wrap gap-6">
-                  <FormField
-                    control={form.control}
-                    name="isMultiDistrictLitigation"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          Multi-District Litigation
-                        </FormLabel>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="creditMonitoring"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          Credit Monitoring
-                        </FormLabel>
-                      </FormItem>
-                    )}
-                  />
-                </div>
+              <div className="flex flex-wrap gap-6">
+                <FormField
+                  control={form.control}
+                  name="isMultiDistrictLitigation"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormLabel className="font-normal text-sm">
+                        Multi-District Litigation
+                      </FormLabel>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="creditMonitoring"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormLabel className="font-normal text-sm">
+                        Credit Monitoring
+                      </FormLabel>
+                    </FormItem>
+                  )}
+                />
               </div>
-
-              {/* Active Filters Display */}
-              {activeFilterCount > 0 && (
-                <>
-                  <div className="border-t pt-4" />
-                  <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-muted-foreground">
-                      Active Filters
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {(form.watch("dateRange.from") ||
-                        form.watch("dateRange.to")) && (
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => removeFilter("dateRange")}
-                          className="gap-1 h-7 px-2 text-xs"
-                        >
-                          {form.watch("dateRange.from") || "Any"} -{" "}
-                          {form.watch("dateRange.to") || "Any"}
-                          <X className="h-3 w-3 ml-1" />
-                        </Button>
-                      )}
-                      {form.watch("states")?.map((state) => (
-                        <Button
-                          key={state}
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => removeFilter("states", state)}
-                          className="gap-1 h-7 px-2 text-xs"
-                        >
-                          {state}
-                          <X className="h-3 w-3 ml-1" />
-                        </Button>
-                      ))}
-                      {form.watch("courts")?.map((court) => (
-                        <Button
-                          key={court}
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => removeFilter("courts", court)}
-                          className="gap-1 h-7 px-2 text-xs"
-                        >
-                          {court}
-                          <X className="h-3 w-3 ml-1" />
-                        </Button>
-                      ))}
-                      {form.watch("isMultiDistrictLitigation") && (
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() =>
-                            removeFilter("isMultiDistrictLitigation")
-                          }
-                          className="gap-1 h-7 px-2 text-xs"
-                        >
-                          Multi-District Litigation
-                          <X className="h-3 w-3 ml-1" />
-                        </Button>
-                      )}
-                      {form.watch("creditMonitoring") && (
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => removeFilter("creditMonitoring")}
-                          className="gap-1 h-7 px-2 text-xs"
-                        >
-                          Credit Monitoring
-                          <X className="h-3 w-3 ml-1" />
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </>
-              )}
             </div>
           </Card>
 
