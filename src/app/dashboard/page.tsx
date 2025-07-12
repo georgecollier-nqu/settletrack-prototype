@@ -298,7 +298,7 @@ export default function DashboardPage() {
 
               {/* Stats Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card>
+                <Card className="!py-0">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div>
@@ -317,7 +317,7 @@ export default function DashboardPage() {
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="!py-0">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div>
@@ -336,7 +336,7 @@ export default function DashboardPage() {
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="!py-0">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div>
@@ -355,7 +355,7 @@ export default function DashboardPage() {
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="!py-0">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div>
