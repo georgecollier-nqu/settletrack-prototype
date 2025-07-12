@@ -6,13 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -65,13 +59,10 @@ import {
   MoreHorizontal,
   Edit,
   Trash2,
-  Share,
   Bell,
   BellOff,
-  Users,
   Play,
   Plus,
-  Eye,
 } from "lucide-react";
 import { mockSavedSearches, type SavedSearch } from "@/lib/mock-data";
 
@@ -79,7 +70,6 @@ const editSearchSchema = z.object({
   name: z.string().min(1, "Search name is required"),
   description: z.string().optional(),
   alertEnabled: z.boolean(),
-  isShared: z.boolean(),
 });
 
 type EditSearchValues = z.infer<typeof editSearchSchema>;
@@ -144,7 +134,6 @@ export default function SavedSearchesPage() {
       name: search.name,
       description: search.description || "",
       alertEnabled: search.alertEnabled,
-      isShared: search.isShared,
     });
     setShowEditDialog(true);
   };
@@ -159,7 +148,6 @@ export default function SavedSearchesPage() {
             name: values.name,
             description: values.description,
             alertEnabled: values.alertEnabled,
-            isShared: values.isShared,
           }
         : search,
     );
@@ -168,98 +156,17 @@ export default function SavedSearchesPage() {
     setEditingSearch(null);
   };
 
-  // Share/unshare a search
-  const toggleShare = (searchId: string) => {
-    const updatedSearches = searches.map((search) =>
-      search.id === searchId
-        ? { ...search, isShared: !search.isShared }
-        : search,
-    );
-    setSearches(updatedSearches);
-  };
-
-  // Get filter summary for display
-  const getFilterSummary = (search: SavedSearch) => {
-    const filters = [];
-
-    if (search.filters.states && search.filters.states.length > 0) {
-      filters.push(`States: ${search.filters.states.join(", ")}`);
-    }
-
-    if (search.filters.yearRange) {
-      const { from, to } = search.filters.yearRange;
-      if (from && to) {
-        filters.push(`Years: ${from}-${to}`);
-      } else if (from) {
-        filters.push(`From: ${from}`);
-      } else if (to) {
-        filters.push(`Until: ${to}`);
-      }
-    }
-
-    if (search.filters.settlementAmountRange) {
-      const { from, to } = search.filters.settlementAmountRange;
-      if (from && to) {
-        filters.push(
-          `Settlement: $${(from / 1000000).toFixed(1)}M - $${(to / 1000000).toFixed(1)}M`,
-        );
-      } else if (from) {
-        filters.push(`Settlement: > $${(from / 1000000).toFixed(1)}M`);
-      } else if (to) {
-        filters.push(`Settlement: < $${(to / 1000000).toFixed(1)}M`);
-      }
-    }
-
-    if (
-      search.filters.causeOfBreach &&
-      search.filters.causeOfBreach.length > 0
-    ) {
-      filters.push(`Cause: ${search.filters.causeOfBreach.join(", ")}`);
-    }
-
-    if (search.filters.classType && search.filters.classType.length > 0) {
-      filters.push(`Class: ${search.filters.classType.join(", ")}`);
-    }
-
-    if (search.filters.isMultiDistrictLitigation !== undefined) {
-      filters.push(
-        `MDL: ${search.filters.isMultiDistrictLitigation ? "Yes" : "No"}`,
-      );
-    }
-
-    if (search.filters.creditMonitoring !== undefined) {
-      filters.push(
-        `Credit Mon.: ${search.filters.creditMonitoring ? "Yes" : "No"}`,
-      );
-    }
-
-    return filters.length > 0 ? filters.join(" • ") : "No specific filters";
-  };
-
   // Statistics
   const totalSearches = searches.length;
-  const sharedSearches = searches.filter((s) => s.isShared).length;
   const alertsEnabled = searches.filter((s) => s.alertEnabled).length;
-  const totalMatches = searches.reduce(
-    (sum, s) => sum + s.matchingCasesCount,
-    0,
-  );
 
   return (
     <>
       {/* Header */}
       <header className="border-b bg-white px-6 py-4 shadow-[0_1px_2px_rgba(17,24,39,0.05)]">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <SidebarTrigger className="lg:hidden" />
-            <h1 className="text-2xl font-serif font-bold">Saved Searches</h1>
-          </div>
-          <Button asChild>
-            <Link href="/dashboard/cases/search">
-              <Plus className="mr-2 h-4 w-4" />
-              Create New Search
-            </Link>
-          </Button>
+        <div className="flex items-center gap-4">
+          <SidebarTrigger className="lg:hidden" />
+          <h1 className="text-2xl font-serif font-bold">Saved Searches</h1>
         </div>
       </header>
 
@@ -267,90 +174,62 @@ export default function SavedSearchesPage() {
       <main className="flex-1 overflow-y-auto p-6 bg-muted/30">
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Overview Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      Total Searches
-                    </p>
-                    <p className="text-2xl font-bold mt-1">{totalSearches}</p>
-                  </div>
-                  <div className="p-3 bg-secondary rounded-lg">
-                    <Bookmark className="h-6 w-6 text-primary" />
-                  </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    Total Searches
+                  </p>
+                  <p className="text-2xl font-bold mt-1">{totalSearches}</p>
                 </div>
-              </CardContent>
+                <div className="p-3 bg-secondary rounded-lg">
+                  <Bookmark className="h-6 w-6 text-primary" />
+                </div>
+              </div>
             </Card>
 
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Shared</p>
-                    <p className="text-2xl font-bold mt-1">{sharedSearches}</p>
-                  </div>
-                  <div className="p-3 bg-secondary rounded-lg">
-                    <Users className="h-6 w-6 text-primary" />
-                  </div>
+            <Card className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Alerts Active</p>
+                  <p className="text-2xl font-bold mt-1">{alertsEnabled}</p>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      Alerts Active
-                    </p>
-                    <p className="text-2xl font-bold mt-1">{alertsEnabled}</p>
-                  </div>
-                  <div className="p-3 bg-secondary rounded-lg">
-                    <Bell className="h-6 w-6 text-primary" />
-                  </div>
+                <div className="p-3 bg-secondary rounded-lg">
+                  <Bell className="h-6 w-6 text-primary" />
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      Total Matches
-                    </p>
-                    <p className="text-2xl font-bold mt-1">{totalMatches}</p>
-                  </div>
-                  <div className="p-3 bg-secondary rounded-lg">
-                    <Eye className="h-6 w-6 text-primary" />
-                  </div>
-                </div>
-              </CardContent>
+              </div>
             </Card>
           </div>
 
           {/* Searches Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Your Saved Searches</CardTitle>
-              <CardDescription>
-                Manage your saved search queries and access them quickly
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {searches.length > 0 ? (
-                <div className="rounded-md border">
+          <Card className="p-6">
+            <div className="mb-4 flex items-start justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Your Saved Searches</h3>
+                <p className="text-sm text-muted-foreground">
+                  Manage your saved search queries and access them quickly
+                </p>
+              </div>
+              <Button asChild>
+                <Link href="/dashboard/cases/search">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create New Search
+                </Link>
+              </Button>
+            </div>
+            {searches.length > 0 ? (
+              <div className="overflow-x-auto">
+                <div className="rounded-md border inline-block min-w-full">
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="w-[300px]">Search Name</TableHead>
-                        <TableHead>Filters Applied</TableHead>
-                        <TableHead className="text-center">Matches</TableHead>
-                        <TableHead className="text-center">Created</TableHead>
-                        <TableHead className="text-center">Last Used</TableHead>
-                        <TableHead className="text-center">Status</TableHead>
+                        <TableHead className="min-w-[250px]">
+                          Search Name
+                        </TableHead>
+                        <TableHead>Created</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Run</TableHead>
                         <TableHead className="w-[100px]">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -361,26 +240,15 @@ export default function SavedSearchesPage() {
                             <div className="space-y-1">
                               <div className="flex items-center gap-2">
                                 <p className="font-medium">{search.name}</p>
-                                <div className="flex items-center gap-1">
-                                  {search.isShared && (
-                                    <Badge
-                                      variant="outline"
-                                      className="h-5 px-1.5 text-xs"
-                                    >
-                                      <Users className="h-3 w-3 mr-1" />
-                                      Shared
-                                    </Badge>
-                                  )}
-                                  {search.alertEnabled && (
-                                    <Badge
-                                      variant="secondary"
-                                      className="h-5 px-1.5 text-xs"
-                                    >
-                                      <Bell className="h-3 w-3 mr-1" />
-                                      Alert
-                                    </Badge>
-                                  )}
-                                </div>
+                                {search.alertEnabled && (
+                                  <Badge
+                                    variant="secondary"
+                                    className="h-5 px-1.5 text-xs"
+                                  >
+                                    <Bell className="h-3 w-3 mr-1" />
+                                    Alert
+                                  </Badge>
+                                )}
                               </div>
                               {search.description && (
                                 <p className="text-sm text-muted-foreground">
@@ -389,165 +257,129 @@ export default function SavedSearchesPage() {
                               )}
                             </div>
                           </TableCell>
-                          <TableCell>
-                            <p className="text-sm text-muted-foreground max-w-md truncate">
-                              {getFilterSummary(search)}
-                            </p>
-                          </TableCell>
-                          <TableCell className="text-center">
-                            <span className="font-medium text-primary">
-                              {search.matchingCasesCount}
-                            </span>
-                          </TableCell>
-                          <TableCell className="text-center text-sm text-muted-foreground">
+                          <TableCell className="text-sm text-muted-foreground">
                             {formatDate(search.createdAt)}
                           </TableCell>
-                          <TableCell className="text-center text-sm text-muted-foreground">
-                            {search.lastUsed
-                              ? formatDate(search.lastUsed)
-                              : "Never"}
-                          </TableCell>
-                          <TableCell className="text-center">
-                            <div className="flex items-center justify-center gap-2">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => toggleAlert(search.id)}
-                                className="h-6 w-6 p-0"
-                              >
-                                {search.alertEnabled ? (
-                                  <Bell className="h-3 w-3 text-primary" />
-                                ) : (
-                                  <BellOff className="h-3 w-3 text-muted-foreground" />
-                                )}
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => toggleShare(search.id)}
-                                className="h-6 w-6 p-0"
-                              >
-                                <Users
-                                  className={`h-3 w-3 ${search.isShared ? "text-primary" : "text-muted-foreground"}`}
-                                />
-                              </Button>
-                            </div>
+                          <TableCell>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleAlert(search.id)}
+                              className="h-6 w-6 p-0"
+                            >
+                              {search.alertEnabled ? (
+                                <Bell className="h-3 w-3 text-primary" />
+                              ) : (
+                                <BellOff className="h-3 w-3 text-muted-foreground" />
+                              )}
+                            </Button>
                           </TableCell>
                           <TableCell>
-                            <div className="flex items-center gap-1">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => runSearch(search)}
-                                className="h-6 w-6 p-0"
-                              >
-                                <Play className="h-3 w-3" />
-                              </Button>
-
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-6 w-6 p-0"
-                                  >
-                                    <MoreHorizontal className="h-3 w-3" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem
-                                    onClick={() => runSearch(search)}
-                                  >
-                                    <Play className="mr-2 h-4 w-4" />
-                                    Run Search
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    onClick={() => openEditDialog(search)}
-                                  >
-                                    <Edit className="mr-2 h-4 w-4" />
-                                    Edit
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    onClick={() => toggleShare(search.id)}
-                                  >
-                                    <Share className="mr-2 h-4 w-4" />
-                                    {search.isShared ? "Unshare" : "Share"}
-                                  </DropdownMenuItem>
-                                  <DropdownMenuSeparator />
-                                  <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                      <DropdownMenuItem
-                                        className="text-destructive focus:text-destructive"
-                                        onSelect={(e) => e.preventDefault()}
+                            <Button
+                              size="sm"
+                              onClick={() => runSearch(search)}
+                              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                            >
+                              <Play className="mr-1.5 h-3 w-3" />
+                              Run
+                            </Button>
+                          </TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-6 w-6 p-0"
+                                >
+                                  <MoreHorizontal className="h-3 w-3" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem
+                                  onClick={() => runSearch(search)}
+                                >
+                                  <Play className="mr-2 h-4 w-4" />
+                                  Run Search
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => openEditDialog(search)}
+                                >
+                                  <Edit className="mr-2 h-4 w-4" />
+                                  Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <DropdownMenuItem
+                                      className="text-destructive focus:text-destructive"
+                                      onSelect={(e) => e.preventDefault()}
+                                    >
+                                      <Trash2 className="mr-2 h-4 w-4" />
+                                      Delete
+                                    </DropdownMenuItem>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>
+                                        Delete Search
+                                      </AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Are you sure you want to delete &quot;
+                                        {search.name}&quot;? This action cannot
+                                        be undone.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>
+                                        Cancel
+                                      </AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() => deleteSearch(search.id)}
+                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                       >
-                                        <Trash2 className="mr-2 h-4 w-4" />
                                         Delete
-                                      </DropdownMenuItem>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                      <AlertDialogHeader>
-                                        <AlertDialogTitle>
-                                          Delete Search
-                                        </AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                          Are you sure you want to delete &quot;
-                                          {search.name}&quot;? This action
-                                          cannot be undone.
-                                        </AlertDialogDescription>
-                                      </AlertDialogHeader>
-                                      <AlertDialogFooter>
-                                        <AlertDialogCancel>
-                                          Cancel
-                                        </AlertDialogCancel>
-                                        <AlertDialogAction
-                                          onClick={() =>
-                                            deleteSearch(search.id)
-                                          }
-                                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                        >
-                                          Delete
-                                        </AlertDialogAction>
-                                      </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                  </AlertDialog>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </div>
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
                 </div>
-              ) : (
-                <div className="text-center py-12">
-                  <Bookmark className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-lg font-medium">No saved searches yet</p>
-                  <p className="text-muted-foreground mb-4">
-                    Create your first saved search to quickly access your
-                    favorite queries
-                  </p>
-                  <Button asChild>
-                    <Link href="/dashboard/cases/search">
-                      <Search className="mr-2 h-4 w-4" />
-                      Create Your First Search
-                    </Link>
-                  </Button>
-                </div>
-              )}
-            </CardContent>
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Bookmark className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-lg font-medium">No saved searches yet</p>
+                <p className="text-muted-foreground mb-4">
+                  Create your first saved search to quickly access your favorite
+                  queries
+                </p>
+                <Button asChild>
+                  <Link href="/dashboard/cases/search">
+                    <Search className="mr-2 h-4 w-4" />
+                    Create Your First Search
+                  </Link>
+                </Button>
+              </div>
+            )}
           </Card>
 
           {/* Quick Actions */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Most Used Searches</CardTitle>
-                <CardDescription>
+            <Card className="p-6">
+              <div className="mb-4">
+                <h3 className="text-lg font-semibold">Most Used Searches</h3>
+                <p className="text-sm text-muted-foreground">
                   Your frequently accessed searches
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+                </p>
+              </div>
+              <div>
                 <div className="space-y-3">
                   {searches
                     .filter((s) => s.lastUsed)
@@ -579,15 +411,17 @@ export default function SavedSearchesPage() {
                     </p>
                   )}
                 </div>
-              </CardContent>
+              </div>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Alert Settings</CardTitle>
-                <CardDescription>Manage your search alerts</CardDescription>
-              </CardHeader>
-              <CardContent>
+            <Card className="p-6">
+              <div className="mb-4">
+                <h3 className="text-lg font-semibold">Alert Settings</h3>
+                <p className="text-sm text-muted-foreground">
+                  Manage your search alerts
+                </p>
+              </div>
+              <div>
                 <div className="space-y-3">
                   {searches
                     .filter((s) => s.alertEnabled)
@@ -617,7 +451,7 @@ export default function SavedSearchesPage() {
                     </p>
                   )}
                 </div>
-              </CardContent>
+              </div>
             </Card>
           </div>
         </div>
@@ -687,24 +521,6 @@ export default function SavedSearchesPage() {
                         <FormLabel>
                           Enable alerts for new matching cases
                         </FormLabel>
-                      </div>
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={editForm.control}
-                  name="isShared"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel>Share with team members</FormLabel>
                       </div>
                     </FormItem>
                   )}
