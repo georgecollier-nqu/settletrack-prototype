@@ -40,9 +40,7 @@ export default function SignupPage() {
     setError("");
 
     if (accountType === "existing_firm") {
-      setError(
-        "You need to be invited by your team admin. Please check your email for an invitation link.",
-      );
+      // Don't proceed - button should be disabled
       return;
     }
 
@@ -103,12 +101,6 @@ export default function SignupPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {error && (
-              <Alert variant="destructive" className="mb-4">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
             {step === 1 ? (
               <form onSubmit={handleStepOne} className="space-y-6">
                 <RadioGroup value={accountType} onValueChange={setAccountType}>
@@ -177,13 +169,31 @@ export default function SignupPage() {
                   </div>
                 )}
 
-                <Button type="submit" className="w-full h-10">
+                {accountType === "existing_firm" && (
+                  <Alert variant="destructive">
+                    <AlertDescription>
+                      You need to be invited by your team admin. Please check
+                      your email for an invitation link.
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                <Button
+                  type="submit"
+                  className="w-full h-10"
+                  disabled={accountType === "existing_firm"}
+                >
                   Continue
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </form>
             ) : (
               <form onSubmit={handleSignup} className="space-y-4">
+                {error && (
+                  <Alert variant="destructive" className="mb-4">
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">First Name</Label>
