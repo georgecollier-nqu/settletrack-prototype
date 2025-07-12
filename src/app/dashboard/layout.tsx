@@ -153,7 +153,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <div className="mt-auto pt-4 border-t">
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild className="w-full">
-                    <Link href="/dashboard/help" className={getActiveClasses("/dashboard/help")}>
+                    <Link
+                      href="/dashboard/help"
+                      className={getActiveClasses("/dashboard/help")}
+                    >
                       <HelpCircle className="h-5 w-5" />
                       Help & Support
                     </Link>

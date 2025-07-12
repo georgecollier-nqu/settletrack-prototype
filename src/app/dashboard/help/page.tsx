@@ -23,12 +23,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { NotificationsDropdown } from "@/components/ui/notifications-dropdown";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Settings,
-  LogOut,
-  HelpCircle,
-  Send,
-} from "lucide-react";
+import { Settings, LogOut, HelpCircle, Send } from "lucide-react";
 import { toast } from "sonner";
 
 export default function HelpPage() {
@@ -41,11 +36,13 @@ export default function HelpPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     // Simulate sending email to support team
     setTimeout(() => {
       setIsSubmitting(false);
-      toast.success("Message sent to support team! We'll get back to you soon.");
+      toast.success(
+        "Message sent to support team! We'll get back to you soon.",
+      );
       setContactForm({ subject: "", message: "" });
     }, 1500);
   };
@@ -113,7 +110,7 @@ export default function HelpPage() {
             <CardHeader>
               <CardTitle>Contact Support</CardTitle>
               <CardDescription>
-                Send us a message and we'll get back to you soon
+                Send us a message and we&apos;ll get back to you soon
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -149,7 +146,11 @@ export default function HelpPage() {
                     required
                   />
                 </div>
-                <Button type="submit" disabled={isSubmitting} className="w-full">
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full"
+                >
                   {isSubmitting ? (
                     <>
                       <Send className="mr-2 h-4 w-4 animate-spin" />
