@@ -520,7 +520,8 @@ export default function SettingsPage() {
                                 Marketing Communications
                               </Label>
                               <p className="text-sm text-muted-foreground">
-                                Receive updates about new features and best practices
+                                Receive updates about new features and best
+                                practices
                               </p>
                             </div>
                             <Switch />
@@ -696,7 +697,10 @@ export default function SettingsPage() {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <form onSubmit={handlePasswordChange} className="space-y-4">
+                      <form
+                        onSubmit={handlePasswordChange}
+                        className="space-y-4"
+                      >
                         <div className="space-y-2">
                           <Label htmlFor="currentPassword">
                             Current Password
@@ -711,8 +715,8 @@ export default function SettingsPage() {
                           <Label htmlFor="newPassword">New Password</Label>
                           <Input id="newPassword" type="password" required />
                           <p className="text-xs text-muted-foreground">
-                            Must be at least 8 characters with a mix of letters and
-                            numbers
+                            Must be at least 8 characters with a mix of letters
+                            and numbers
                           </p>
                         </div>
                         <div className="space-y-2">

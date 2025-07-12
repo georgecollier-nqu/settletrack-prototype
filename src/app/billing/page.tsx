@@ -175,7 +175,8 @@ export default function BillingPage() {
     }, 2000);
   };
 
-  const seatUsagePercentage = (subscription.usedSeats / subscription.seats) * 100;
+  const seatUsagePercentage =
+    (subscription.usedSeats / subscription.seats) * 100;
 
   return (
     <SidebarProvider>
@@ -372,7 +373,9 @@ export default function BillingPage() {
                         </CardDescription>
                       </div>
                       <Badge className="bg-success/10 text-success border-0">
-                        {subscription.status === "active" ? "Active" : "Inactive"}
+                        {subscription.status === "active"
+                          ? "Active"
+                          : "Inactive"}
                       </Badge>
                     </div>
                   </CardHeader>
@@ -392,10 +395,12 @@ export default function BillingPage() {
                     <div className="space-y-4">
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium">Seat Usage</span>
+                          <span className="text-sm font-medium">
+                            Seat Usage
+                          </span>
                           <span className="text-sm text-muted-foreground">
-                            {subscription.usedSeats} of {subscription.seats} seats
-                            used
+                            {subscription.usedSeats} of {subscription.seats}{" "}
+                            seats used
                           </span>
                         </div>
                         <Progress value={seatUsagePercentage} className="h-2" />
@@ -457,7 +462,8 @@ export default function BillingPage() {
                           </div>
                           <div>
                             <p className="font-medium">
-                              {subscription.cardBrand} •••• {subscription.cardLast4}
+                              {subscription.cardBrand} ••••{" "}
+                              {subscription.cardLast4}
                             </p>
                             <p className="text-sm text-muted-foreground">
                               Expires {subscription.cardExpiry}
@@ -525,7 +531,10 @@ export default function BillingPage() {
                           >
                             Cancel
                           </Button>
-                          <Button onClick={handleUpdateCard} disabled={isProcessing}>
+                          <Button
+                            onClick={handleUpdateCard}
+                            disabled={isProcessing}
+                          >
                             {isProcessing ? (
                               <>
                                 <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
@@ -545,7 +554,10 @@ export default function BillingPage() {
                         onOpenChange={setCancelDialogOpen}
                       >
                         <DialogTrigger asChild>
-                          <Button variant="outline" className="w-full text-destructive">
+                          <Button
+                            variant="outline"
+                            className="w-full text-destructive"
+                          >
                             Cancel Subscription
                           </Button>
                         </DialogTrigger>
@@ -553,16 +565,17 @@ export default function BillingPage() {
                           <DialogHeader>
                             <DialogTitle>Cancel Subscription</DialogTitle>
                             <DialogDescription>
-                              Are you sure you want to cancel your subscription? You&apos;ll
-                              lose access to all features at the end of your billing
-                              period.
+                              Are you sure you want to cancel your subscription?
+                              You&apos;ll lose access to all features at the end
+                              of your billing period.
                             </DialogDescription>
                           </DialogHeader>
                           <div className="py-4">
                             <Alert variant="destructive">
                               <AlertCircle className="h-4 w-4" />
                               <AlertDescription>
-                                This action cannot be undone. Your access will end on{" "}
+                                This action cannot be undone. Your access will
+                                end on{" "}
                                 {new Date(
                                   subscription.nextBillingDate,
                                 ).toLocaleDateString()}

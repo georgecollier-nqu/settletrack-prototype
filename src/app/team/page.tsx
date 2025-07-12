@@ -166,7 +166,10 @@ export default function TeamPage() {
     setInviteEmails("");
   };
 
-  const handleRoleChange = (memberId: string, newRole: "team_leader" | "user") => {
+  const handleRoleChange = (
+    memberId: string,
+    newRole: "team_leader" | "user",
+  ) => {
     setTeamMembers((prev) =>
       prev.map((member) =>
         member.id === memberId ? { ...member, role: newRole } : member,
@@ -322,7 +325,9 @@ export default function TeamPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <SidebarTrigger className="lg:hidden" />
-                <h1 className="text-2xl font-serif font-bold">Team Management</h1>
+                <h1 className="text-2xl font-serif font-bold">
+                  Team Management
+                </h1>
               </div>
 
               <div className="flex items-center gap-4">
@@ -383,7 +388,9 @@ export default function TeamPage() {
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-muted-foreground">Total Seats</p>
+                        <p className="text-sm text-muted-foreground">
+                          Total Seats
+                        </p>
                         <p className="text-2xl font-bold mt-1">10</p>
                         <p className="text-xs text-muted-foreground mt-1">
                           In your plan
@@ -400,7 +407,9 @@ export default function TeamPage() {
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-muted-foreground">Active Users</p>
+                        <p className="text-sm text-muted-foreground">
+                          Active Users
+                        </p>
                         <p className="text-2xl font-bold mt-1">{activeCount}</p>
                         <p className="text-xs text-success mt-1">
                           {10 - activeCount} seats available
@@ -420,7 +429,9 @@ export default function TeamPage() {
                         <p className="text-sm text-muted-foreground">
                           Pending Invites
                         </p>
-                        <p className="text-2xl font-bold mt-1">{invitedCount}</p>
+                        <p className="text-2xl font-bold mt-1">
+                          {invitedCount}
+                        </p>
                         <p className="text-xs text-muted-foreground mt-1">
                           Awaiting response
                         </p>
@@ -436,8 +447,12 @@ export default function TeamPage() {
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-muted-foreground">Deactivated</p>
-                        <p className="text-2xl font-bold mt-1">{deactivatedCount}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Deactivated
+                        </p>
+                        <p className="text-2xl font-bold mt-1">
+                          {deactivatedCount}
+                        </p>
                         <p className="text-xs text-muted-foreground mt-1">
                           Not using seats
                         </p>
@@ -479,7 +494,10 @@ export default function TeamPage() {
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
-                      <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
+                      <Dialog
+                        open={inviteDialogOpen}
+                        onOpenChange={setInviteDialogOpen}
+                      >
                         <DialogTrigger asChild>
                           <Button>
                             <UserPlus className="mr-2 h-4 w-4" />
@@ -490,8 +508,8 @@ export default function TeamPage() {
                           <DialogHeader>
                             <DialogTitle>Invite Team Members</DialogTitle>
                             <DialogDescription>
-                              Enter email addresses to send invitations. Separate multiple
-                              emails with commas or new lines.
+                              Enter email addresses to send invitations.
+                              Separate multiple emails with commas or new lines.
                             </DialogDescription>
                           </DialogHeader>
                           <div className="grid gap-4 py-4">
@@ -502,7 +520,9 @@ export default function TeamPage() {
                                 placeholder="john@example.com, jane@example.com"
                                 className="min-h-[120px]"
                                 value={inviteEmails}
-                                onChange={(e) => setInviteEmails(e.target.value)}
+                                onChange={(e) =>
+                                  setInviteEmails(e.target.value)
+                                }
                               />
                               <p className="text-xs text-muted-foreground">
                                 {10 - activeCount} seats remaining in your plan
@@ -548,7 +568,9 @@ export default function TeamPage() {
                             <TableHead>Status</TableHead>
                             <TableHead>Joined</TableHead>
                             <TableHead>Last Active</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
+                            <TableHead className="text-right">
+                              Actions
+                            </TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -601,7 +623,9 @@ export default function TeamPage() {
                                 )}
                               </TableCell>
                               <TableCell className="text-muted-foreground">
-                                {new Date(member.joinedDate).toLocaleDateString()}
+                                {new Date(
+                                  member.joinedDate,
+                                ).toLocaleDateString()}
                               </TableCell>
                               <TableCell className="text-muted-foreground">
                                 {member.lastActive}
@@ -619,7 +643,10 @@ export default function TeamPage() {
                                         {member.role === "user" && (
                                           <DropdownMenuItem
                                             onClick={() =>
-                                              handleRoleChange(member.id, "team_leader")
+                                              handleRoleChange(
+                                                member.id,
+                                                "team_leader",
+                                              )
                                             }
                                           >
                                             <Shield className="mr-2 h-4 w-4" />
@@ -630,7 +657,10 @@ export default function TeamPage() {
                                           member.id !== "1" && (
                                             <DropdownMenuItem
                                               onClick={() =>
-                                                handleRoleChange(member.id, "user")
+                                                handleRoleChange(
+                                                  member.id,
+                                                  "user",
+                                                )
                                               }
                                             >
                                               <Users className="mr-2 h-4 w-4" />
@@ -641,7 +671,10 @@ export default function TeamPage() {
                                         <DropdownMenuItem
                                           className="text-destructive"
                                           onClick={() =>
-                                            handleStatusChange(member.id, "deactivated")
+                                            handleStatusChange(
+                                              member.id,
+                                              "deactivated",
+                                            )
                                           }
                                         >
                                           <UserX className="mr-2 h-4 w-4" />
@@ -651,7 +684,9 @@ export default function TeamPage() {
                                     )}
                                     {member.status === "invited" && (
                                       <DropdownMenuItem
-                                        onClick={() => handleResendInvite(member.id)}
+                                        onClick={() =>
+                                          handleResendInvite(member.id)
+                                        }
                                       >
                                         <Mail className="mr-2 h-4 w-4" />
                                         Resend Invitation
@@ -660,7 +695,10 @@ export default function TeamPage() {
                                     {member.status === "deactivated" && (
                                       <DropdownMenuItem
                                         onClick={() =>
-                                          handleStatusChange(member.id, "active")
+                                          handleStatusChange(
+                                            member.id,
+                                            "active",
+                                          )
                                         }
                                       >
                                         <Shield className="mr-2 h-4 w-4" />

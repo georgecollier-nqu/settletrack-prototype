@@ -26,7 +26,7 @@ import {
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background scroll-smooth">
       {/* Navigation */}
       <nav className="sticky top-0 z-50 bg-white border-b shadow-sm">
         <div className="container mx-auto px-6 py-4">
@@ -373,6 +373,218 @@ export default function LandingPage() {
                   <p className="text-sm text-muted-foreground">Data Accuracy</p>
                 </CardContent>
               </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="py-24 px-6 bg-muted/30">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-serif font-bold mb-4">
+              Simple, Transparent Pricing
+            </h2>
+            <p className="text-xl text-muted-foreground">
+              Choose the plan that fits your firm&apos;s needs
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Starter Plan */}
+            <Card className="border-border hover:shadow-lg transition-shadow">
+              <CardHeader className="text-center pb-8">
+                <CardTitle className="text-2xl font-serif">Starter</CardTitle>
+                <div className="mt-4">
+                  <span className="text-4xl font-bold">$99</span>
+                  <span className="text-muted-foreground">/month</span>
+                </div>
+                <CardDescription className="mt-2">
+                  Perfect for solo practitioners and small firms
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <ul className="space-y-3">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="text-sm">Up to 3 team members</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="text-sm">100 case searches per month</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="text-sm">Basic filtering</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="text-sm">Export to CSV</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="text-sm">Email support</span>
+                  </li>
+                </ul>
+                <div className="pt-6">
+                  <Button className="w-full" variant="outline" asChild>
+                    <Link href="/signup">Start Free Trial</Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Professional Plan */}
+            <Card className="border-primary shadow-lg relative">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <Badge className="bg-primary text-primary-foreground">
+                  Most Popular
+                </Badge>
+              </div>
+              <CardHeader className="text-center pb-8">
+                <CardTitle className="text-2xl font-serif">
+                  Professional
+                </CardTitle>
+                <div className="mt-4">
+                  <span className="text-4xl font-bold">$299</span>
+                  <span className="text-muted-foreground">/month</span>
+                </div>
+                <CardDescription className="mt-2">
+                  For growing firms that need advanced features
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <ul className="space-y-3">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="text-sm">Up to 10 team members</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="text-sm">Unlimited case searches</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="text-sm">
+                      Advanced filtering and analytics
+                    </span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="text-sm">Export to CSV</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="text-sm">Priority email support</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="text-sm">99.9% uptime SLA</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="text-sm">Team collaboration tools</span>
+                  </li>
+                </ul>
+                <div className="pt-6">
+                  <Button className="w-full" asChild>
+                    <Link href="/signup">Start Free Trial</Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Enterprise Plan */}
+            <Card className="border-border hover:shadow-lg transition-shadow">
+              <CardHeader className="text-center pb-8">
+                <CardTitle className="text-2xl font-serif">
+                  Enterprise
+                </CardTitle>
+                <div className="mt-4">
+                  <span className="text-4xl font-bold">Custom</span>
+                </div>
+                <CardDescription className="mt-2">
+                  For large firms with custom requirements
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <ul className="space-y-3">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="text-sm">Unlimited team members</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="text-sm">Everything in Professional</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="text-sm">API access</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="text-sm">Custom integrations</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="text-sm">Dedicated account manager</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="text-sm">24/7 priority support</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="text-sm">Custom training</span>
+                  </li>
+                </ul>
+                <div className="pt-6">
+                  <Button className="w-full" variant="outline" asChild>
+                    <Link href="/contact">Contact Sales</Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* FAQ Section */}
+          <div className="mt-16 text-center">
+            <h3 className="text-2xl font-serif font-bold mb-8">
+              Frequently Asked Questions
+            </h3>
+            <div className="grid md:grid-cols-2 gap-8 text-left">
+              <div>
+                <h4 className="font-semibold mb-2">
+                  Can I switch plans anytime?
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  Yes, you can upgrade or downgrade your plan at any time.
+                  Changes take effect at your next billing cycle.
+                </p>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-2">Is there a free trial?</h4>
+                <p className="text-sm text-muted-foreground">
+                  All plans come with a 14-day free trial. No credit card
+                  required to get started.
+                </p>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-2">
+                  What payment methods do you accept?
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  We accept all major credit cards and can arrange invoicing for
+                  Enterprise customers.
+                </p>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-2">Is my data secure?</h4>
+                <p className="text-sm text-muted-foreground">
+                  Yes, we use bank-level encryption and are fully compliant with
+                  UK & EU GDPR regulations.
+                </p>
+              </div>
             </div>
           </div>
         </div>

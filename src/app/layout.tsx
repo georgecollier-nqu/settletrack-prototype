@@ -24,7 +24,8 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: "SettleTrack - Legal Settlement Intelligence",
-  description: "Track and analyze legal settlements with powerful search and trend analysis tools",
+  description:
+    "Track and analyze legal settlements with powerful search and trend analysis tools",
   icons: {
     icon: "/favicon.png",
   },
