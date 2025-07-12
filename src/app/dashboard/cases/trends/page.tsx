@@ -311,13 +311,13 @@ export default function CaseTrendsPage() {
                 </Button>
               </div>
 
-              {/* Metric and Period Selection */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Metric, Period, and Year Range */}
+              <div className="flex flex-wrap items-end gap-4">
                 <FormField
                   control={form.control}
                   name="metric"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="min-w-[180px]">
                       <FormLabel>Metric</FormLabel>
                       <Select
                         onValueChange={field.onChange}
@@ -352,7 +352,7 @@ export default function CaseTrendsPage() {
                   control={form.control}
                   name="timeGrouping"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="min-w-[120px]">
                       <FormLabel>Time Period</FormLabel>
                       <Select
                         onValueChange={field.onChange}
@@ -371,6 +371,7 @@ export default function CaseTrendsPage() {
                     </FormItem>
                   )}
                 />
+
                 <div className="space-y-2">
                   <FormLabel>Year Range</FormLabel>
                   <div className="flex items-center gap-2">
@@ -378,7 +379,7 @@ export default function CaseTrendsPage() {
                       control={form.control}
                       name="dateRange.from"
                       render={({ field }) => (
-                        <FormItem className="flex-1">
+                        <FormItem>
                           <FormControl>
                             <Input
                               type="number"
@@ -393,17 +394,18 @@ export default function CaseTrendsPage() {
                                     : null,
                                 )
                               }
+                              className="w-[100px]"
                             />
                           </FormControl>
                         </FormItem>
                       )}
                     />
-                    <span className="text-muted-foreground">to</span>
+                    <span className="text-muted-foreground text-sm">to</span>
                     <FormField
                       control={form.control}
                       name="dateRange.to"
                       render={({ field }) => (
-                        <FormItem className="flex-1">
+                        <FormItem>
                           <FormControl>
                             <Input
                               type="number"
@@ -418,6 +420,7 @@ export default function CaseTrendsPage() {
                                     : null,
                                 )
                               }
+                              className="w-[100px]"
                             />
                           </FormControl>
                         </FormItem>
@@ -428,13 +431,13 @@ export default function CaseTrendsPage() {
               </div>
 
               {/* Location Filters */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex flex-wrap gap-4">
                 {/* States */}
                 <FormField
                   control={form.control}
                   name="states"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="min-w-[200px]">
                       <FormLabel>States</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
@@ -499,7 +502,7 @@ export default function CaseTrendsPage() {
                   control={form.control}
                   name="courts"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="min-w-[200px]">
                       <FormLabel>Federal Courts</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
