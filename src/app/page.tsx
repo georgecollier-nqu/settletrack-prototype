@@ -40,7 +40,7 @@ export default function LandingPage() {
             <div className="flex items-center space-x-8">
               <button
                 onClick={scrollToTop}
-                className="focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+                className="focus:outline-none cursor-pointer"
               >
                 <Image
                   src="/logo.png"
@@ -641,7 +641,7 @@ export default function LandingPage() {
             <div>
               <button
                 onClick={scrollToTop}
-                className="focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded mb-4"
+                className="focus:outline-none cursor-pointer mb-4"
               >
                 <Image
                   src="/logo.png"

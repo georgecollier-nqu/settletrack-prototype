@@ -25,7 +25,7 @@ Before beginning a task, it is ESSENTIAL that you read the full design system an
 3. **Write meaningful commit messages** - Follow conventional commits (e.g., `feat:`, `fix:`, `docs:`)
 4. **Make atomic commits** - Each commit should represent one logical change
 5. **Linting** - Before stating you have completed the task, or merging into main, run `npm run lint` to auto-fix and format code, and fix any issues that require attention.
-6. **Pushing** - Before pushing (only necessary to push from main), run `npm run build` to check the code is ready for production. You should only push when prompted.
+6. **Pushing** - Before pushing (only necessary to push from main), run `npm run build` to check the code is ready for production. You should only build and push when prompted (building stops the dev server).
 
 ## Commands
 
