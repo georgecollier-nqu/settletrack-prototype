@@ -1,17 +1,13 @@
 "use client";
 
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import * as z from "zod";
+
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -48,929 +44,614 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+
+import {
   Search,
-  Download,
   Save,
   RotateCcw,
-  ExternalLink,
-  DollarSign,
-  TrendingUp,
-  Filter,
-  Eye,
+  ChevronDown,
+  Calendar,
+  CircleDollarSign,
+  Shield,
+  MapPin,
+  FileText,
 } from "lucide-react";
+
 import { mockCases, filterOptions, type Case } from "@/lib/mock-data";
 
-// Form schema for filters
+// —————————————————————————————————————————————————————————————————————————————
+// SCHEMAS
+// —————————————————————————————————————————————————————————————————————————————
+
 const filterSchema = z.object({
   searchTerm: z.string().optional(),
+  yearFrom: z.number().min(2000).max(2030).optional(),
+  yearTo: z.number().min(2000).max(2030).optional(),
+  minSettlement: z.number().min(0).optional(),
+  maxSettlement: z.number().min(0).optional(),
+  minClassSize: z.number().min(0).optional(),
+  maxClassSize: z.number().min(0).optional(),
   states: z.array(z.string()).optional(),
-  courts: z.array(z.string()).optional(),
-  yearRange: z
-    .object({
-      from: z.number().min(2000).max(2030).optional(),
-      to: z.number().min(2000).max(2030).optional(),
-    })
-    .optional(),
-  settlementAmountRange: z
-    .object({
-      from: z.number().min(0).optional(),
-      to: z.number().min(0).optional(),
-    })
-    .optional(),
-  classSizeRange: z
-    .object({
-      from: z.number().min(0).optional(),
-      to: z.number().min(0).optional(),
-    })
-    .optional(),
   piiAffected: z.array(z.string()).optional(),
   causeOfBreach: z.array(z.string()).optional(),
-  classType: z.array(z.string()).optional(),
-  isMultiDistrictLitigation: z.boolean().optional(),
-  hasMinorSubclass: z.boolean().optional(),
-  settlementType: z.array(z.string()).optional(),
-  creditMonitoring: z.boolean().optional(),
+  isMDL: z.boolean().optional(),
+  hasMinor: z.boolean().optional(),
+  creditMon: z.boolean().optional(),
 });
 
 type FilterValues = z.infer<typeof filterSchema>;
 
 const saveSearchSchema = z.object({
-  name: z.string().min(1, "Search name is required"),
+  name: z.string().min(1),
   description: z.string().optional(),
-  alertEnabled: z.boolean().default(false),
+  alertEnabled: z.boolean(),
 });
-
 type SaveSearchValues = z.infer<typeof saveSearchSchema>;
 
-export default function CaseSearchPage() {
-  const [filteredCases, setFilteredCases] = useState<Case[]>(mockCases);
-  const [showSaveDialog, setShowSaveDialog] = useState(false);
+// —————————————————————————————————————————————————————————————————————————————
+// CONFIG-DRIVEN FILTERS
+// —————————————————————————————————————————————————————————————————————————————
 
+interface FilterConfig {
+  name: keyof FilterValues;
+  label: string;
+  type: "text" | "number" | "select" | "checkbox";
+  placeholder?: string;
+  options?: string[];
+  min?: number;
+  max?: number;
+}
+
+interface FilterGroup {
+  id: string;
+  label: string;
+  icon: React.FC<React.SVGProps<SVGSVGElement>>;
+  filters: FilterConfig[];
+  defaultOpen?: boolean;
+}
+
+const filterGroups: FilterGroup[] = [
+  {
+    id: "search",
+    label: "Search",
+    icon: Search,
+    defaultOpen: true,
+    filters: [
+      {
+        name: "searchTerm",
+        label: "Search Term",
+        type: "text",
+        placeholder: "Case name, docket, court…",
+      },
+    ],
+  },
+  {
+    id: "timeline",
+    label: "Timeline",
+    icon: Calendar,
+    defaultOpen: true,
+    filters: [
+      {
+        name: "yearFrom",
+        label: "Year From",
+        type: "number",
+        min: 2000,
+        max: 2030,
+      },
+      {
+        name: "yearTo",
+        label: "Year To",
+        type: "number",
+        min: 2000,
+        max: 2030,
+      },
+    ],
+  },
+  {
+    id: "financial",
+    label: "Financial Details",
+    icon: CircleDollarSign,
+    defaultOpen: false,
+    filters: [
+      { name: "minSettlement", label: "Min Settlement ($)", type: "number" },
+      { name: "maxSettlement", label: "Max Settlement ($)", type: "number" },
+      { name: "minClassSize", label: "Min Class Size", type: "number" },
+      { name: "maxClassSize", label: "Max Class Size", type: "number" },
+    ],
+  },
+  {
+    id: "breach",
+    label: "Breach Information",
+    icon: Shield,
+    defaultOpen: false,
+    filters: [
+      {
+        name: "piiAffected",
+        label: "PII Affected",
+        type: "select",
+        options: filterOptions.piiTypes,
+      },
+      {
+        name: "causeOfBreach",
+        label: "Cause of Breach",
+        type: "select",
+        options: filterOptions.breachCauses,
+      },
+    ],
+  },
+  {
+    id: "location",
+    label: "Location",
+    icon: MapPin,
+    defaultOpen: false,
+    filters: [
+      {
+        name: "states",
+        label: "States",
+        type: "select",
+        options: filterOptions.states,
+      },
+    ],
+  },
+  {
+    id: "case-details",
+    label: "Case Details",
+    icon: FileText,
+    defaultOpen: false,
+    filters: [
+      { name: "isMDL", label: "Multi-District Litigation", type: "checkbox" },
+      { name: "hasMinor", label: "Has Minor Subclass", type: "checkbox" },
+      { name: "creditMon", label: "Credit Monitoring", type: "checkbox" },
+    ],
+  },
+];
+
+// —————————————————————————————————————————————————————————————————————————————
+// UTILITIES
+// —————————————————————————————————————————————————————————————————————————————
+
+function formatCurrency(amount: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(amount);
+}
+
+function formatNumber(num: number) {
+  return new Intl.NumberFormat("en-US").format(num);
+}
+
+// —————————————————————————————————————————————————————————————————————————————
+// CUSTOM HOOKS
+// —————————————————————————————————————————————————————————————————————————————
+
+function useFilteredCases(cases: Case[]) {
   const form = useForm<FilterValues>({
     resolver: zodResolver(filterSchema),
-    defaultValues: {
-      searchTerm: "",
-      states: [],
-      courts: [],
-      piiAffected: [],
-      causeOfBreach: [],
-      classType: [],
-      settlementType: [],
-    },
+    defaultValues: {},
   });
+  const values = form.watch();
 
-  const saveForm = useForm<SaveSearchValues>({
-    resolver: zodResolver(saveSearchSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      alertEnabled: false,
-    },
-  });
+  const filtered = useMemo(() => {
+    return cases.filter((c) => {
+      const {
+        searchTerm,
+        yearFrom,
+        yearTo,
+        minSettlement,
+        maxSettlement,
+        minClassSize,
+        maxClassSize,
+        states,
+        piiAffected,
+        causeOfBreach,
+        isMDL,
+        hasMinor,
+        creditMon,
+      } = values;
 
-  // Filter cases based on form values
-  const applyFilters = useCallback((values: FilterValues) => {
-    let filtered = mockCases;
+      if (
+        searchTerm &&
+        ![c.name, c.docketId, c.court, c.summary].some((f) =>
+          f.toLowerCase().includes(searchTerm.toLowerCase()),
+        )
+      ) {
+        return false;
+      }
+      if (yearFrom && c.year < yearFrom) return false;
+      if (yearTo && c.year > yearTo) return false;
+      if (minSettlement && c.settlementAmount < minSettlement) return false;
+      if (maxSettlement && c.settlementAmount > maxSettlement) return false;
+      if (minClassSize && c.classSize < minClassSize) return false;
+      if (maxClassSize && c.classSize > maxClassSize) return false;
+      if (states?.length && !states.includes(c.state)) return false;
+      if (
+        piiAffected?.length &&
+        !piiAffected.some((pt) => c.piiAffected.includes(pt))
+      )
+        return false;
+      if (causeOfBreach?.length && !causeOfBreach.includes(c.causeOfBreach))
+        return false;
+      if (isMDL !== undefined && c.isMultiDistrictLitigation !== isMDL)
+        return false;
+      if (hasMinor !== undefined && c.hasMinorSubclass !== hasMinor)
+        return false;
+      if (creditMon !== undefined && c.creditMonitoring !== creditMon)
+        return false;
+      return true;
+    });
+  }, [cases, values]);
 
-    // Search term filter
-    if (values.searchTerm && values.searchTerm.trim()) {
-      const term = values.searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (case_) =>
-          case_.name.toLowerCase().includes(term) ||
-          case_.docketId.toLowerCase().includes(term) ||
-          case_.court.toLowerCase().includes(term) ||
-          case_.summary.toLowerCase().includes(term),
-      );
-    }
+  return { form, filtered };
+}
 
-    // State filter
-    if (values.states && values.states.length > 0) {
-      filtered = filtered.filter((case_) =>
-        values.states!.includes(case_.state),
-      );
-    }
-
-    // Court filter
-    if (values.courts && values.courts.length > 0) {
-      filtered = filtered.filter((case_) =>
-        values.courts!.includes(case_.court),
-      );
-    }
-
-    // Year range filter
-    if (values.yearRange?.from || values.yearRange?.to) {
-      filtered = filtered.filter((case_) => {
-        const year = case_.year;
-        const fromYear = values.yearRange?.from || 2000;
-        const toYear = values.yearRange?.to || 2030;
-        return year >= fromYear && year <= toYear;
-      });
-    }
-
-    // Settlement amount range filter
-    if (
-      values.settlementAmountRange?.from ||
-      values.settlementAmountRange?.to
-    ) {
-      filtered = filtered.filter((case_) => {
-        const amount = case_.settlementAmount;
-        const fromAmount = values.settlementAmountRange?.from || 0;
-        const toAmount = values.settlementAmountRange?.to || Infinity;
-        return amount >= fromAmount && amount <= toAmount;
-      });
-    }
-
-    // Class size range filter
-    if (values.classSizeRange?.from || values.classSizeRange?.to) {
-      filtered = filtered.filter((case_) => {
-        const size = case_.classSize;
-        const fromSize = values.classSizeRange?.from || 0;
-        const toSize = values.classSizeRange?.to || Infinity;
-        return size >= fromSize && size <= toSize;
-      });
-    }
-
-    // PII affected filter
-    if (values.piiAffected && values.piiAffected.length > 0) {
-      filtered = filtered.filter((case_) =>
-        values.piiAffected!.some((pii) => case_.piiAffected.includes(pii)),
-      );
-    }
-
-    // Cause of breach filter
-    if (values.causeOfBreach && values.causeOfBreach.length > 0) {
-      filtered = filtered.filter((case_) =>
-        values.causeOfBreach!.includes(case_.causeOfBreach),
-      );
-    }
-
-    // Class type filter
-    if (values.classType && values.classType.length > 0) {
-      filtered = filtered.filter((case_) =>
-        values.classType!.some((type) => case_.classType.includes(type)),
-      );
-    }
-
-    // Settlement type filter
-    if (values.settlementType && values.settlementType.length > 0) {
-      filtered = filtered.filter((case_) =>
-        values.settlementType!.includes(case_.settlementType),
-      );
-    }
-
-    // Boolean filters
-    if (values.isMultiDistrictLitigation !== undefined) {
-      filtered = filtered.filter(
-        (case_) =>
-          case_.isMultiDistrictLitigation === values.isMultiDistrictLitigation,
-      );
-    }
-
-    if (values.hasMinorSubclass !== undefined) {
-      filtered = filtered.filter(
-        (case_) => case_.hasMinorSubclass === values.hasMinorSubclass,
-      );
-    }
-
-    if (values.creditMonitoring !== undefined) {
-      filtered = filtered.filter(
-        (case_) => case_.creditMonitoring === values.creditMonitoring,
-      );
-    }
-
-    setFilteredCases(filtered);
-  }, []);
-
-  // Calculate summary statistics
-  const statistics = useMemo(() => {
-    if (filteredCases.length === 0) {
-      return { count: 0, mean: 0, median: 0, min: 0, max: 0, total: 0 };
-    }
-
-    const amounts = filteredCases
-      .map((case_) => case_.settlementAmount)
-      .sort((a, b) => a - b);
-    const sum = amounts.reduce((acc, amount) => acc + amount, 0);
-    const mean = sum / amounts.length;
+function useStatistics(cases: Case[]) {
+  return useMemo(() => {
+    if (!cases.length) return { count: 0, mean: 0, median: 0, total: 0 };
+    const amounts = cases.map((c) => c.settlementAmount).sort((a, b) => a - b);
+    const total = amounts.reduce((a, b) => a + b, 0);
+    const mean = total / amounts.length;
     const median =
       amounts.length % 2 === 0
         ? (amounts[amounts.length / 2 - 1] + amounts[amounts.length / 2]) / 2
         : amounts[Math.floor(amounts.length / 2)];
+    return { count: cases.length, mean, median, total };
+  }, [cases]);
+}
 
-    return {
-      count: filteredCases.length,
-      mean,
-      median,
-      min: amounts[0],
-      max: amounts[amounts.length - 1],
-      total: sum,
-    };
-  }, [filteredCases]);
+// —————————————————————————————————————————————————————————————————————————————
+// REUSABLE COMPONENTS
+// —————————————————————————————————————————————————————————————————————————————
 
-  // Format currency
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      notation: "compact",
-      maximumFractionDigits: 1,
-    }).format(amount);
-  };
+function StatCard({ label, value }: { label: string; value: string | number }) {
+  return (
+    <Card className="p-4">
+      <div>
+        <p className="text-sm text-muted-foreground">{label}</p>
+        <p className="text-2xl font-bold mt-1">{value}</p>
+      </div>
+    </Card>
+  );
+}
 
-  // Format number with commas
-  const formatNumber = (num: number) => {
-    return new Intl.NumberFormat("en-US").format(num);
-  };
+// —————————————————————————————————————————————————————————————————————————————
+// MAIN PAGE
+// —————————————————————————————————————————————————————————————————————————————
 
-  // Export to CSV
-  const exportToCSV = () => {
-    const headers = [
-      "Case Name",
-      "Docket ID",
-      "Court",
-      "State",
-      "Year",
-      "Settlement Amount",
-      "Class Size",
-      "MDL",
-      "PII Affected",
-      "Cause of Breach",
-      "Class Type",
-      "Minor Subclass",
-      "Defense Counsel",
-      "Plaintiff Counsel",
-      "Judge",
-      "Settlement Type",
-      "Date",
-      "Summary",
-    ];
-
-    const csvContent = [
-      headers.join(","),
-      ...filteredCases.map((case_) =>
-        [
-          `"${case_.name}"`,
-          case_.docketId,
-          case_.court,
-          case_.state,
-          case_.year,
-          case_.settlementAmount,
-          case_.classSize,
-          case_.isMultiDistrictLitigation ? "Yes" : "No",
-          `"${case_.piiAffected.join("; ")}"`,
-          case_.causeOfBreach,
-          `"${case_.classType.join("; ")}"`,
-          case_.hasMinorSubclass ? "Yes" : "No",
-          `"${case_.defenseCounsel}"`,
-          `"${case_.plaintiffCounsel}"`,
-          `"${case_.judgeName}"`,
-          case_.settlementType,
-          case_.date,
-          `"${case_.summary}"`,
-        ].join(","),
+export default function CaseSearchPage() {
+  const router = useRouter();
+  const { form, filtered } = useFilteredCases(mockCases);
+  const stats = useStatistics(filtered);
+  const [showSave, setShowSave] = React.useState(false);
+  const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(
+    () =>
+      filterGroups.reduce(
+        (acc, group) => ({ ...acc, [group.id]: group.defaultOpen ?? false }),
+        {},
       ),
-    ].join("\n");
+  );
+  const saveForm = useForm<SaveSearchValues>({
+    resolver: zodResolver(saveSearchSchema),
+    defaultValues: { name: "", description: "", alertEnabled: false },
+  });
 
-    const blob = new Blob([csvContent], { type: "text/csv" });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `settlement-cases-${new Date().toISOString().split("T")[0]}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
-  };
-
-  // Reset filters
-  const resetFilters = () => {
-    form.reset();
-    setFilteredCases(mockCases);
-  };
-
-  // Save search functionality
-  const handleSaveSearch = (values: SaveSearchValues) => {
-    const currentFilters = form.getValues();
-    console.log("Saving search:", values, "with filters:", currentFilters);
-    // In real app, would save to backend
-    setShowSaveDialog(false);
+  const onSave = (vals: SaveSearchValues) => {
+    console.log("Save search:", vals, form.getValues());
+    setShowSave(false);
     saveForm.reset();
   };
 
-  // Watch form changes and apply filters
-  const watchedValues = form.watch();
-  
-  // Apply filters when form values change
-  React.useEffect(() => {
-    applyFilters(watchedValues);
-  }, [watchedValues, applyFilters]);
-
   return (
     <>
-      {/* Header */}
-      <header className="border-b bg-white px-6 py-4 shadow-[0_1px_2px_rgba(17,24,39,0.05)]">
+      <header className="border-b bg-white px-6 py-4 shadow">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <SidebarTrigger className="lg:hidden" />
             <h1 className="text-2xl font-serif font-bold">Case Search</h1>
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              onClick={exportToCSV}
-              disabled={filteredCases.length === 0}
-            >
-              <Download className="mr-2 h-4 w-4" />
-              Export CSV
-            </Button>
-            <Button
-              onClick={() => setShowSaveDialog(true)}
-              disabled={filteredCases.length === 0}
-            >
-              <Save className="mr-2 h-4 w-4" />
-              Save Search
-            </Button>
-          </div>
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="flex-1 overflow-y-auto p-6 bg-muted/30">
-        <div className="max-w-7xl mx-auto space-y-6">
-          {/* Search and Filters */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Filter className="h-5 w-5" />
-                Search & Filter Cases
-              </CardTitle>
-              <CardDescription>
-                Use the filters below to narrow your search and find relevant
-                settlement cases
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Filters */}
+          <div className="lg:col-span-1 h-fit max-h-[calc(100vh-8rem)] overflow-y-auto bg-white rounded-lg border shadow-sm">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-semibold">Filters</h2>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                  onClick={() => {
+                    form.reset();
+                  }}
+                >
+                  <RotateCcw className="h-4 w-4" />
+                </Button>
+              </div>
+
               <Form {...form}>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                  {/* Search Term */}
-                  <FormField
-                    control={form.control}
-                    name="searchTerm"
-                    render={({ field }) => (
-                      <FormItem className="md:col-span-2 lg:col-span-3">
-                        <FormLabel>Search Term</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input
-                              placeholder="Search case names, docket IDs, courts, or summaries..."
-                              className="pl-10"
-                              {...field}
-                            />
+                <div className="space-y-4">
+                  {filterGroups.map((group, index) => (
+                    <div key={group.id}>
+                      {index > 0 && <div className="h-px bg-border mb-4" />}
+                      <Collapsible
+                        open={openGroups[group.id]}
+                        onOpenChange={(open) =>
+                          setOpenGroups((prev) => ({
+                            ...prev,
+                            [group.id]: open,
+                          }))
+                        }
+                      >
+                        <CollapsibleTrigger className="flex items-center justify-between w-full hover:text-primary transition-colors group cursor-pointer">
+                          <div className="flex items-center gap-2">
+                            <group.icon className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
+                            <span className="text-sm font-medium">
+                              {group.label}
+                            </span>
                           </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Year Range */}
-                  <FormField
-                    control={form.control}
-                    name="yearRange.from"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Year From</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="2020"
-                            min={2000}
-                            max={2030}
-                            value={field.value || ""}
-                            onChange={(e) =>
-                              field.onChange(
-                                e.target.value
-                                  ? parseInt(e.target.value)
-                                  : undefined,
-                              )
-                            }
+                          <ChevronDown
+                            className={`h-4 w-4 transition-transform text-muted-foreground group-hover:text-primary ${openGroups[group.id] ? "rotate-180" : ""}`}
                           />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="yearRange.to"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Year To</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="2024"
-                            min={2000}
-                            max={2030}
-                            value={field.value || ""}
-                            onChange={(e) =>
-                              field.onChange(
-                                e.target.value
-                                  ? parseInt(e.target.value)
-                                  : undefined,
-                              )
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Settlement Amount Range */}
-                  <FormField
-                    control={form.control}
-                    name="settlementAmountRange.from"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Min Settlement ($)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="1000000"
-                            min={0}
-                            value={field.value || ""}
-                            onChange={(e) =>
-                              field.onChange(
-                                e.target.value
-                                  ? parseInt(e.target.value)
-                                  : undefined,
-                              )
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="settlementAmountRange.to"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Max Settlement ($)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="50000000"
-                            min={0}
-                            value={field.value || ""}
-                            onChange={(e) =>
-                              field.onChange(
-                                e.target.value
-                                  ? parseInt(e.target.value)
-                                  : undefined,
-                              )
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Class Size Range */}
-                  <FormField
-                    control={form.control}
-                    name="classSizeRange.from"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Min Class Size</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="100000"
-                            min={0}
-                            value={field.value || ""}
-                            onChange={(e) =>
-                              field.onChange(
-                                e.target.value
-                                  ? parseInt(e.target.value)
-                                  : undefined,
-                              )
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="classSizeRange.to"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Max Class Size</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="5000000"
-                            min={0}
-                            value={field.value || ""}
-                            onChange={(e) =>
-                              field.onChange(
-                                e.target.value
-                                  ? parseInt(e.target.value)
-                                  : undefined,
-                              )
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* State Selection */}
-                  <FormField
-                    control={form.control}
-                    name="states"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>States</FormLabel>
-                        <Select
-                          onValueChange={(value) => {
-                            const current = field.value || [];
-                            if (!current.includes(value)) {
-                              field.onChange([...current, value]);
-                            }
-                          }}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select states..." />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {filterOptions.states.map((state) => (
-                              <SelectItem key={state} value={state}>
-                                {state}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {field.value?.map((state) => (
-                            <Badge
-                              key={state}
-                              variant="secondary"
-                              className="text-xs"
-                            >
-                              {state}
-                              <button
-                                onClick={() =>
-                                  field.onChange(
-                                    field.value?.filter((s) => s !== state),
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <div className="space-y-3 mt-3">
+                            {group.filters.map((cfg) => (
+                              <FormField
+                                key={cfg.name}
+                                control={form.control}
+                                name={cfg.name}
+                                render={({ field }) =>
+                                  cfg.type === "checkbox" ? (
+                                    <label className="flex items-center space-x-3 cursor-pointer">
+                                      <Checkbox
+                                        checked={!!field.value}
+                                        onCheckedChange={field.onChange}
+                                      />
+                                      <span className="text-sm font-normal">
+                                        {cfg.label}
+                                      </span>
+                                    </label>
+                                  ) : (
+                                    <FormItem>
+                                      <FormLabel className="text-sm">
+                                        {cfg.label}
+                                      </FormLabel>
+                                      {cfg.type === "text" && (
+                                        <FormControl>
+                                          {cfg.name === "searchTerm" ? (
+                                            <div className="relative">
+                                              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                              <Input
+                                                placeholder={cfg.placeholder}
+                                                className="pl-10 h-9"
+                                                {...field}
+                                                value={
+                                                  (field.value as string) || ""
+                                                }
+                                              />
+                                            </div>
+                                          ) : (
+                                            <Input
+                                              placeholder={cfg.placeholder}
+                                              className="h-9"
+                                              {...field}
+                                              value={
+                                                (field.value as string) || ""
+                                              }
+                                            />
+                                          )}
+                                        </FormControl>
+                                      )}
+                                      {cfg.type === "number" && (
+                                        <FormControl>
+                                          <Input
+                                            type="number"
+                                            min={cfg.min}
+                                            max={cfg.max}
+                                            className="h-9"
+                                            {...field}
+                                            value={
+                                              (field.value as number) || ""
+                                            }
+                                            onChange={(e) =>
+                                              field.onChange(
+                                                e.target.value
+                                                  ? Number(e.target.value)
+                                                  : undefined,
+                                              )
+                                            }
+                                          />
+                                        </FormControl>
+                                      )}
+                                      {cfg.type === "select" && (
+                                        <Controller
+                                          control={form.control}
+                                          name={cfg.name}
+                                          render={({ field: ctl }) => {
+                                            const currentValues =
+                                              (ctl.value as
+                                                | string[]
+                                                | undefined) || [];
+                                            return (
+                                              <>
+                                                <Select
+                                                  value=""
+                                                  onValueChange={(val) => {
+                                                    if (
+                                                      !currentValues.includes(
+                                                        val,
+                                                      )
+                                                    ) {
+                                                      ctl.onChange([
+                                                        ...currentValues,
+                                                        val,
+                                                      ]);
+                                                    }
+                                                  }}
+                                                >
+                                                  <SelectTrigger className="h-9">
+                                                    <SelectValue
+                                                      placeholder={`Select ${cfg.label.toLowerCase()}…`}
+                                                    />
+                                                  </SelectTrigger>
+                                                  <SelectContent>
+                                                    {cfg.options!.map((opt) => (
+                                                      <SelectItem
+                                                        key={opt}
+                                                        value={opt}
+                                                      >
+                                                        {opt}
+                                                      </SelectItem>
+                                                    ))}
+                                                  </SelectContent>
+                                                </Select>
+                                                {currentValues.length > 0 && (
+                                                  <div className="flex flex-wrap gap-1 mt-2">
+                                                    {currentValues.map(
+                                                      (v: string) => (
+                                                        <Badge
+                                                          key={v}
+                                                          variant="secondary"
+                                                          className="text-xs py-0.5"
+                                                        >
+                                                          {v}
+                                                          <button
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                              e.preventDefault();
+                                                              ctl.onChange(
+                                                                currentValues.filter(
+                                                                  (x: string) =>
+                                                                    x !== v,
+                                                                ),
+                                                              );
+                                                            }}
+                                                            className="ml-1 hover:text-destructive"
+                                                          >
+                                                            ×
+                                                          </button>
+                                                        </Badge>
+                                                      ),
+                                                    )}
+                                                  </div>
+                                                )}
+                                              </>
+                                            );
+                                          }}
+                                        />
+                                      )}
+                                      <FormMessage />
+                                    </FormItem>
                                   )
                                 }
-                                className="ml-1 hover:text-destructive"
-                              >
-                                ×
-                              </button>
-                            </Badge>
-                          ))}
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* PII Affected */}
-                  <FormField
-                    control={form.control}
-                    name="piiAffected"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>PII Affected</FormLabel>
-                        <Select
-                          onValueChange={(value) => {
-                            const current = field.value || [];
-                            if (!current.includes(value)) {
-                              field.onChange([...current, value]);
-                            }
-                          }}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select PII types..." />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {filterOptions.piiTypes.map((pii) => (
-                              <SelectItem key={pii} value={pii}>
-                                {pii}
-                              </SelectItem>
+                              />
                             ))}
-                          </SelectContent>
-                        </Select>
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {field.value?.map((pii) => (
-                            <Badge
-                              key={pii}
-                              variant="secondary"
-                              className="text-xs"
-                            >
-                              {pii}
-                              <button
-                                onClick={() =>
-                                  field.onChange(
-                                    field.value?.filter((p) => p !== pii),
-                                  )
-                                }
-                                className="ml-1 hover:text-destructive"
-                              >
-                                ×
-                              </button>
-                            </Badge>
-                          ))}
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Cause of Breach */}
-                  <FormField
-                    control={form.control}
-                    name="causeOfBreach"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Cause of Breach</FormLabel>
-                        <Select
-                          onValueChange={(value) => {
-                            const current = field.value || [];
-                            if (!current.includes(value)) {
-                              field.onChange([...current, value]);
-                            }
-                          }}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select causes..." />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {filterOptions.breachCauses.map((cause) => (
-                              <SelectItem key={cause} value={cause}>
-                                {cause}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {field.value?.map((cause) => (
-                            <Badge
-                              key={cause}
-                              variant="secondary"
-                              className="text-xs"
-                            >
-                              {cause}
-                              <button
-                                onClick={() =>
-                                  field.onChange(
-                                    field.value?.filter((c) => c !== cause),
-                                  )
-                                }
-                                className="ml-1 hover:text-destructive"
-                              >
-                                ×
-                              </button>
-                            </Badge>
-                          ))}
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* Boolean Filters */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t">
-                  <FormField
-                    control={form.control}
-                    name="isMultiDistrictLitigation"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel>Multi-District Litigation</FormLabel>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="hasMinorSubclass"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel>Has Minor Subclass</FormLabel>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="creditMonitoring"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel>Credit Monitoring Offered</FormLabel>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="flex justify-end gap-2 pt-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={resetFilters}
-                  >
-                    <RotateCcw className="mr-2 h-4 w-4" />
-                    Reset Filters
-                  </Button>
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    </div>
+                  ))}
                 </div>
               </Form>
-            </CardContent>
-          </Card>
-
-          {/* Summary Statistics */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Cases</p>
-                    <p className="text-2xl font-bold mt-1">
-                      {formatNumber(statistics.count)}
-                    </p>
-                  </div>
-                  <div className="p-3 bg-secondary rounded-lg">
-                    <Eye className="h-6 w-6 text-primary" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      Avg Settlement
-                    </p>
-                    <p className="text-2xl font-bold mt-1">
-                      {formatCurrency(statistics.mean)}
-                    </p>
-                  </div>
-                  <div className="p-3 bg-secondary rounded-lg">
-                    <DollarSign className="h-6 w-6 text-primary" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      Median Settlement
-                    </p>
-                    <p className="text-2xl font-bold mt-1">
-                      {formatCurrency(statistics.median)}
-                    </p>
-                  </div>
-                  <div className="p-3 bg-secondary rounded-lg">
-                    <TrendingUp className="h-6 w-6 text-primary" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Value</p>
-                    <p className="text-2xl font-bold mt-1">
-                      {formatCurrency(statistics.total)}
-                    </p>
-                  </div>
-                  <div className="p-3 bg-secondary rounded-lg">
-                    <DollarSign className="h-6 w-6 text-primary" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            </div>
           </div>
 
-          {/* Results Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                Search Results ({formatNumber(filteredCases.length)} cases)
-              </CardTitle>
-              <CardDescription>
-                Click on any case to view detailed information
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {filteredCases.length > 0 ? (
+          {/* Results */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <StatCard label="Total Cases" value={formatNumber(stats.count)} />
+              <StatCard
+                label="Avg Settlement"
+                value={formatCurrency(stats.mean)}
+              />
+              <StatCard
+                label="Median Settlement"
+                value={formatCurrency(stats.median)}
+              />
+              <StatCard
+                label="Total Value"
+                value={formatCurrency(stats.total)}
+              />
+            </div>
+
+            <Card className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <p className="font-medium">
+                  Search Results ({formatNumber(filtered.length)} cases)
+                </p>
+                <Button
+                  size="sm"
+                  disabled={!filtered.length}
+                  onClick={() => setShowSave(true)}
+                >
+                  <Save className="mr-2 h-4 w-4" />
+                  Save Search
+                </Button>
+              </div>
+              {filtered.length > 0 ? (
                 <div className="rounded-md border">
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="w-[300px]">Case Name</TableHead>
+                        <TableHead>Case Name</TableHead>
                         <TableHead>Court</TableHead>
                         <TableHead>Year</TableHead>
                         <TableHead className="text-right">Settlement</TableHead>
                         <TableHead className="text-right">Class Size</TableHead>
                         <TableHead>Type</TableHead>
-                        <TableHead className="w-[100px]">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredCases.map((case_) => (
-                        <TableRow key={case_.id} className="hover:bg-muted/50">
+                      {filtered.map((c) => (
+                        <TableRow
+                          key={c.id}
+                          className="hover:bg-muted/50 cursor-pointer"
+                          onClick={() =>
+                            router.push(`/dashboard/cases/${c.id}`)
+                          }
+                        >
                           <TableCell>
                             <div>
-                              <p className="font-medium">{case_.name}</p>
+                              <p className="font-medium">{c.name}</p>
                               <p className="text-sm text-muted-foreground">
-                                {case_.docketId}
+                                {c.docketId}
                               </p>
                             </div>
                           </TableCell>
                           <TableCell>
                             <div>
-                              <p className="font-medium">{case_.court}</p>
+                              <p className="font-medium">{c.court}</p>
                               <p className="text-sm text-muted-foreground">
-                                {case_.state}
+                                {c.state}
                               </p>
                             </div>
                           </TableCell>
-                          <TableCell>{case_.year}</TableCell>
+                          <TableCell>{c.year}</TableCell>
                           <TableCell className="text-right font-medium text-primary">
-                            {formatCurrency(case_.settlementAmount)}
+                            {formatCurrency(c.settlementAmount)}
                           </TableCell>
                           <TableCell className="text-right">
-                            {formatNumber(case_.classSize)}
+                            {formatNumber(c.classSize)}
                           </TableCell>
                           <TableCell>
                             <Badge
                               variant={
-                                case_.settlementType === "Final"
+                                c.settlementType === "Final"
                                   ? "default"
                                   : "secondary"
                               }
                             >
-                              {case_.settlementType}
+                              {c.settlementType}
                             </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Button variant="ghost" size="sm" asChild>
-                              <a
-                                href={`/dashboard/cases/${case_.id}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                <ExternalLink className="h-4 w-4" />
-                              </a>
-                            </Button>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -982,27 +663,27 @@ export default function CaseSearchPage() {
                   <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                   <p className="text-lg font-medium">No cases found</p>
                   <p className="text-muted-foreground">
-                    Try adjusting your search criteria to find matching cases
+                    Try adjusting your filters.
                   </p>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </Card>
+          </div>
         </div>
       </main>
 
       {/* Save Search Dialog */}
-      <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+      <Dialog open={showSave} onOpenChange={setShowSave}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Save Search</DialogTitle>
             <DialogDescription>
-              Save your current search filters for quick access in the future
+              Save your current filters for future use
             </DialogDescription>
           </DialogHeader>
           <Form {...saveForm}>
             <form
-              onSubmit={saveForm.handleSubmit(handleSaveSearch)}
+              onSubmit={saveForm.handleSubmit(onSave)}
               className="space-y-4"
             >
               <FormField
@@ -1012,62 +693,43 @@ export default function CaseSearchPage() {
                   <FormItem>
                     <FormLabel>Search Name</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="e.g., Data Breach > $10M"
-                        {...field}
-                      />
+                      <Input placeholder="e.g. Data Breach > $10M" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={saveForm.control}
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description (optional)</FormLabel>
+                    <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Brief description of this search"
-                        {...field}
-                      />
+                      <Input placeholder="Optional description" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={saveForm.control}
                 name="alertEnabled"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel>
-                        Enable alerts for new matching cases
-                      </FormLabel>
-                    </div>
+                  <FormItem className="flex items-start space-x-3">
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                    <FormLabel>Enable alerts for new matches</FormLabel>
                   </FormItem>
                 )}
               />
-
-              <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setShowSaveDialog(false)}
-                >
+              <DialogFooter className="flex justify-end space-x-2">
+                <Button variant="outline" onClick={() => setShowSave(false)}>
                   Cancel
                 </Button>
-                <Button type="submit">Save Search</Button>
+                <Button type="submit">Save</Button>
               </DialogFooter>
             </form>
           </Form>
