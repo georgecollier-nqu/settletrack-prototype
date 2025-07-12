@@ -102,7 +102,7 @@ export default function LandingPage() {
               processed dockets.
             </p>
             <div className="flex gap-4 justify-center pt-4">
-              <Button size="lg" className="text-lg px-8" asChild>
+              <Button size="lg" className="text-lg px-8 rounded-full" asChild>
                 <Link href="/signup">
                   Get Started Free
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -111,7 +111,7 @@ export default function LandingPage() {
               <Button
                 size="lg"
                 variant="outline"
-                className="text-lg px-8"
+                className="text-lg px-8 rounded-full"
                 asChild
               >
                 <Link href="#pricing">View Pricing</Link>
@@ -614,7 +614,7 @@ export default function LandingPage() {
             <Button
               size="lg"
               variant="secondary"
-              className="text-lg px-8"
+              className="text-lg px-8 rounded-full"
               asChild
             >
               <Link href="/signup">
@@ -625,7 +625,7 @@ export default function LandingPage() {
             <Button
               size="lg"
               variant="outline"
-              className="text-lg px-8 bg-transparent text-primary-foreground border-primary-foreground hover:bg-primary-foreground hover:text-primary"
+              className="text-lg px-8 rounded-full bg-transparent text-primary-foreground border-primary-foreground hover:bg-primary-foreground hover:text-primary"
               asChild
             >
               <Link href="#pricing">View Pricing</Link>
