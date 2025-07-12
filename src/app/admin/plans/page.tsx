@@ -157,7 +157,7 @@ export default function AdminPlansPage() {
   };
 
   return (
-    <div className="flex-1 overflow-hidden">
+    <>
       {/* Header */}
       <header className="border-b bg-white px-6 py-4 shadow-[0_1px_2px_rgba(17,24,39,0.05)]">
         <div className="flex items-center justify-between">
@@ -175,7 +175,7 @@ export default function AdminPlansPage() {
       </header>
 
       {/* Plans Grid */}
-      <div className="flex-1 overflow-auto bg-muted/30 p-6">
+      <div className="flex-1 overflow-y-auto bg-muted/30 p-6">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {plans.map((plan) => {
@@ -187,9 +187,6 @@ export default function AdminPlansPage() {
                     !plan.isActive ? "opacity-75" : ""
                   }`}
                 >
-                  {!plan.isActive && (
-                    <div className="absolute inset-0 bg-white/50 z-10" />
-                  )}
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
@@ -208,7 +205,7 @@ export default function AdminPlansPage() {
                           <CardDescription>{plan.description}</CardDescription>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 relative z-20">
                         <span className="text-sm text-muted-foreground">
                           Active
                         </span>
@@ -307,6 +304,6 @@ export default function AdminPlansPage() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

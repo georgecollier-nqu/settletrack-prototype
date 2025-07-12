@@ -129,139 +129,137 @@ export default function AdminCasesPage() {
 
   return (
     <>
-      <div className="flex-1 overflow-hidden">
-        {/* Header */}
-        <header className="border-b bg-white px-6 py-4 shadow-[0_1px_2px_rgba(17,24,39,0.05)]">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <SidebarTrigger className="lg:hidden" />
-              <h1 className="text-2xl font-serif font-bold">Case Management</h1>
-            </div>
-          </div>
-        </header>
-
-        {/* Filters and Search */}
-        <div className="bg-white border-b px-6 py-4">
+      {/* Header */}
+      <header className="border-b bg-white px-6 py-4 shadow-[0_1px_2px_rgba(17,24,39,0.05)]">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Search by case number..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9"
-              />
-            </div>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2">
-                  <Filter className="h-4 w-4" />
-                  Status:{" "}
-                  {filterStatus === "all"
-                    ? "All"
-                    : filterStatus.charAt(0).toUpperCase() +
-                      filterStatus.slice(1)}
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setFilterStatus("all")}>
-                  All Cases
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setFilterStatus("pending")}>
-                  Pending Review
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setFilterStatus("flagged")}>
-                  Flagged
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setFilterStatus("approved")}>
-                  Approved
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2">
-                  Sort:{" "}
-                  {sortField === "dateAdded"
-                    ? "Date Added"
-                    : sortField === "caseNumber"
-                      ? "Case Number"
-                      : "Title"}
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setSortField("dateAdded")}>
-                  Date Added
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortField("caseNumber")}>
-                  Case Number
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortField("title")}>
-                  Title
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <SidebarTrigger className="lg:hidden" />
+            <h1 className="text-2xl font-serif font-bold">Case Management</h1>
           </div>
         </div>
+      </header>
 
-        {/* Cases List */}
-        <div className="flex-1 overflow-auto">
-          <div className="divide-y">
-            {filteredCases.map((caseItem) => (
-              <div
-                key={caseItem.id}
-                className="bg-white px-6 py-4 hover:bg-gray-50 cursor-pointer transition-colors"
-                onClick={() => router.push(`/admin/cases/${caseItem.id}`)}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-3">
-                      <h3 className="font-medium">{caseItem.id}</h3>
-                      <Badge
-                        variant={getStatusColor(caseItem.status)}
-                        className="gap-1"
-                      >
-                        {getStatusIcon(caseItem.status)}
-                        {caseItem.status.charAt(0).toUpperCase() +
-                          caseItem.status.slice(1)}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {caseItem.title}
-                    </p>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <FileText className="h-3 w-3" />
-                        {caseItem.court}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        {new Date(caseItem.dateAdded).toLocaleDateString()}
-                      </span>
-                    </div>
-                    {caseItem.flagReason && (
-                      <p className="text-sm text-orange-600 mt-2">
-                        Flagged: &quot;{caseItem.flagReason}&quot; -{" "}
-                        {caseItem.flaggedBy}
-                      </p>
-                    )}
+      {/* Filters and Search */}
+      <div className="bg-white border-b px-6 py-4">
+        <div className="flex items-center gap-4">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search by case number..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <Filter className="h-4 w-4" />
+                Status:{" "}
+                {filterStatus === "all"
+                  ? "All"
+                  : filterStatus.charAt(0).toUpperCase() +
+                    filterStatus.slice(1)}
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => setFilterStatus("all")}>
+                All Cases
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setFilterStatus("pending")}>
+                Pending Review
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setFilterStatus("flagged")}>
+                Flagged
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setFilterStatus("approved")}>
+                Approved
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                Sort:{" "}
+                {sortField === "dateAdded"
+                  ? "Date Added"
+                  : sortField === "caseNumber"
+                    ? "Case Number"
+                    : "Title"}
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => setSortField("dateAdded")}>
+                Date Added
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSortField("caseNumber")}>
+                Case Number
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSortField("title")}>
+                Title
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+
+      {/* Cases List */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="divide-y">
+          {filteredCases.map((caseItem) => (
+            <div
+              key={caseItem.id}
+              className="bg-white px-6 py-4 hover:bg-gray-50 cursor-pointer transition-colors"
+              onClick={() => router.push(`/admin/cases/${caseItem.id}`)}
+            >
+              <div className="flex items-start justify-between">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-3">
+                    <h3 className="font-medium">{caseItem.id}</h3>
+                    <Badge
+                      variant={getStatusColor(caseItem.status)}
+                      className="gap-1"
+                    >
+                      {getStatusIcon(caseItem.status)}
+                      {caseItem.status.charAt(0).toUpperCase() +
+                        caseItem.status.slice(1)}
+                    </Badge>
                   </div>
-                  <div className="text-right">
-                    <p className="font-medium">
-                      ${caseItem.settlementAmount.toLocaleString()}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {caseItem.classSize.toLocaleString()} members
-                    </p>
+                  <p className="text-sm text-muted-foreground">
+                    {caseItem.title}
+                  </p>
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <FileText className="h-3 w-3" />
+                      {caseItem.court}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Calendar className="h-3 w-3" />
+                      {new Date(caseItem.dateAdded).toLocaleDateString()}
+                    </span>
                   </div>
+                  {caseItem.flagReason && (
+                    <p className="text-sm text-orange-600 mt-2">
+                      Flagged: &quot;{caseItem.flagReason}&quot; -{" "}
+                      {caseItem.flaggedBy}
+                    </p>
+                  )}
+                </div>
+                <div className="text-right">
+                  <p className="font-medium">
+                    ${caseItem.settlementAmount.toLocaleString()}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {caseItem.classSize.toLocaleString()} members
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
     </>

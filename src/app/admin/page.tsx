@@ -2,11 +2,9 @@
 
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Users,
   Search,
-  FileText,
   Clock,
   TrendingUp,
   UserPlus,
@@ -47,7 +45,7 @@ const searchData = [
 
 export default function AdminAnalyticsPage() {
   return (
-    <div className="flex-1 overflow-hidden">
+    <>
       {/* Header */}
       <header className="border-b bg-white px-6 py-4 shadow-[0_1px_2px_rgba(17,24,39,0.05)]">
         <div className="flex items-center justify-between">
@@ -209,108 +207,8 @@ export default function AdminAnalyticsPage() {
               </CardContent>
             </Card>
           </div>
-
-          {/* Additional Stats */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">Recent Activity</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-green-50 rounded-full">
-                    <FileText className="h-4 w-4 text-green-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">12 new cases added</p>
-                    <p className="text-xs text-muted-foreground">
-                      Last 24 hours
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-50 rounded-full">
-                    <Users className="h-4 w-4 text-blue-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">8 new organizations</p>
-                    <p className="text-xs text-muted-foreground">This week</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-orange-50 rounded-full">
-                    <Clock className="h-4 w-4 text-orange-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">
-                      5 cases pending review
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Requires attention
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">Search Trends</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Data Breach</span>
-                    <span className="text-sm font-medium">342</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Class Action</span>
-                    <span className="text-sm font-medium">289</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Settlement &gt; $10M</span>
-                    <span className="text-sm font-medium">198</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">California</span>
-                    <span className="text-sm font-medium">156</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">2024 Cases</span>
-                    <span className="text-sm font-medium">134</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">System Health</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Database Status</span>
-                    <Badge variant="success">Healthy</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">API Response Time</span>
-                    <span className="text-sm font-medium">45ms</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Queue Length</span>
-                    <span className="text-sm font-medium">23 items</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Last Import</span>
-                    <span className="text-sm font-medium">2 hours ago</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
         </div>
       </main>
-    </div>
+    </>
   );
 }

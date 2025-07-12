@@ -200,7 +200,7 @@ export default function AdminOrganizationsPage() {
   };
 
   return (
-    <div className="flex-1 overflow-hidden">
+    <>
       {/* Header */}
       <header className="border-b bg-white px-6 py-4 shadow-[0_1px_2px_rgba(17,24,39,0.05)]">
         <div className="flex items-center justify-between">
@@ -228,7 +228,7 @@ export default function AdminOrganizationsPage() {
       </div>
 
       {/* Organizations Grid */}
-      <div className="flex-1 overflow-auto bg-muted/30 p-6">
+      <div className="flex-1 overflow-y-auto bg-muted/30 p-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {filteredOrganizations.map((org) => (
             <Card key={org.id} className="overflow-hidden">
@@ -352,6 +352,6 @@ export default function AdminOrganizationsPage() {
           ))}
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -144,7 +144,7 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div className="flex-1 overflow-hidden">
+    <>
       {/* Header */}
       <header className="border-b bg-white px-6 py-4 shadow-[0_1px_2px_rgba(17,24,39,0.05)]">
         <div className="flex items-center justify-between">
@@ -172,7 +172,7 @@ export default function AdminUsersPage() {
       </div>
 
       {/* Users Table */}
-      <div className="flex-1 overflow-auto bg-white">
+      <div className="flex-1 overflow-y-auto bg-white">
         <Table>
           <TableHeader>
             <TableRow>
@@ -253,6 +253,6 @@ export default function AdminUsersPage() {
           </TableBody>
         </Table>
       </div>
-    </div>
+    </>
   );
 }

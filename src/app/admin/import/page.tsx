@@ -107,7 +107,7 @@ export default function AdminImportPage() {
   const canImport = (file || pasteContent) && status === "idle";
 
   return (
-    <div className="flex-1 overflow-hidden">
+    <>
       {/* Header */}
       <header className="border-b bg-white px-6 py-4 shadow-[0_1px_2px_rgba(17,24,39,0.05)]">
         <div className="flex items-center justify-between">
@@ -128,7 +128,7 @@ export default function AdminImportPage() {
       </header>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto bg-muted/30 p-6">
+      <div className="flex-1 overflow-y-auto bg-muted/30 p-6">
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Instructions */}
           <Alert>
@@ -347,6 +347,6 @@ export default function AdminImportPage() {
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 }
