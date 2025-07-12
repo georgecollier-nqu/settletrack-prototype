@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -31,9 +32,13 @@ export default function LandingPage() {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-8">
-              <h1 className="text-2xl font-serif font-bold text-primary">
-                SettleTrack
-              </h1>
+              <Image
+                src="/logo.png"
+                alt="SettleTrack"
+                width={186}
+                height={42}
+                className="h-8 w-auto"
+              />
               <div className="hidden md:flex space-x-6">
                 <a
                   href="#features"
@@ -411,9 +416,13 @@ export default function LandingPage() {
         <div className="container mx-auto">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <h3 className="font-serif text-xl font-bold text-primary mb-4">
-                SettleTrack
-              </h3>
+              <Image
+                src="/logo.png"
+                alt="SettleTrack"
+                width={149}
+                height={34}
+                className="h-6 w-auto mb-4"
+              />
               <p className="text-sm text-muted-foreground">
                 Legal settlement intelligence for modern law firms.
               </p>
