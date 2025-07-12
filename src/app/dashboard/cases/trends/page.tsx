@@ -371,10 +371,6 @@ export default function CaseTrendsPage() {
                     </FormItem>
                   )}
                 />
-              </div>
-
-              {/* Date Range */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <FormLabel>Year Range</FormLabel>
                   <div className="flex items-center gap-2">
@@ -429,6 +425,10 @@ export default function CaseTrendsPage() {
                     />
                   </div>
                 </div>
+              </div>
+
+              {/* Location Filters */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* States */}
                 <FormField
                   control={form.control}
