@@ -69,7 +69,7 @@ export default function OnboardingPage() {
         <img
           src="/onboarding_background.jpg"
           alt=""
-          className="w-full h-full object-cover opacity-10 grayscale"
+          className="w-full h-full object-cover grayscale contrast-50"
         />
       </div>
       {/* Header */}
@@ -93,25 +93,21 @@ export default function OnboardingPage() {
         </div>
       </div>
 
-      {/* Progress Bar */}
-      <div className="container mx-auto px-6 py-6 relative z-10">
-        <div className="max-w-2xl mx-auto">
-          <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
-            <span>
-              Step {currentStep} of {totalSteps}
-            </span>
-            <span>{Math.round(progress)}% complete</span>
-          </div>
-          <Progress value={progress} className="h-2" />
-        </div>
-      </div>
-
       {/* Content */}
-      <div className="container mx-auto px-6 pb-12 relative z-10 flex items-center justify-center min-h-[calc(100vh-200px)]">
+      <div className="container mx-auto px-6 pb-12 relative z-10 flex items-center justify-center min-h-[calc(100vh-80px)]">
         <div className="max-w-2xl w-full">
           {/* Step 1: Profile Setup */}
           {currentStep === 1 && (
             <Card>
+              <div className="p-6 pb-0">
+                <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
+                  <span>
+                    Step {currentStep} of {totalSteps}
+                  </span>
+                  <span>{Math.round(progress)}% complete</span>
+                </div>
+                <Progress value={progress} className="h-2 mb-6" />
+              </div>
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
                   <div className="p-2 bg-secondary rounded-lg">
@@ -179,6 +175,15 @@ export default function OnboardingPage() {
           {/* Step 2: Practice Areas */}
           {currentStep === 2 && (
             <Card>
+              <div className="p-6 pb-0">
+                <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
+                  <span>
+                    Step {currentStep} of {totalSteps}
+                  </span>
+                  <span>{Math.round(progress)}% complete</span>
+                </div>
+                <Progress value={progress} className="h-2 mb-6" />
+              </div>
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
                   <div className="p-2 bg-secondary rounded-lg">
@@ -276,6 +281,15 @@ export default function OnboardingPage() {
           {/* Step 3: Key Features Tour */}
           {currentStep === 3 && (
             <Card>
+              <div className="p-6 pb-0">
+                <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
+                  <span>
+                    Step {currentStep} of {totalSteps}
+                  </span>
+                  <span>{Math.round(progress)}% complete</span>
+                </div>
+                <Progress value={progress} className="h-2 mb-6" />
+              </div>
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
                   <div className="p-2 bg-secondary rounded-lg">
@@ -353,6 +367,15 @@ export default function OnboardingPage() {
           {/* Step 4: Ready to Go */}
           {currentStep === 4 && (
             <Card>
+              <div className="p-6 pb-0">
+                <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
+                  <span>
+                    Step {currentStep} of {totalSteps}
+                  </span>
+                  <span>{Math.round(progress)}% complete</span>
+                </div>
+                <Progress value={progress} className="h-2 mb-6" />
+              </div>
               <CardHeader className="text-center">
                 <div className="flex justify-center mb-4">
                   <div className="p-4 bg-success/10 rounded-full">
