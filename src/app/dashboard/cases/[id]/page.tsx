@@ -41,16 +41,24 @@ import {
 import { mockCases } from "@/lib/mock-data";
 
 interface CaseDetailsPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export default function CaseDetailsPage({ params }: CaseDetailsPageProps) {
+export default async function CaseDetailsPage({
+  params,
+}: CaseDetailsPageProps) {
+  const { id } = await params;
+
+  return <CaseDetailsPageContent caseId={id} />;
+}
+
+function CaseDetailsPageContent({ caseId }: { caseId: string }) {
   const [showComparisonDialog, setShowComparisonDialog] = useState(false);
 
   // Find the case by ID
-  const case_ = mockCases.find((c) => c.id === params.id);
+  const case_ = mockCases.find((c) => c.id === caseId);
 
   if (!case_) {
     notFound();
