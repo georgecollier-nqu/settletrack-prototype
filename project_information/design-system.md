@@ -1,6 +1,6 @@
 # SettleTrack Design System v0.1
 
-*A comprehensive guide to our design language, components, and patterns for building consistent legal‑settlement applications.*
+_A comprehensive guide to our design language, components, and patterns for building consistent legal‑settlement applications._
 
 **Last updated 11 July 2025**
 
@@ -55,9 +55,9 @@ Our typographic scale pairs a humanist serif for headings with a clean geometric
 
 | Style       | Typeface      | Size / Line‑height | Weight | Tracking | Sample                               |
 | ----------- | ------------- | ------------------ | ------ | -------- | ------------------------------------ |
-| **H1**      | Merriweather  | 32 / 40 px         | 700    | −0.5     | *Primary Page Heading*               |
-| **H2**      | Merriweather  | 24 / 32 px         | 700    | −0.25    | *Section Heading*                    |
-| **H3**      | Merriweather  | 20 / 28 px         | 700    | 0        | *Sub‑section Heading*                |
+| **H1**      | Merriweather  | 32 / 40 px         | 700    | −0.5     | _Primary Page Heading_               |
+| **H2**      | Merriweather  | 24 / 32 px         | 700    | −0.25    | _Section Heading_                    |
+| **H3**      | Merriweather  | 20 / 28 px         | 700    | 0        | _Sub‑section Heading_                |
 | **Body L**  | Inter         | 16 / 24 px         | 400    | 0        | This is the primary body text style… |
 | **Body S**  | Inter         | 14 / 20 px         | 400    | 0        | Secondary body text is used…         |
 | **Caption** | Inter         | 12 / 16 px         | 500    | +0.5     | CAPTIONS ARE USED FOR LABELS…        |
@@ -104,7 +104,7 @@ Our typographic scale pairs a humanist serif for headings with a clean geometric
 
 ### 4.1  Buttons
 
-*Corner radius 8 px · Padding 12 × 20 px*
+_Corner radius 8 px · Padding 12 × 20 px_
 
 | Variant         | Fill        | Text        | Border           | States                                                       |
 | --------------- | ----------- | ----------- | ---------------- | ------------------------------------------------------------ |
@@ -115,7 +115,7 @@ Our typographic scale pairs a humanist serif for headings with a clean geometric
 
 ### 4.2  Form Inputs
 
-*Height 40 px · Radius 4 px · Border 1 px Neutral 300*
+_Height 40 px · Radius 4 px · Border 1 px Neutral 300_
 
 | State     | Border                                    | Helper Text | Notes                          |
 | --------- | ----------------------------------------- | ----------- | ------------------------------ |
@@ -126,23 +126,23 @@ Our typographic scale pairs a humanist serif for headings with a clean geometric
 
 ### 4.3  Tables & Data Grid
 
-*Zebra rows Primary 50 tint · Header row Primary 50 (bold)*
+_Zebra rows Primary 50 tint · Header row Primary 50 (bold)_
 
-* Column min‑width 120 px
-* Numerical data right‑aligned
+- Column min‑width 120 px
+- Numerical data right‑aligned
 
 ### 4.4  Navigation
 
 #### Top Bar
 
-*Height 64 px · Background white · Shadow e1*
+_Height 64 px · Background white · Shadow e1_
 `logo → section links → spacer → user avatar`
 
 #### Side Nav (≥ 1280 px)
 
-*Width 240 px · Background white*
+_Width 240 px · Background white_
 
-* Active item: background Primary 50, left border 2 px Primary 600
+- Active item: background Primary 50, left border 2 px Primary 600
 
 ### 4.5  Cards & Modals
 
@@ -153,10 +153,10 @@ Our typographic scale pairs a humanist serif for headings with a clean geometric
 
 ### 4.6  Charts & Data Visualisation
 
-* Default series colour Primary 500
-* Success overlays Success 600
-* Gridlines Neutral 300 @ 40 % opacity
-* Tooltip surface e1
+- Default series colour Primary 500
+- Success overlays Success 600
+- Gridlines Neutral 300 @ 40 % opacity
+- Tooltip surface e1
 
 #### 4.6.1  Data‑Vis Series Palette
 
@@ -188,16 +188,16 @@ Our typographic scale pairs a humanist serif for headings with a clean geometric
 
 ### 5.2  Inline Alert Messages
 
-* Surface colour matches **Background** in table above
-* Left accent bar 4 px corresponding **Foreground** colour
-* Elevation e1
+- Surface colour matches **Background** in table above
+- Left accent bar 4 px corresponding **Foreground** colour
+- Elevation e1
 
 ---
 
 ## 6  Iconography
 
-* **Icon set**: *Lucide*
-* Active: Primary 700 · Default: Neutral 700
+- **Icon set**: _Lucide_
+- Active: Primary 700 · Default: Neutral 700
 
 | Category   | Examples                                                      |
 | ---------- | ------------------------------------------------------------- |

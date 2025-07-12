@@ -7,40 +7,40 @@
     /* SettleTrack Design System Colors */
     --background: 210 20% 98%; /* #F8FAFC - Neutral 50 */
     --foreground: 221 39% 11%; /* #111827 - Neutral 900 */
-    
+
     /* Card surfaces use white background */
     --card: 0 0% 100%; /* #FFFFFF - White */
     --card-foreground: 221 39% 11%; /* #111827 - Neutral 900 */
-    
+
     /* Popovers and dropdowns */
     --popover: 0 0% 100%; /* #FFFFFF - White */
     --popover-foreground: 221 39% 11%; /* #111827 - Neutral 900 */
-    
+
     /* Primary brand colors */
     --primary: 156 46% 36%; /* #2E7D5B - Primary 700 */
     --primary-foreground: 0 0% 100%; /* #FFFFFF - White */
-    
+
     /* Secondary uses primary with transparency */
     --secondary: 156 30% 95%; /* #E8F5EE - Primary 50 (Tint) */
     --secondary-foreground: 156 46% 36%; /* #2E7D5B - Primary 700 */
-    
+
     /* Muted colors for subtle elements */
     --muted: 210 20% 98%; /* #F8FAFC - Neutral 50 */
     --muted-foreground: 215 19% 35%; /* #374151 - Neutral 700 */
-    
+
     /* Accent uses primary tint */
     --accent: 156 30% 95%; /* #E8F5EE - Primary 50 (Tint) */
     --accent-foreground: 156 46% 36%; /* #2E7D5B - Primary 700 */
-    
+
     /* Destructive/Error states */
     --destructive: 0 73% 36%; /* #991B1B - Error 600 */
     --destructive-foreground: 0 0% 100%; /* #FFFFFF - White */
-    
+
     /* Borders and inputs */
     --border: 210 18% 87%; /* #D1D5DB - Neutral 300 */
     --input: 210 18% 87%; /* #D1D5DB - Neutral 300 */
     --ring: 156 41% 53%; /* #4CAF82 - Primary 500 */
-    
+
     /* Chart colors from data-vis palette */
     --chart-1: 156 41% 53%; /* #4CAF82 - Primary 500 (dv-1) */
     --chart-2: 207 67% 60%; /* #5AA5DA - (dv-2) */
@@ -50,10 +50,10 @@
     --chart-6: 0 100% 71%; /* #FF6B6B - (dv-6) */
     --chart-7: 282 54% 48%; /* #8E44AD - (dv-7) */
     --chart-8: 156 46% 36%; /* #2E7D5B - Deep brand green (dv-8) */
-    
+
     /* Border radius */
     --radius: 0.5rem; /* 8px default, 4px for inputs, 12px for cards/modals */
-    
+
     /* Status colors */
     --success: 123 46% 34%; /* #2E7D32 - Success 600 */
     --success-foreground: 0 0% 100%; /* White */
@@ -66,32 +66,32 @@
     /* Dark mode - using inverted neutral scale */
     --background: 221 39% 11%; /* #111827 - Neutral 900 */
     --foreground: 210 20% 98%; /* #F8FAFC - Neutral 50 */
-    
+
     --card: 220 26% 14%; /* Slightly lighter than background */
     --card-foreground: 210 20% 98%; /* #F8FAFC - Neutral 50 */
-    
+
     --popover: 220 26% 14%; /* Same as card */
     --popover-foreground: 210 20% 98%; /* #F8FAFC - Neutral 50 */
-    
+
     --primary: 156 41% 53%; /* #4CAF82 - Primary 500 (brighter in dark) */
     --primary-foreground: 221 39% 11%; /* #111827 - Neutral 900 */
-    
+
     --secondary: 156 46% 20%; /* Darker primary tint */
     --secondary-foreground: 156 41% 53%; /* #4CAF82 - Primary 500 */
-    
+
     --muted: 217 19% 27%; /* Muted dark gray */
     --muted-foreground: 210 20% 80%; /* Light gray text */
-    
+
     --accent: 156 46% 20%; /* Same as secondary */
     --accent-foreground: 156 41% 53%; /* #4CAF82 - Primary 500 */
-    
+
     --destructive: 0 73% 50%; /* Brighter error in dark */
     --destructive-foreground: 0 0% 100%; /* White */
-    
+
     --border: 217 19% 27%; /* Darker borders */
     --input: 217 19% 27%; /* Same as border */
     --ring: 156 41% 68%; /* #80CFA3 - Primary 300 (brighter) */
-    
+
     /* Chart colors remain vibrant in dark mode */
     --chart-1: 156 41% 53%; /* #4CAF82 */
     --chart-2: 207 67% 60%; /* #5AA5DA */
@@ -101,7 +101,7 @@
     --chart-6: 0 100% 71%; /* #FF6B6B */
     --chart-7: 282 54% 58%; /* Brighter purple */
     --chart-8: 156 41% 68%; /* #80CFA3 - Primary 300 */
-    
+
     /* Status colors - brighter for dark mode */
     --success: 123 46% 44%; /* Brighter green */
     --warning: 30 82% 48%; /* Brighter amber */

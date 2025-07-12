@@ -76,13 +76,34 @@ const config: Config = {
       },
       fontSize: {
         // Typography scale from design system
-        h1: ["32px", { lineHeight: "40px", fontWeight: "700", letterSpacing: "-0.5px" }],
-        h2: ["24px", { lineHeight: "32px", fontWeight: "700", letterSpacing: "-0.25px" }],
-        h3: ["20px", { lineHeight: "28px", fontWeight: "700", letterSpacing: "0" }],
-        "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400", letterSpacing: "0" }],
-        "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400", letterSpacing: "0" }],
-        caption: ["12px", { lineHeight: "16px", fontWeight: "500", letterSpacing: "0.5px" }],
-        mono: ["13px", { lineHeight: "20px", fontWeight: "400", letterSpacing: "0" }],
+        h1: [
+          "32px",
+          { lineHeight: "40px", fontWeight: "700", letterSpacing: "-0.5px" },
+        ],
+        h2: [
+          "24px",
+          { lineHeight: "32px", fontWeight: "700", letterSpacing: "-0.25px" },
+        ],
+        h3: [
+          "20px",
+          { lineHeight: "28px", fontWeight: "700", letterSpacing: "0" },
+        ],
+        "body-lg": [
+          "16px",
+          { lineHeight: "24px", fontWeight: "400", letterSpacing: "0" },
+        ],
+        "body-sm": [
+          "14px",
+          { lineHeight: "20px", fontWeight: "400", letterSpacing: "0" },
+        ],
+        caption: [
+          "12px",
+          { lineHeight: "16px", fontWeight: "500", letterSpacing: "0.5px" },
+        ],
+        mono: [
+          "13px",
+          { lineHeight: "20px", fontWeight: "400", letterSpacing: "0" },
+        ],
       },
       keyframes: {
         "accordion-down": {
