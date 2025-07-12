@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
+import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -19,15 +19,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import {
   LineChart,
   Line,
@@ -37,264 +41,199 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { TrendingUp, Plus, X } from "lucide-react";
-import { mockCases, filterOptions, type Case } from "@/lib/mock-data";
+import { useForm } from "react-hook-form";
+import { TrendingUp, Check, ChevronsUpDown, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { filterOptions, mockCases } from "@/lib/mock-data";
 
-// Form schema for trend filters
-const trendFilterSchema = z.object({
-  metric: z.enum([
-    "avgSettlement",
-    "totalSettlement",
-    "caseCount",
-    "avgClassSize",
-    "medianSettlement",
-  ]),
-  timeGrouping: z.enum(["year", "quarter", "month"]),
-  dateRange: z
-    .object({
-      from: z.number().min(2020).max(2030).optional(),
-      to: z.number().min(2020).max(2030).optional(),
-    })
-    .optional(),
-  // Same filters as search page for consistency
-  states: z.array(z.string()).optional(),
-  courts: z.array(z.string()).optional(),
-  piiAffected: z.array(z.string()).optional(),
-  causeOfBreach: z.array(z.string()).optional(),
-  classType: z.array(z.string()).optional(),
-  isMultiDistrictLitigation: z.boolean().optional(),
-  hasMinorSubclass: z.boolean().optional(),
-  settlementType: z.array(z.string()).optional(),
-  creditMonitoring: z.boolean().optional(),
-  settlementAmountRange: z
-    .object({
-      from: z.number().min(0).optional(),
-      to: z.number().min(0).optional(),
-    })
-    .optional(),
-  classSizeRange: z
-    .object({
-      from: z.number().min(0).optional(),
-      to: z.number().min(0).optional(),
-    })
-    .optional(),
-});
-
-type TrendFilterValues = z.infer<typeof trendFilterSchema>;
-
-interface TrendDataPoint {
-  period: string;
-  value: number;
-  count: number;
-  rawDate: Date;
-}
+type FormValues = {
+  metric: string;
+  timeGrouping: string;
+  dateRange: {
+    from: number | null;
+    to: number | null;
+  };
+  states: string[];
+  courts: string[];
+  isMultiDistrictLitigation: boolean;
+  creditMonitoring: boolean;
+};
 
 export default function CaseTrendsPage() {
-  const [filterPopoverOpen, setFilterPopoverOpen] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState<string>("");
-
-  const form = useForm<TrendFilterValues>({
-    resolver: zodResolver(trendFilterSchema),
+  const form = useForm<FormValues>({
     defaultValues: {
       metric: "avgSettlement",
-      timeGrouping: "month",
+      timeGrouping: "quarter",
+      dateRange: { from: null, to: null },
       states: [],
       courts: [],
-      piiAffected: [],
-      causeOfBreach: [],
-      classType: [],
-      settlementType: [],
+      isMultiDistrictLitigation: false,
+      creditMonitoring: false,
     },
   });
 
-  // Filter cases based on form values (similar to search page)
-  const getFilteredCases = useCallback((values: TrendFilterValues): Case[] => {
-    let filtered = mockCases;
-
-    // Apply same filters as search page
-    if (values.states && values.states.length > 0) {
-      filtered = filtered.filter((case_) =>
-        values.states!.includes(case_.state),
-      );
-    }
-
-    if (values.courts && values.courts.length > 0) {
-      filtered = filtered.filter((case_) =>
-        values.courts!.includes(case_.court),
-      );
-    }
-
-    if (values.dateRange?.from || values.dateRange?.to) {
-      filtered = filtered.filter((case_) => {
-        const year = case_.year;
-        const fromYear = values.dateRange?.from || 2020;
-        const toYear = values.dateRange?.to || 2030;
-        return year >= fromYear && year <= toYear;
-      });
-    }
-
-    if (
-      values.settlementAmountRange?.from ||
-      values.settlementAmountRange?.to
-    ) {
-      filtered = filtered.filter((case_) => {
-        const amount = case_.settlementAmount;
-        const fromAmount = values.settlementAmountRange?.from || 0;
-        const toAmount = values.settlementAmountRange?.to || Infinity;
-        return amount >= fromAmount && amount <= toAmount;
-      });
-    }
-
-    if (values.classSizeRange?.from || values.classSizeRange?.to) {
-      filtered = filtered.filter((case_) => {
-        const size = case_.classSize;
-        const fromSize = values.classSizeRange?.from || 0;
-        const toSize = values.classSizeRange?.to || Infinity;
-        return size >= fromSize && size <= toSize;
-      });
-    }
-
-    if (values.piiAffected && values.piiAffected.length > 0) {
-      filtered = filtered.filter((case_) =>
-        values.piiAffected!.some((pii) => case_.piiAffected.includes(pii)),
-      );
-    }
-
-    if (values.causeOfBreach && values.causeOfBreach.length > 0) {
-      filtered = filtered.filter((case_) =>
-        values.causeOfBreach!.includes(case_.causeOfBreach),
-      );
-    }
-
-    if (values.classType && values.classType.length > 0) {
-      filtered = filtered.filter((case_) =>
-        values.classType!.some((type) => case_.classType.includes(type)),
-      );
-    }
-
-    if (values.settlementType && values.settlementType.length > 0) {
-      filtered = filtered.filter((case_) =>
-        values.settlementType!.includes(case_.settlementType),
-      );
-    }
-
-    if (values.isMultiDistrictLitigation !== undefined) {
-      filtered = filtered.filter(
-        (case_) =>
-          case_.isMultiDistrictLitigation === values.isMultiDistrictLitigation,
-      );
-    }
-
-    if (values.hasMinorSubclass !== undefined) {
-      filtered = filtered.filter(
-        (case_) => case_.hasMinorSubclass === values.hasMinorSubclass,
-      );
-    }
-
-    if (values.creditMonitoring !== undefined) {
-      filtered = filtered.filter(
-        (case_) => case_.creditMonitoring === values.creditMonitoring,
-      );
-    }
-
-    return filtered;
-  }, []);
-
-  // Generate trend data based on filtered cases and selected metric/grouping
-  const trendData = useMemo(() => {
+  // Get filtered cases based on form values
+  const getFilteredCases = () => {
     const values = form.getValues();
-    const filteredCases = getFilteredCases(values);
+    return mockCases.filter((case_) => {
+      // Date range filter
+      if (values.dateRange.from || values.dateRange.to) {
+        const caseYear = case_.year;
+        if (values.dateRange.from && caseYear < values.dateRange.from)
+          return false;
+        if (values.dateRange.to && caseYear > values.dateRange.to) return false;
+      }
+
+      // States filter
+      if (values.states.length > 0 && !values.states.includes(case_.state)) {
+        return false;
+      }
+
+      // Courts filter
+      if (values.courts.length > 0 && !values.courts.includes(case_.court)) {
+        return false;
+      }
+
+      // MDL filter
+      if (
+        values.isMultiDistrictLitigation &&
+        !case_.isMultiDistrictLitigation
+      ) {
+        return false;
+      }
+
+      // Credit monitoring filter
+      if (values.creditMonitoring && !case_.creditMonitoring) {
+        return false;
+      }
+
+      return true;
+    });
+  };
+
+  // First calculate trend data
+  const trendData = useMemo(() => {
+    const filteredCases = getFilteredCases();
+    const values = form.getValues();
 
     if (filteredCases.length === 0) return [];
 
     // Group cases by time period
-    const groupedData = new Map<string, Case[]>();
+    const groupedData: Record<string, typeof filteredCases> = {};
 
     filteredCases.forEach((case_) => {
-      const date = new Date(case_.date);
-      let periodKey: string;
-
-      switch (values.timeGrouping) {
-        case "year":
-          periodKey = date.getFullYear().toString();
-          break;
-        case "quarter":
-          const quarter = Math.floor(date.getMonth() / 3) + 1;
-          periodKey = `${date.getFullYear()} Q${quarter}`;
-          break;
-        case "month":
-          periodKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-          break;
-        default:
-          periodKey = date.getFullYear().toString();
+      let period: string;
+      if (values.timeGrouping === "year") {
+        period = case_.year.toString();
+      } else if (values.timeGrouping === "quarter") {
+        const quarter = Math.floor((case_.date.getMonth() + 3) / 3);
+        period = `${case_.year} Q${quarter}`;
+      } else {
+        // month
+        period = case_.date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+        });
       }
 
-      if (!groupedData.has(periodKey)) {
-        groupedData.set(periodKey, []);
+      if (!groupedData[period]) {
+        groupedData[period] = [];
       }
-      groupedData.get(periodKey)!.push(case_);
+      groupedData[period].push(case_);
     });
 
     // Calculate metric for each period
-    const result: TrendDataPoint[] = Array.from(groupedData.entries()).map(
-      ([period, cases]) => {
-        let value: number;
-        const count = cases.length;
+    const result = Object.entries(groupedData).map(([period, cases]) => {
+      let value: number;
+      const count = cases.length;
 
-        switch (values.metric) {
-          case "avgSettlement":
-            value =
-              cases.reduce((sum, case_) => sum + case_.settlementAmount, 0) /
-              cases.length;
-            break;
-          case "totalSettlement":
-            value = cases.reduce(
-              (sum, case_) => sum + case_.settlementAmount,
-              0,
-            );
-            break;
-          case "caseCount":
-            value = cases.length;
-            break;
-          case "avgClassSize":
-            value =
-              cases.reduce((sum, case_) => sum + case_.classSize, 0) /
-              cases.length;
-            break;
-          case "medianSettlement":
-            const amounts = cases
-              .map((case_) => case_.settlementAmount)
-              .sort((a, b) => a - b);
-            value =
-              amounts.length % 2 === 0
-                ? (amounts[amounts.length / 2 - 1] +
-                    amounts[amounts.length / 2]) /
-                  2
-                : amounts[Math.floor(amounts.length / 2)];
-            break;
-          default:
-            value = 0;
-        }
+      switch (values.metric) {
+        case "avgSettlement":
+          value =
+            cases.reduce((sum, case_) => sum + case_.settlementAmount, 0) /
+            cases.length;
+          break;
+        case "totalSettlement":
+          value = cases.reduce((sum, case_) => sum + case_.settlementAmount, 0);
+          break;
+        case "caseCount":
+          value = cases.length;
+          break;
+        case "avgClassSize":
+          value =
+            cases.reduce((sum, case_) => sum + case_.classSize, 0) /
+            cases.length;
+          break;
+        case "medianSettlement":
+          const amounts = cases
+            .map((case_) => case_.settlementAmount)
+            .sort((a, b) => a - b);
+          value =
+            amounts.length % 2 === 0
+              ? (amounts[amounts.length / 2 - 1] +
+                  amounts[amounts.length / 2]) /
+                2
+              : amounts[Math.floor(amounts.length / 2)];
+          break;
+        default:
+          value = 0;
+      }
 
-        // Create a representative date for sorting
-        let rawDate: Date;
-        if (values.timeGrouping === "year") {
-          rawDate = new Date(parseInt(period), 0, 1);
-        } else if (values.timeGrouping === "quarter") {
-          const [year, quarter] = period.split(" Q");
-          const month = (parseInt(quarter) - 1) * 3;
-          rawDate = new Date(parseInt(year), month, 1);
-        } else {
-          rawDate = new Date(period + "-01");
-        }
+      // Create a representative date for sorting
+      let rawDate: Date;
+      if (values.timeGrouping === "year") {
+        rawDate = new Date(parseInt(period), 0, 1);
+      } else if (values.timeGrouping === "quarter") {
+        const [year, quarter] = period.split(" Q");
+        const month = (parseInt(quarter) - 1) * 3;
+        rawDate = new Date(parseInt(year), month, 1);
+      } else {
+        rawDate = new Date(period + "-01");
+      }
 
-        return { period, value, count, rawDate };
-      },
-    );
+      return { period, value, count, rawDate };
+    });
 
     // Sort by date
     return result.sort((a, b) => a.rawDate.getTime() - b.rawDate.getTime());
-  }, [form.watch(), getFilteredCases]);
+  }, [form.watch()]);
+
+  // Calculate summary statistics
+  const summaryStats = useMemo(() => {
+    const filteredCases = getFilteredCases();
+
+    if (filteredCases.length === 0 || trendData.length === 0) return null;
+
+    const dataPoints = trendData.map((d) => d.value);
+
+    let sum = 0;
+    let min = Infinity;
+    let max = -Infinity;
+
+    for (const value of dataPoints) {
+      sum += value;
+      if (value < min) min = value;
+      if (value > max) max = value;
+    }
+
+    const average = sum / dataPoints.length;
+    const sortedValues = [...dataPoints].sort((a, b) => a - b);
+    const median =
+      sortedValues.length % 2 === 0
+        ? (sortedValues[sortedValues.length / 2 - 1] +
+            sortedValues[sortedValues.length / 2]) /
+          2
+        : sortedValues[Math.floor(sortedValues.length / 2)];
+
+    return {
+      average,
+      median,
+      min,
+      max,
+      totalCases: filteredCases.length,
+      periods: trendData.length,
+    };
+  }, [trendData]);
 
   // Format currency
   const formatCurrency = (amount: number) => {
@@ -351,401 +290,487 @@ export default function CaseTrendsPage() {
 
   const currentMetricInfo = getMetricInfo(form.watch("metric"));
 
-  // Calculate summary statistics
-  const summaryStats = useMemo(() => {
-    if (trendData.length === 0) return null;
-
-    const values = trendData.map((d) => d.value);
-    const sortedValues = [...values].sort((a, b) => a - b);
-    const average = values.reduce((a, b) => a + b, 0) / values.length;
-    const median =
-      sortedValues.length % 2 === 0
-        ? (sortedValues[sortedValues.length / 2 - 1] +
-            sortedValues[sortedValues.length / 2]) /
-          2
-        : sortedValues[Math.floor(sortedValues.length / 2)];
-
-    const totalCases = trendData.reduce((sum, d) => sum + d.count, 0);
-
-    return {
-      average,
-      median,
-      min: Math.min(...values),
-      max: Math.max(...values),
-      totalCases,
-      periods: trendData.length,
-    };
-  }, [trendData]);
-
-  // Get active filters for display
-  const activeFilters = useMemo(() => {
-    const filters: {
-      label: string;
-      value: string;
-      field: keyof TrendFilterValues;
-    }[] = [];
+  // Calculate active filter count
+  const activeFilterCount = useMemo(() => {
     const values = form.getValues();
-
-    if (values.states && values.states.length > 0) {
-      values.states.forEach((state) =>
-        filters.push({ label: "State", value: state, field: "states" }),
-      );
-    }
-    if (values.courts && values.courts.length > 0) {
-      values.courts.forEach((court) =>
-        filters.push({ label: "Court", value: court, field: "courts" }),
-      );
-    }
-    if (values.isMultiDistrictLitigation) {
-      filters.push({
-        label: "Multi-District",
-        value: "Yes",
-        field: "isMultiDistrictLitigation",
-      });
-    }
-    if (values.creditMonitoring) {
-      filters.push({
-        label: "Credit Monitoring",
-        value: "Yes",
-        field: "creditMonitoring",
-      });
-    }
-    if (values.dateRange?.from || values.dateRange?.to) {
-      const from = values.dateRange.from || "Any";
-      const to = values.dateRange.to || "Any";
-      filters.push({
-        label: "Year Range",
-        value: `${from}-${to}`,
-        field: "dateRange",
-      });
-    }
-
-    return filters;
+    let count = 0;
+    if (values.dateRange.from || values.dateRange.to) count++;
+    if (values.states.length > 0) count++;
+    if (values.courts.length > 0) count++;
+    if (values.isMultiDistrictLitigation) count++;
+    if (values.creditMonitoring) count++;
+    return count;
   }, [form.watch()]);
 
-  const removeFilter = (field: keyof TrendFilterValues, value?: string) => {
-    const currentValues = form.getValues();
-
-    if (
-      field === "states" ||
-      field === "courts" ||
-      field === "piiAffected" ||
-      field === "causeOfBreach" ||
-      field === "classType" ||
-      field === "settlementType"
-    ) {
-      const array = currentValues[field] as string[];
-      form.setValue(
-        field,
-        array.filter((v) => v !== value),
-      );
-    } else if (
-      field === "isMultiDistrictLitigation" ||
-      field === "creditMonitoring" ||
-      field === "hasMinorSubclass"
-    ) {
-      form.setValue(field, undefined);
-    } else if (field === "dateRange") {
-      form.setValue(field, undefined);
+  // Remove a specific filter
+  const removeFilter = (filterType: string, value?: string) => {
+    switch (filterType) {
+      case "dateRange":
+        form.setValue("dateRange", { from: null, to: null });
+        break;
+      case "states":
+        if (value) {
+          form.setValue(
+            "states",
+            form.getValues("states").filter((s) => s !== value),
+          );
+        } else {
+          form.setValue("states", []);
+        }
+        break;
+      case "courts":
+        if (value) {
+          form.setValue(
+            "courts",
+            form.getValues("courts").filter((c) => c !== value),
+          );
+        } else {
+          form.setValue("courts", []);
+        }
+        break;
+      case "isMultiDistrictLitigation":
+        form.setValue("isMultiDistrictLitigation", false);
+        break;
+      case "creditMonitoring":
+        form.setValue("creditMonitoring", false);
+        break;
     }
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-neutral-50">
-      <div className="max-w-7xl mx-auto p-6 space-y-6">
-        {/* Page Title */}
-        <div>
-          <h1 className="text-3xl font-serif font-bold text-neutral-900">
-            Case Trends Analysis
-          </h1>
-        </div>
+    <div className="min-h-screen bg-muted/30">
+      <div className="p-8 max-w-7xl mx-auto space-y-6">
+        <Form {...form}>
+          {/* Filters Section */}
+          <Card className="p-6 bg-white border shadow-sm">
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Filters</h3>
 
-        {/* Filter Controls */}
-        <Card className="p-4 bg-white border shadow-sm">
-          <Form {...form}>
-            <div className="space-y-3">
-              <div className="flex flex-wrap items-center gap-4">
-                <div className="flex items-center gap-4 flex-1">
-                  <FormField
-                    control={form.control}
-                    name="metric"
-                    render={({ field }) => (
-                      <FormItem className="flex items-center gap-2 space-y-0">
-                        <FormLabel className="font-medium whitespace-nowrap">
-                          Metric:
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="w-[200px]">
-                              <SelectValue placeholder="Select metric..." />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="avgSettlement">
-                              Average Payout
-                            </SelectItem>
-                            <SelectItem value="totalSettlement">
-                              Total Settlement
-                            </SelectItem>
-                            <SelectItem value="caseCount">
-                              Case Count
-                            </SelectItem>
-                            <SelectItem value="avgClassSize">
-                              Average Class Size
-                            </SelectItem>
-                            <SelectItem value="medianSettlement">
-                              Median Settlement
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="timeGrouping"
-                    render={({ field }) => (
-                      <FormItem className="flex items-center gap-2 space-y-0">
-                        <FormLabel className="font-medium whitespace-nowrap">
-                          Period:
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="w-[150px]">
-                              <SelectValue placeholder="Select period..." />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="month">Monthly</SelectItem>
-                            <SelectItem value="quarter">Quarterly</SelectItem>
-                            <SelectItem value="year">Yearly</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <Popover
-                  open={filterPopoverOpen}
-                  onOpenChange={setFilterPopoverOpen}
-                >
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" size="sm" className="gap-2">
-                      <Plus className="h-4 w-4" />
-                      Add Filter
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-80" align="end">
-                    <div className="space-y-3">
-                      <h4 className="font-medium">Add Filters</h4>
-
+              {/* Metric and Period Selection */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="metric"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Metric</FormLabel>
                       <Select
-                        value={selectedFilter}
-                        onValueChange={setSelectedFilter}
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
                       >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Choose filter type..." />
-                        </SelectTrigger>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select metric..." />
+                          </SelectTrigger>
+                        </FormControl>
                         <SelectContent>
-                          <SelectItem value="states">State</SelectItem>
-                          <SelectItem value="courts">Federal Court</SelectItem>
-                          <SelectItem value="dateRange">Year Range</SelectItem>
-                          <SelectItem value="isMultiDistrictLitigation">
-                            Multi-District Litigation
+                          <SelectItem value="avgSettlement">
+                            Average Payout
                           </SelectItem>
-                          <SelectItem value="creditMonitoring">
-                            Credit Monitoring
+                          <SelectItem value="totalSettlement">
+                            Total Settlement
+                          </SelectItem>
+                          <SelectItem value="caseCount">Case Count</SelectItem>
+                          <SelectItem value="avgClassSize">
+                            Average Class Size
+                          </SelectItem>
+                          <SelectItem value="medianSettlement">
+                            Median Settlement
                           </SelectItem>
                         </SelectContent>
                       </Select>
+                    </FormItem>
+                  )}
+                />
 
-                      {selectedFilter === "states" && (
-                        <FormField
-                          control={form.control}
-                          name="states"
-                          render={({ field }) => (
-                            <FormItem>
-                              <Select
-                                onValueChange={(value) => {
-                                  const current = field.value || [];
-                                  if (!current.includes(value)) {
-                                    field.onChange([...current, value]);
-                                    setSelectedFilter("");
-                                  }
-                                }}
-                              >
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select state..." />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {filterOptions.states.map((state) => (
-                                    <SelectItem key={state} value={state}>
-                                      {state}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormItem>
-                          )}
-                        />
+                <FormField
+                  control={form.control}
+                  name="timeGrouping"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Time Period</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select period..." />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="month">Monthly</SelectItem>
+                          <SelectItem value="quarter">Quarterly</SelectItem>
+                          <SelectItem value="year">Yearly</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Additional Filters */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Date Range */}
+                <div className="space-y-2">
+                  <FormLabel>Year Range</FormLabel>
+                  <div className="flex items-center gap-2">
+                    <FormField
+                      control={form.control}
+                      name="dateRange.from"
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="From"
+                              min={2020}
+                              max={2030}
+                              value={field.value || ""}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value
+                                    ? parseInt(e.target.value)
+                                    : null,
+                                )
+                              }
+                            />
+                          </FormControl>
+                        </FormItem>
                       )}
+                    />
+                    <span className="text-muted-foreground">to</span>
+                    <FormField
+                      control={form.control}
+                      name="dateRange.to"
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="To"
+                              min={2020}
+                              max={2030}
+                              value={field.value || ""}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value
+                                    ? parseInt(e.target.value)
+                                    : null,
+                                )
+                              }
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
 
-                      {selectedFilter === "dateRange" && (
-                        <div className="grid grid-cols-2 gap-2">
-                          <FormField
-                            control={form.control}
-                            name="dateRange.from"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-sm">From</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    type="number"
-                                    placeholder="2020"
-                                    min={2020}
-                                    max={2030}
-                                    value={field.value || ""}
-                                    onChange={(e) =>
+                {/* States */}
+                <FormField
+                  control={form.control}
+                  name="states"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>States</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className="w-full justify-between font-normal"
+                            >
+                              {field.value?.length
+                                ? `${field.value.length} selected`
+                                : "Select states..."}
+                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[200px] p-0">
+                          <Command>
+                            <CommandInput placeholder="Search states..." />
+                            <CommandList>
+                              <CommandEmpty>No state found.</CommandEmpty>
+                              <CommandGroup>
+                                {filterOptions.states.map((state) => (
+                                  <CommandItem
+                                    key={state}
+                                    value={state}
+                                    onSelect={() => {
+                                      const current = field.value || [];
                                       field.onChange(
-                                        e.target.value
-                                          ? parseInt(e.target.value)
-                                          : undefined,
-                                      )
-                                    }
-                                  />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="dateRange.to"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-sm">To</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    type="number"
-                                    placeholder="2024"
-                                    min={2020}
-                                    max={2030}
-                                    value={field.value || ""}
-                                    onChange={(e) =>
-                                      field.onChange(
-                                        e.target.value
-                                          ? parseInt(e.target.value)
-                                          : undefined,
-                                      )
-                                    }
-                                  />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                      )}
+                                        current.includes(state)
+                                          ? current.filter((s) => s !== state)
+                                          : [...current, state],
+                                      );
+                                    }}
+                                  >
+                                    <Check
+                                      className={cn(
+                                        "mr-2 h-4 w-4",
+                                        field.value?.includes(state)
+                                          ? "opacity-100"
+                                          : "opacity-0",
+                                      )}
+                                    />
+                                    {state}
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </FormItem>
+                  )}
+                />
 
-                      {(selectedFilter === "isMultiDistrictLitigation" ||
-                        selectedFilter === "creditMonitoring") && (
-                        <FormField
-                          control={form.control}
-                          name={
-                            selectedFilter as
-                              | "isMultiDistrictLitigation"
-                              | "creditMonitoring"
-                          }
-                          render={({ field }) => (
-                            <FormItem>
-                              <label className="flex items-center space-x-3 cursor-pointer">
-                                <Checkbox
-                                  checked={field.value || false}
-                                  onCheckedChange={(checked) => {
-                                    field.onChange(checked);
-                                    setSelectedFilter("");
-                                    setFilterPopoverOpen(false);
-                                  }}
-                                />
-                                <span className="text-sm font-normal">
-                                  {selectedFilter ===
-                                  "isMultiDistrictLitigation"
-                                    ? "Multi-District Litigation Only"
-                                    : "Credit Monitoring Offered"}
-                                </span>
-                              </label>
-                            </FormItem>
-                          )}
+                {/* Federal Courts */}
+                <FormField
+                  control={form.control}
+                  name="courts"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Federal Courts</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className="w-full justify-between font-normal"
+                            >
+                              {field.value?.length
+                                ? `${field.value.length} selected`
+                                : "Select courts..."}
+                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[200px] p-0">
+                          <Command>
+                            <CommandInput placeholder="Search courts..." />
+                            <CommandList>
+                              <CommandEmpty>No court found.</CommandEmpty>
+                              <CommandGroup>
+                                {filterOptions.courts.map((court) => (
+                                  <CommandItem
+                                    key={court}
+                                    value={court}
+                                    onSelect={() => {
+                                      const current = field.value || [];
+                                      field.onChange(
+                                        current.includes(court)
+                                          ? current.filter((c) => c !== court)
+                                          : [...current, court],
+                                      );
+                                    }}
+                                  >
+                                    <Check
+                                      className={cn(
+                                        "mr-2 h-4 w-4",
+                                        field.value?.includes(court)
+                                          ? "opacity-100"
+                                          : "opacity-0",
+                                      )}
+                                    />
+                                    {court}
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Checkbox Filters */}
+              <div className="flex flex-wrap gap-4">
+                <FormField
+                  control={form.control}
+                  name="isMultiDistrictLitigation"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
                         />
-                      )}
-                    </div>
-                  </PopoverContent>
-                </Popover>
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        Multi-District Litigation
+                      </FormLabel>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="creditMonitoring"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        Credit Monitoring
+                      </FormLabel>
+                    </FormItem>
+                  )}
+                />
               </div>
 
               {/* Active Filters Display */}
-              {activeFilters.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {activeFilters.map((filter, index) => (
-                    <Badge key={index} variant="secondary" className="gap-1">
-                      <span className="text-xs font-medium">
-                        {filter.label}:
-                      </span>
-                      <span className="text-xs">{filter.value}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeFilter(filter.field, filter.value)}
-                        className="ml-1 hover:text-destructive"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </Badge>
+              {activeFilterCount > 0 && (
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {(form.watch("dateRange.from") ||
+                    form.watch("dateRange.to")) && (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => removeFilter("dateRange")}
+                      className="gap-1"
+                    >
+                      {form.watch("dateRange.from") || "Any"} -{" "}
+                      {form.watch("dateRange.to") || "Any"}
+                      <X className="h-3 w-3" />
+                    </Button>
+                  )}
+                  {form.watch("states")?.map((state) => (
+                    <Button
+                      key={state}
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => removeFilter("states", state)}
+                      className="gap-1"
+                    >
+                      {state}
+                      <X className="h-3 w-3" />
+                    </Button>
                   ))}
+                  {form.watch("courts")?.map((court) => (
+                    <Button
+                      key={court}
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => removeFilter("courts", court)}
+                      className="gap-1"
+                    >
+                      {court}
+                      <X className="h-3 w-3" />
+                    </Button>
+                  ))}
+                  {form.watch("isMultiDistrictLitigation") && (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => removeFilter("isMultiDistrictLitigation")}
+                      className="gap-1"
+                    >
+                      Multi-District Litigation
+                      <X className="h-3 w-3" />
+                    </Button>
+                  )}
+                  {form.watch("creditMonitoring") && (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => removeFilter("creditMonitoring")}
+                      className="gap-1"
+                    >
+                      Credit Monitoring
+                      <X className="h-3 w-3" />
+                    </Button>
+                  )}
                 </div>
               )}
             </div>
-          </Form>
-        </Card>
+          </Card>
 
-        {/* Main Chart */}
-        <Card className="p-6 bg-white border shadow-sm">
-          <div className="space-y-6">
-            {trendData.length > 0 ? (
-              <>
+          {/* Summary Statistics */}
+          {summaryStats && (
+            <Card className="p-6 bg-white border shadow-sm">
+              <h3 className="text-lg font-semibold mb-4">Summary Statistics</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <div>
+                  <p className="text-sm text-neutral-500">Average</p>
+                  <p className="text-xl font-semibold text-neutral-900">
+                    {currentMetricInfo.format(summaryStats.average)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-neutral-500">Median</p>
+                  <p className="text-xl font-semibold text-neutral-900">
+                    {currentMetricInfo.format(summaryStats.median)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-neutral-500">Minimum</p>
+                  <p className="text-xl font-semibold text-neutral-900">
+                    {currentMetricInfo.format(summaryStats.min)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-neutral-500">Maximum</p>
+                  <p className="text-xl font-semibold text-neutral-900">
+                    {currentMetricInfo.format(summaryStats.max)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-neutral-500">Total Cases</p>
+                  <p className="text-xl font-semibold text-neutral-900">
+                    {formatNumber(summaryStats.totalCases)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-neutral-500">Time Periods</p>
+                  <p className="text-xl font-semibold text-neutral-900">
+                    {summaryStats.periods}
+                  </p>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          {/* Trend Chart */}
+          <Card className="p-6 bg-white border shadow-sm">
+            <div className="space-y-6">
+              <h3 className="text-lg font-semibold">
+                {currentMetricInfo.label} Over Time
+              </h3>
+
+              {trendData.length > 0 ? (
                 <div className="h-[400px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart
                       data={trendData}
-                      margin={{ top: 5, right: 30, left: 20, bottom: 60 }}
+                      margin={{ top: 10, right: 30, left: 10, bottom: 40 }}
                     >
                       <CartesianGrid
                         strokeDasharray="3 3"
-                        stroke="#D1D5DB"
-                        opacity={0.4}
+                        stroke="#E5E7EB"
+                        vertical={false}
                       />
                       <XAxis
                         dataKey="period"
-                        tick={{ fontSize: 12, fill: "#374151" }}
+                        tick={{ fontSize: 12, fill: "#6B7280" }}
                         angle={-45}
                         textAnchor="end"
-                        height={80}
+                        height={100}
                       />
                       <YAxis
-                        tick={{ fontSize: 12, fill: "#374151" }}
-                        tickFormatter={(value) => {
-                          if (currentMetricInfo.label.includes("Amount")) {
-                            return formatCurrency(value);
-                          }
-                          return formatNumber(value);
-                        }}
+                        tick={{ fontSize: 12, fill: "#6B7280" }}
+                        tickFormatter={(value) =>
+                          currentMetricInfo.format(value)
+                        }
                       />
                       <Tooltip
                         formatter={(value: number) => [
@@ -776,65 +801,20 @@ export default function CaseTrendsPage() {
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
-              </>
-            ) : (
-              <div className="text-center py-16">
-                <TrendingUp className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
-                <p className="text-lg font-medium text-neutral-700">
-                  No trend data available
-                </p>
-                <p className="text-neutral-500 mt-1">
-                  Try adjusting your filters to see trend analysis
-                </p>
-              </div>
-            )}
-          </div>
-        </Card>
-
-        {/* Summary Statistics */}
-        {summaryStats && (
-          <Card className="p-6 bg-white border shadow-sm">
-            <h3 className="text-lg font-semibold mb-4">Summary Statistics</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              <div>
-                <p className="text-sm text-neutral-500">Average</p>
-                <p className="text-xl font-semibold text-neutral-900">
-                  {currentMetricInfo.format(summaryStats.average)}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-neutral-500">Median</p>
-                <p className="text-xl font-semibold text-neutral-900">
-                  {currentMetricInfo.format(summaryStats.median)}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-neutral-500">Minimum</p>
-                <p className="text-xl font-semibold text-neutral-900">
-                  {currentMetricInfo.format(summaryStats.min)}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-neutral-500">Maximum</p>
-                <p className="text-xl font-semibold text-neutral-900">
-                  {currentMetricInfo.format(summaryStats.max)}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-neutral-500">Total Cases</p>
-                <p className="text-xl font-semibold text-neutral-900">
-                  {formatNumber(summaryStats.totalCases)}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-neutral-500">Time Periods</p>
-                <p className="text-xl font-semibold text-neutral-900">
-                  {summaryStats.periods}
-                </p>
-              </div>
+              ) : (
+                <div className="text-center py-16">
+                  <TrendingUp className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
+                  <p className="text-lg font-medium text-neutral-700">
+                    No trend data available
+                  </p>
+                  <p className="text-neutral-500 mt-1">
+                    Try adjusting your filters to see trend analysis
+                  </p>
+                </div>
+              )}
             </div>
           </Card>
-        )}
+        </Form>
       </div>
     </div>
   );
