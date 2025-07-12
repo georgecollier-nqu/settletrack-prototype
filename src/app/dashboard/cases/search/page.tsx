@@ -34,7 +34,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { DashboardHeader } from "@/components/dashboard-header";
 import {
   Dialog,
   DialogContent,
@@ -425,14 +425,7 @@ export default function CaseSearchPage() {
 
   return (
     <>
-      <header className="border-b bg-white px-6 py-4 shadow">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <SidebarTrigger className="lg:hidden" />
-            <h1 className="text-2xl font-serif font-bold">Case Search</h1>
-          </div>
-        </div>
-      </header>
+      <DashboardHeader title="Case Search" />
 
       <main className="flex-1 overflow-y-auto p-6 bg-muted/30">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">

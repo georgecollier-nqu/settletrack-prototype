@@ -52,7 +52,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { DashboardHeader } from "@/components/dashboard-header";
 import {
   Bookmark,
   Search,
@@ -162,13 +162,7 @@ export default function SavedSearchesPage() {
 
   return (
     <>
-      {/* Header */}
-      <header className="border-b bg-white px-6 py-4 shadow-[0_1px_2px_rgba(17,24,39,0.05)]">
-        <div className="flex items-center gap-4">
-          <SidebarTrigger className="lg:hidden" />
-          <h1 className="text-2xl font-serif font-bold">Saved Searches</h1>
-        </div>
-      </header>
+      <DashboardHeader title="Saved Searches" />
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto p-6 bg-muted/30">

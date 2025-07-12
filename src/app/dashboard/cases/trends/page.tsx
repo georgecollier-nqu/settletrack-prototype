@@ -45,6 +45,7 @@ import { useForm } from "react-hook-form";
 import { TrendingUp, Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { filterOptions, mockCases } from "@/lib/mock-data";
+import { DashboardHeader } from "@/components/dashboard-header";
 
 type FormValues = {
   metric: string;
@@ -293,437 +294,445 @@ export default function CaseTrendsPage() {
   const currentMetricInfo = getMetricInfo(form.watch("metric"));
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      <div className="p-8 max-w-7xl mx-auto space-y-6">
-        <Form {...form}>
-          {/* Filters Section */}
-          <Card className="p-4 bg-white border shadow-sm">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">Filters</h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => form.reset()}
-                  className="h-8 px-2 text-xs"
-                >
-                  Clear all
-                </Button>
-              </div>
+    <>
+      <DashboardHeader title="Case Trends" />
 
-              {/* Metric, Period, and Year Range */}
-              <div className="flex flex-wrap items-end gap-4">
-                <FormField
-                  control={form.control}
-                  name="metric"
-                  render={({ field }) => (
-                    <FormItem className="min-w-[180px]">
-                      <FormLabel>Metric</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select metric..." />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="avgSettlement">
-                            Average Payout
-                          </SelectItem>
-                          <SelectItem value="totalSettlement">
-                            Total Settlement
-                          </SelectItem>
-                          <SelectItem value="caseCount">Case Count</SelectItem>
-                          <SelectItem value="avgClassSize">
-                            Average Class Size
-                          </SelectItem>
-                          <SelectItem value="medianSettlement">
-                            Median Settlement
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
+      <main className="flex-1 overflow-y-auto bg-muted/30">
+        <div className="p-8 max-w-7xl mx-auto space-y-6">
+          <Form {...form}>
+            {/* Filters Section */}
+            <Card className="p-4 bg-white border shadow-sm">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold">Filters</h3>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => form.reset()}
+                    className="h-8 px-2 text-xs"
+                  >
+                    Clear all
+                  </Button>
+                </div>
 
-                <FormField
-                  control={form.control}
-                  name="timeGrouping"
-                  render={({ field }) => (
-                    <FormItem className="min-w-[120px]">
-                      <FormLabel>Time Period</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select period..." />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="month">Monthly</SelectItem>
-                          <SelectItem value="year">Yearly</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
-
-                <div className="space-y-2">
-                  <FormLabel>Year Range</FormLabel>
-                  <div className="flex items-center gap-2">
-                    <FormField
-                      control={form.control}
-                      name="dateRange.from"
-                      render={({ field }) => (
-                        <FormItem>
+                {/* Metric, Period, and Year Range */}
+                <div className="flex flex-wrap items-end gap-4">
+                  <FormField
+                    control={form.control}
+                    name="metric"
+                    render={({ field }) => (
+                      <FormItem className="min-w-[180px]">
+                        <FormLabel>Metric</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
                           <FormControl>
-                            <Input
-                              type="number"
-                              placeholder="From"
-                              min={2020}
-                              max={2030}
-                              value={field.value || ""}
-                              onChange={(e) =>
-                                field.onChange(
-                                  e.target.value
-                                    ? parseInt(e.target.value)
-                                    : null,
-                                )
-                              }
-                              className="w-[100px]"
-                            />
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select metric..." />
+                            </SelectTrigger>
                           </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    <span className="text-muted-foreground text-sm">to</span>
-                    <FormField
-                      control={form.control}
-                      name="dateRange.to"
-                      render={({ field }) => (
-                        <FormItem>
+                          <SelectContent>
+                            <SelectItem value="avgSettlement">
+                              Average Payout
+                            </SelectItem>
+                            <SelectItem value="totalSettlement">
+                              Total Settlement
+                            </SelectItem>
+                            <SelectItem value="caseCount">
+                              Case Count
+                            </SelectItem>
+                            <SelectItem value="avgClassSize">
+                              Average Class Size
+                            </SelectItem>
+                            <SelectItem value="medianSettlement">
+                              Median Settlement
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="timeGrouping"
+                    render={({ field }) => (
+                      <FormItem className="min-w-[120px]">
+                        <FormLabel>Time Period</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
                           <FormControl>
-                            <Input
-                              type="number"
-                              placeholder="To"
-                              min={2020}
-                              max={2030}
-                              value={field.value || ""}
-                              onChange={(e) =>
-                                field.onChange(
-                                  e.target.value
-                                    ? parseInt(e.target.value)
-                                    : null,
-                                )
-                              }
-                              className="w-[100px]"
-                            />
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select period..." />
+                            </SelectTrigger>
                           </FormControl>
-                        </FormItem>
-                      )}
-                    />
+                          <SelectContent>
+                            <SelectItem value="month">Monthly</SelectItem>
+                            <SelectItem value="year">Yearly</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="space-y-2">
+                    <FormLabel>Year Range</FormLabel>
+                    <div className="flex items-center gap-2">
+                      <FormField
+                        control={form.control}
+                        name="dateRange.from"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="From"
+                                min={2020}
+                                max={2030}
+                                value={field.value || ""}
+                                onChange={(e) =>
+                                  field.onChange(
+                                    e.target.value
+                                      ? parseInt(e.target.value)
+                                      : null,
+                                  )
+                                }
+                                className="w-[100px]"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <span className="text-muted-foreground text-sm">to</span>
+                      <FormField
+                        control={form.control}
+                        name="dateRange.to"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="To"
+                                min={2020}
+                                max={2030}
+                                value={field.value || ""}
+                                onChange={(e) =>
+                                  field.onChange(
+                                    e.target.value
+                                      ? parseInt(e.target.value)
+                                      : null,
+                                  )
+                                }
+                                className="w-[100px]"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Location Filters */}
-              <div className="flex flex-wrap gap-4">
-                {/* States */}
-                <FormField
-                  control={form.control}
-                  name="states"
-                  render={({ field }) => (
-                    <FormItem className="min-w-[200px]">
-                      <FormLabel>States</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              className="w-full justify-between font-normal text-left"
-                            >
-                              <span className="truncate">
-                                {field.value?.length
-                                  ? field.value.length === 1
-                                    ? field.value[0]
-                                    : `${field.value.length} states`
-                                  : "Select states..."}
-                              </span>
-                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[200px] p-0">
-                          <Command>
-                            <CommandInput placeholder="Search states..." />
-                            <CommandList>
-                              <CommandEmpty>No state found.</CommandEmpty>
-                              <CommandGroup>
-                                {filterOptions.states.map((state) => (
-                                  <CommandItem
-                                    key={state}
-                                    value={state}
-                                    onSelect={() => {
-                                      const current = field.value || [];
-                                      field.onChange(
-                                        current.includes(state)
-                                          ? current.filter((s) => s !== state)
-                                          : [...current, state],
-                                      );
-                                    }}
-                                  >
-                                    <Check
-                                      className={cn(
-                                        "mr-2 h-4 w-4",
-                                        field.value?.includes(state)
-                                          ? "opacity-100"
-                                          : "opacity-0",
-                                      )}
-                                    />
-                                    {state}
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                    </FormItem>
-                  )}
-                />
+                {/* Location Filters */}
+                <div className="flex flex-wrap gap-4">
+                  {/* States */}
+                  <FormField
+                    control={form.control}
+                    name="states"
+                    render={({ field }) => (
+                      <FormItem className="min-w-[200px]">
+                        <FormLabel>States</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                className="w-full justify-between font-normal text-left"
+                              >
+                                <span className="truncate">
+                                  {field.value?.length
+                                    ? field.value.length === 1
+                                      ? field.value[0]
+                                      : `${field.value.length} states`
+                                    : "Select states..."}
+                                </span>
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[200px] p-0">
+                            <Command>
+                              <CommandInput placeholder="Search states..." />
+                              <CommandList>
+                                <CommandEmpty>No state found.</CommandEmpty>
+                                <CommandGroup>
+                                  {filterOptions.states.map((state) => (
+                                    <CommandItem
+                                      key={state}
+                                      value={state}
+                                      onSelect={() => {
+                                        const current = field.value || [];
+                                        field.onChange(
+                                          current.includes(state)
+                                            ? current.filter((s) => s !== state)
+                                            : [...current, state],
+                                        );
+                                      }}
+                                    >
+                                      <Check
+                                        className={cn(
+                                          "mr-2 h-4 w-4",
+                                          field.value?.includes(state)
+                                            ? "opacity-100"
+                                            : "opacity-0",
+                                        )}
+                                      />
+                                      {state}
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      </FormItem>
+                    )}
+                  />
 
-                {/* Federal Courts */}
-                <FormField
-                  control={form.control}
-                  name="courts"
-                  render={({ field }) => (
-                    <FormItem className="min-w-[200px]">
-                      <FormLabel>Federal Courts</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              className="w-full justify-between font-normal text-left"
-                            >
-                              <span className="truncate">
-                                {field.value?.length
-                                  ? field.value.length === 1
-                                    ? field.value[0]
-                                    : `${field.value.length} courts`
-                                  : "Select courts..."}
-                              </span>
-                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[200px] p-0">
-                          <Command>
-                            <CommandInput placeholder="Search courts..." />
-                            <CommandList>
-                              <CommandEmpty>No court found.</CommandEmpty>
-                              <CommandGroup>
-                                {filterOptions.courts.map((court) => (
-                                  <CommandItem
-                                    key={court}
-                                    value={court}
-                                    onSelect={() => {
-                                      const current = field.value || [];
-                                      field.onChange(
-                                        current.includes(court)
-                                          ? current.filter((c) => c !== court)
-                                          : [...current, court],
-                                      );
-                                    }}
-                                  >
-                                    <Check
-                                      className={cn(
-                                        "mr-2 h-4 w-4",
-                                        field.value?.includes(court)
-                                          ? "opacity-100"
-                                          : "opacity-0",
-                                      )}
-                                    />
-                                    {court}
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                    </FormItem>
-                  )}
-                />
-              </div>
+                  {/* Federal Courts */}
+                  <FormField
+                    control={form.control}
+                    name="courts"
+                    render={({ field }) => (
+                      <FormItem className="min-w-[200px]">
+                        <FormLabel>Federal Courts</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                className="w-full justify-between font-normal text-left"
+                              >
+                                <span className="truncate">
+                                  {field.value?.length
+                                    ? field.value.length === 1
+                                      ? field.value[0]
+                                      : `${field.value.length} courts`
+                                    : "Select courts..."}
+                                </span>
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[200px] p-0">
+                            <Command>
+                              <CommandInput placeholder="Search courts..." />
+                              <CommandList>
+                                <CommandEmpty>No court found.</CommandEmpty>
+                                <CommandGroup>
+                                  {filterOptions.courts.map((court) => (
+                                    <CommandItem
+                                      key={court}
+                                      value={court}
+                                      onSelect={() => {
+                                        const current = field.value || [];
+                                        field.onChange(
+                                          current.includes(court)
+                                            ? current.filter((c) => c !== court)
+                                            : [...current, court],
+                                        );
+                                      }}
+                                    >
+                                      <Check
+                                        className={cn(
+                                          "mr-2 h-4 w-4",
+                                          field.value?.includes(court)
+                                            ? "opacity-100"
+                                            : "opacity-0",
+                                        )}
+                                      />
+                                      {court}
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
-              {/* Case Type Filters */}
-              <div className="flex flex-wrap gap-6">
-                <FormField
-                  control={form.control}
-                  name="isMultiDistrictLitigation"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <FormLabel className="font-normal text-sm">
-                        Multi-District Litigation
-                      </FormLabel>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="creditMonitoring"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <FormLabel className="font-normal text-sm">
-                        Credit Monitoring
-                      </FormLabel>
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-          </Card>
-
-          {/* Summary Statistics */}
-          {summaryStats && (
-            <Card className="p-6 bg-white border shadow-sm">
-              <h3 className="text-lg font-semibold mb-4">Summary Statistics</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                <div>
-                  <p className="text-sm text-neutral-500">Average</p>
-                  <p className="text-xl font-semibold text-neutral-900">
-                    {currentMetricInfo.format(summaryStats.average)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-neutral-500">Median</p>
-                  <p className="text-xl font-semibold text-neutral-900">
-                    {currentMetricInfo.format(summaryStats.median)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-neutral-500">Minimum</p>
-                  <p className="text-xl font-semibold text-neutral-900">
-                    {currentMetricInfo.format(summaryStats.min)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-neutral-500">Maximum</p>
-                  <p className="text-xl font-semibold text-neutral-900">
-                    {currentMetricInfo.format(summaryStats.max)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-neutral-500">Total Cases</p>
-                  <p className="text-xl font-semibold text-neutral-900">
-                    {formatNumber(summaryStats.totalCases)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-neutral-500">Time Periods</p>
-                  <p className="text-xl font-semibold text-neutral-900">
-                    {summaryStats.periods}
-                  </p>
+                {/* Case Type Filters */}
+                <div className="flex flex-wrap gap-6">
+                  <FormField
+                    control={form.control}
+                    name="isMultiDistrictLitigation"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormLabel className="font-normal text-sm">
+                          Multi-District Litigation
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="creditMonitoring"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormLabel className="font-normal text-sm">
+                          Credit Monitoring
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  />
                 </div>
               </div>
             </Card>
-          )}
 
-          {/* Trend Chart */}
-          <Card className="p-6 bg-white border shadow-sm">
-            <div className="space-y-6">
-              <h3 className="text-lg font-semibold">
-                {currentMetricInfo.label} Over Time
-              </h3>
+            {/* Summary Statistics */}
+            {summaryStats && (
+              <Card className="p-6 bg-white border shadow-sm">
+                <h3 className="text-lg font-semibold mb-4">
+                  Summary Statistics
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                  <div>
+                    <p className="text-sm text-neutral-500">Average</p>
+                    <p className="text-xl font-semibold text-neutral-900">
+                      {currentMetricInfo.format(summaryStats.average)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-neutral-500">Median</p>
+                    <p className="text-xl font-semibold text-neutral-900">
+                      {currentMetricInfo.format(summaryStats.median)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-neutral-500">Minimum</p>
+                    <p className="text-xl font-semibold text-neutral-900">
+                      {currentMetricInfo.format(summaryStats.min)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-neutral-500">Maximum</p>
+                    <p className="text-xl font-semibold text-neutral-900">
+                      {currentMetricInfo.format(summaryStats.max)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-neutral-500">Total Cases</p>
+                    <p className="text-xl font-semibold text-neutral-900">
+                      {formatNumber(summaryStats.totalCases)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-neutral-500">Time Periods</p>
+                    <p className="text-xl font-semibold text-neutral-900">
+                      {summaryStats.periods}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            )}
 
-              {trendData.length > 0 ? (
-                <div className="h-[400px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart
-                      data={trendData}
-                      margin={{ top: 10, right: 30, left: 10, bottom: 40 }}
-                    >
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        stroke="#E5E7EB"
-                        vertical={false}
-                      />
-                      <XAxis
-                        dataKey="period"
-                        tick={{ fontSize: 12, fill: "#6B7280" }}
-                        angle={-45}
-                        textAnchor="end"
-                        height={100}
-                      />
-                      <YAxis
-                        tick={{ fontSize: 12, fill: "#6B7280" }}
-                        tickFormatter={(value) =>
-                          currentMetricInfo.format(value)
-                        }
-                      />
-                      <Tooltip
-                        formatter={(value: number) => [
-                          currentMetricInfo.format(value),
-                          "",
-                        ]}
-                        labelFormatter={(label) => `${label}`}
-                        contentStyle={{
-                          backgroundColor: "white",
-                          border: "1px solid #D1D5DB",
-                          borderRadius: "8px",
-                          boxShadow: "0 4px 8px rgba(17, 24, 39, 0.08)",
-                          padding: "8px 12px",
-                        }}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="value"
-                        stroke={currentMetricInfo.color}
-                        strokeWidth={3}
-                        dot={{
-                          fill: currentMetricInfo.color,
-                          strokeWidth: 2,
-                          r: 4,
-                        }}
-                        activeDot={{ r: 6, fill: currentMetricInfo.color }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              ) : (
-                <div className="text-center py-16">
-                  <TrendingUp className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
-                  <p className="text-lg font-medium text-neutral-700">
-                    No trend data available
-                  </p>
-                  <p className="text-neutral-500 mt-1">
-                    Try adjusting your filters to see trend analysis
-                  </p>
-                </div>
-              )}
-            </div>
-          </Card>
-        </Form>
-      </div>
-    </div>
+            {/* Trend Chart */}
+            <Card className="p-6 bg-white border shadow-sm">
+              <div className="space-y-6">
+                <h3 className="text-lg font-semibold">
+                  {currentMetricInfo.label} Over Time
+                </h3>
+
+                {trendData.length > 0 ? (
+                  <div className="h-[400px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart
+                        data={trendData}
+                        margin={{ top: 10, right: 30, left: 10, bottom: 40 }}
+                      >
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          stroke="#E5E7EB"
+                          vertical={false}
+                        />
+                        <XAxis
+                          dataKey="period"
+                          tick={{ fontSize: 12, fill: "#6B7280" }}
+                          angle={-45}
+                          textAnchor="end"
+                          height={100}
+                        />
+                        <YAxis
+                          tick={{ fontSize: 12, fill: "#6B7280" }}
+                          tickFormatter={(value) =>
+                            currentMetricInfo.format(value)
+                          }
+                        />
+                        <Tooltip
+                          formatter={(value: number) => [
+                            currentMetricInfo.format(value),
+                            "",
+                          ]}
+                          labelFormatter={(label) => `${label}`}
+                          contentStyle={{
+                            backgroundColor: "white",
+                            border: "1px solid #D1D5DB",
+                            borderRadius: "8px",
+                            boxShadow: "0 4px 8px rgba(17, 24, 39, 0.08)",
+                            padding: "8px 12px",
+                          }}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="value"
+                          stroke={currentMetricInfo.color}
+                          strokeWidth={3}
+                          dot={{
+                            fill: currentMetricInfo.color,
+                            strokeWidth: 2,
+                            r: 4,
+                          }}
+                          activeDot={{ r: 6, fill: currentMetricInfo.color }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                ) : (
+                  <div className="text-center py-16">
+                    <TrendingUp className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
+                    <p className="text-lg font-medium text-neutral-700">
+                      No trend data available
+                    </p>
+                    <p className="text-neutral-500 mt-1">
+                      Try adjusting your filters to see trend analysis
+                    </p>
+                  </div>
+                )}
+              </div>
+            </Card>
+          </Form>
+        </div>
+      </main>
+    </>
   );
 }
