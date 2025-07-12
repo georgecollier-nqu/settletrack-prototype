@@ -1,0 +1,1 @@
+You need to implement a design or design improvement. It is essential that you consider UI best practices and also pay attention to Shad CN UI conventions. You should verify how the components are structured and what styles those components use when using components so that you don't accidentally create conflicts.
