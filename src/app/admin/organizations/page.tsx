@@ -181,7 +181,7 @@ export default function AdminOrganizationsPage() {
   const getStatusColor = (status: string | undefined) => {
     switch (status) {
       case "active":
-        return "success";
+        return "default";
       case "cancelled":
         return "destructive";
       default:

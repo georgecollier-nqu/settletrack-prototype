@@ -212,7 +212,7 @@ export default function AdminUsersPage() {
                 </TableCell>
                 <TableCell>
                   <Badge
-                    variant={user.status === "active" ? "success" : "secondary"}
+                    variant={user.status === "active" ? "default" : "secondary"}
                   >
                     {user.status}
                   </Badge>

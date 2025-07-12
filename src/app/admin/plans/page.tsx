@@ -9,21 +9,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import {
-  Check,
-  X,
-  Users,
-  Search,
-  FileText,
-  Download,
-  TrendingUp,
-  Star,
-  Zap,
-  Building,
-} from "lucide-react";
+import { Check, X, Users, Search, Star, Zap, Building } from "lucide-react";
 
 // Mock plans data
 const mockPlans = [
@@ -44,14 +32,12 @@ const mockPlans = [
       { name: "Email support", included: true },
       { name: "CSV export", included: true },
       { name: "Advanced filters", included: false },
-      { name: "API access", included: false },
       { name: "Custom branding", included: false },
       { name: "Priority support", included: false },
     ],
     limits: {
       users: 5,
       searchesPerMonth: 100,
-      apiCalls: 0,
     },
     subscriberCount: 42,
   },
@@ -72,14 +58,12 @@ const mockPlans = [
       { name: "Priority email support", included: true },
       { name: "CSV & PDF export", included: true },
       { name: "Advanced filters", included: true },
-      { name: "API access (1000 calls/month)", included: true },
       { name: "Custom branding", included: false },
       { name: "Dedicated account manager", included: false },
     ],
     limits: {
       users: 20,
       searchesPerMonth: 500,
-      apiCalls: 1000,
     },
     subscriberCount: 28,
   },
@@ -100,14 +84,12 @@ const mockPlans = [
       { name: "24/7 phone & email support", included: true },
       { name: "All export formats", included: true },
       { name: "Advanced filters", included: true },
-      { name: "Unlimited API access", included: true },
       { name: "Custom branding", included: true },
       { name: "Dedicated account manager", included: true },
     ],
     limits: {
       users: -1, // Unlimited
       searchesPerMonth: -1,
-      apiCalls: -1,
     },
     subscriberCount: 12,
   },
@@ -128,14 +110,12 @@ const mockPlans = [
       { name: "Email support", included: true },
       { name: "CSV export", included: true },
       { name: "Advanced filters", included: true },
-      { name: "API access (500 calls/month)", included: true },
       { name: "Custom branding", included: false },
       { name: "Priority support", included: false },
     ],
     limits: {
       users: 10,
       searchesPerMonth: 250,
-      apiCalls: 500,
     },
     subscriberCount: 7,
   },
@@ -167,10 +147,6 @@ export default function AdminPlansPage() {
               Subscription Plans
             </h1>
           </div>
-          <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-2" />
-            Export Plan Data
-          </Button>
         </div>
       </header>
 
@@ -239,7 +215,7 @@ export default function AdminPlansPage() {
                     {/* Limits */}
                     <div className="space-y-2">
                       <h4 className="text-sm font-semibold">Usage Limits</h4>
-                      <div className="grid grid-cols-3 gap-2 text-sm">
+                      <div className="grid grid-cols-2 gap-2 text-sm">
                         <div className="flex flex-col items-center p-2 bg-muted/30 rounded">
                           <Users className="h-4 w-4 text-muted-foreground mb-1" />
                           <span className="font-medium">
@@ -256,15 +232,6 @@ export default function AdminPlansPage() {
                           </span>
                           <span className="text-xs text-muted-foreground">
                             Searches/mo
-                          </span>
-                        </div>
-                        <div className="flex flex-col items-center p-2 bg-muted/30 rounded">
-                          <TrendingUp className="h-4 w-4 text-muted-foreground mb-1" />
-                          <span className="font-medium">
-                            {formatLimit(plan.limits.apiCalls)}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            API/mo
                           </span>
                         </div>
                       </div>

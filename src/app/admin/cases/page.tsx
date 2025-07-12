@@ -119,11 +119,11 @@ export default function AdminCasesPage() {
       case "flagged":
         return "destructive";
       case "approved":
-        return "success";
-      case "pending":
-        return "warning";
-      default:
         return "default";
+      case "pending":
+        return "secondary";
+      default:
+        return "outline";
     }
   };
 
