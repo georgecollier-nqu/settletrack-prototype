@@ -11,7 +11,16 @@ import {
 } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, Users, Search, Star, Zap, Building } from "lucide-react";
+import {
+  Check,
+  X,
+  Users,
+  Search,
+  Star,
+  Zap,
+  Building,
+  FileText,
+} from "lucide-react";
 
 // Mock plans data
 const mockPlans = [

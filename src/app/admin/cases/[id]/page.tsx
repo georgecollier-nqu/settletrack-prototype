@@ -1197,7 +1197,8 @@ export default function CaseDetailsPage() {
                     ? Array.isArray(editFieldData.currentValue)
                       ? editFieldData.currentValue.join(", ")
                       : ""
-                    : editFieldData?.currentValue || "Not specified"}
+                    : editFieldData?.currentValue?.toString() ||
+                      "Not specified"}
               </div>
             </div>
 
@@ -1219,7 +1220,7 @@ export default function CaseDetailsPage() {
                 </div>
               ) : editFieldData?.fieldType === "select" ? (
                 <Select
-                  value={editValues.value}
+                  value={editValues.value as string}
                   onValueChange={(value) =>
                     setEditValues({
                       ...editValues,
@@ -1249,7 +1250,7 @@ export default function CaseDetailsPage() {
                 </Select>
               ) : editFieldData?.fieldType === "array" ? (
                 <Textarea
-                  value={editValues.value}
+                  value={editValues.value as string}
                   onChange={(e) =>
                     setEditValues({
                       ...editValues,
@@ -1267,7 +1268,7 @@ export default function CaseDetailsPage() {
                       ? "number"
                       : "text"
                   }
-                  value={editValues.value}
+                  value={editValues.value as string}
                   onChange={(e) =>
                     setEditValues({
                       ...editValues,
