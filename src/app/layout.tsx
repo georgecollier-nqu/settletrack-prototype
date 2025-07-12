@@ -23,8 +23,11 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SettleTrack Prototype",
-  description: "Legal settlement tracking application prototype",
+  title: "SettleTrack - Legal Settlement Intelligence",
+  description: "Track and analyze legal settlements with powerful search and trend analysis tools",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
