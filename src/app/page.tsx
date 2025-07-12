@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -25,20 +27,29 @@ import {
 } from "lucide-react";
 
 export default function LandingPage() {
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
-    <div className="min-h-screen bg-background scroll-smooth">
+    <div className="min-h-screen bg-background">
       {/* Navigation */}
       <nav className="sticky top-0 z-50 bg-white border-b shadow-sm">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-8">
-              <Image
-                src="/logo.png"
-                alt="SettleTrack"
-                width={186}
-                height={42}
-                className="h-8 w-auto"
-              />
+              <button
+                onClick={scrollToTop}
+                className="focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+              >
+                <Image
+                  src="/logo.png"
+                  alt="SettleTrack"
+                  width={186}
+                  height={42}
+                  className="h-8 w-auto"
+                />
+              </button>
               <div className="hidden md:flex space-x-6">
                 <a
                   href="#features"
@@ -628,13 +639,18 @@ export default function LandingPage() {
         <div className="container mx-auto">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <Image
-                src="/logo.png"
-                alt="SettleTrack"
-                width={149}
-                height={34}
-                className="h-6 w-auto mb-4"
-              />
+              <button
+                onClick={scrollToTop}
+                className="focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded mb-4"
+              >
+                <Image
+                  src="/logo.png"
+                  alt="SettleTrack"
+                  width={149}
+                  height={34}
+                  className="h-6 w-auto"
+                />
+              </button>
               <p className="text-sm text-muted-foreground">
                 Legal settlement intelligence for modern law firms.
               </p>

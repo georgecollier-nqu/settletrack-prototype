@@ -194,4 +194,9 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Smooth scrolling for the entire document */
+  html {
+    scroll-behavior: smooth;
+  }
 }
