@@ -65,6 +65,7 @@ import {
 } from "lucide-react";
 
 import { mockCases, filterOptions, type Case } from "@/lib/mock-data";
+import { CaseDataOutput } from "@/components/case-data-output";
 
 // —————————————————————————————————————————————————————————————————————————————
 // SCHEMAS
@@ -701,6 +702,9 @@ export default function CaseSearchPage() {
                   value={formatCurrency(stats.total)}
                 />
               </div>
+
+              {/* Data Analysis */}
+              {filtered.length > 0 && <CaseDataOutput cases={filtered} />}
             </div>
           </div>
 
