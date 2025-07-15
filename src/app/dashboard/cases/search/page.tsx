@@ -454,7 +454,7 @@ export default function CaseSearchPage() {
           {/* Top Section: Filters and Stats */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
             {/* Filters */}
-            <div className="lg:col-span-1 h-fit max-h-[calc(100vh-8rem)] overflow-y-auto bg-white rounded-lg border shadow-sm">
+            <div className="lg:col-span-1 h-fit bg-white rounded-lg border shadow-sm">
               <div className="p-4 md:p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-lg font-semibold">Filters</h2>
