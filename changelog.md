@@ -1,40 +1,19 @@
-# Changelog
+# SettleTrack Updates - January 15, 2025
 
-## [Unreleased] - 2025-07-15
+## Key Improvements
 
-### Added
+• **Enhanced Search Statistics** - Now displays both median settlement amount and average payout per claimant for better case analysis
 
-- **Average Payout Per Claimant Statistic**: Added a new statistic in the case search page that calculates and displays the average payout per claimant alongside the existing median settlement amount.
+• **New Case Type Filter** - Filter cases by industry vertical (Data Breach, Healthcare, Financial Services, Retail, Technology, Education)
 
-- **Case Type Filter**: Added a new "Case Type" filter with options including "Data Breach", "Healthcare", "Financial Services", "Retail", "Technology", and "Education" to allow filtering cases by industry vertical.
+• **Improved Settlement Type Selection** - Cleaner dropdown interface with options for Preliminary, Final, or Both settlement types
 
-- **Citation Tooltips**: Implemented interactive tooltips on the case detail page that display source document information including:
-  - Document name
-  - Page number
-  - Relevant quote
-  - Quick link to view source document
+• **Source Citations on Hover** - Hover over any data point in case details to see the source document, page number, and relevant quote. Click to copy citation for easy reference
 
-  Citations are available for key data points including settlement amount, class size, attorney fees percentage, base cash compensation, and claims submitted.
+• **Streamlined Search Page** - Filters and statistics now appear at the top with full-width case results below for better visibility
 
-- **Multi-Select Component**: Created a new reusable multi-select dropdown component for improved user experience.
+• **Always-Visible Data Analysis** - Case results and data visualizations now display together without requiring a toggle
 
-### Changed
+• **Better Mobile Experience** - Improved layouts and spacing for all screen sizes
 
-- **Settlement Type Filter**: Converted the settlement type filter from a tag-based multi-select to a native multi-select dropdown component with options for "Preliminary", "Final", and "Both".
-
-- **Data Analysis Display**: Removed the toggle behavior between case results and data analysis. Both components now display simultaneously on the search page for better data visibility.
-
-- **Responsive Design Improvements**: Enhanced mobile responsiveness across all views including:
-  - Adjusted padding and margins for mobile screens
-  - Made tab lists wrap on smaller screens
-  - Improved grid layouts to stack properly on mobile devices
-  - Made stat cards more compact on mobile with smaller text sizes
-
-### Technical Details
-
-- Added `caseType` field to the `Case` interface in mock data
-- Added `Citation` and `FieldCitations` interfaces to support citation data
-- Created `CitationTooltip` component in `/src/components/ui/citation-tooltip.tsx`
-- Created `MultiSelect` component in `/src/components/ui/multi-select.tsx`
-- Updated `useStatistics` hook to calculate average payout per claimant
-- Enhanced filtering logic to handle "Both" option for settlement types
+• **Cleaner Case Details** - Added "View" buttons to case results and improved spacing throughout case detail pages

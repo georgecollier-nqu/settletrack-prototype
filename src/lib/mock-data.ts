@@ -285,6 +285,44 @@ export const mockCases: Case[] = [
     creditMonitoring: true,
     creditMonitoringAmount: 3500000,
     excessFundsDisposition: "Redistribution",
+    citations: {
+      settlementAmount: {
+        documentName: "Settlement Agreement",
+        pageNumber: 14,
+        quote:
+          "The Settlement Fund shall consist of Twelve Million Three Hundred Thousand Dollars ($12,300,000.00) in cash.",
+      },
+      classSize: {
+        documentName: "Class Certification Order",
+        pageNumber: 5,
+        quote:
+          "The Court finds that the proposed class includes approximately 2.5 million affected users.",
+      },
+      lodestardAmount: {
+        documentName: "Fee Motion",
+        pageNumber: 7,
+        quote:
+          "Class Counsel's lodestar calculation totals $2,500,000 based on 4,500 hours of attorney time.",
+      },
+      baseCashCompensation: {
+        documentName: "Settlement Agreement",
+        pageNumber: 22,
+        quote:
+          "Each Settlement Class Member who submits a valid claim form shall receive a base payment of $75.",
+      },
+      claimsSubmitted: {
+        documentName: "Claims Administrator Final Report",
+        pageNumber: 3,
+        quote:
+          "The Claims Administrator received and processed 750,000 valid claims by the submission deadline.",
+      },
+      creditMonitoringAmount: {
+        documentName: "Settlement Agreement",
+        pageNumber: 28,
+        quote:
+          "Defendant shall provide $3,500,000 for credit monitoring services for affected class members.",
+      },
+    },
   },
   {
     id: "3",
@@ -333,6 +371,36 @@ export const mockCases: Case[] = [
     injunctiveReliefAmount: 500000,
     creditMonitoring: false,
     excessFundsDisposition: "Reversion",
+    citations: {
+      settlementAmount: {
+        documentName: "Preliminary Settlement Agreement",
+        pageNumber: 10,
+        quote:
+          "The parties agree to a total settlement amount of Five Million Two Hundred Thousand Dollars ($5,200,000.00).",
+      },
+      classSize: {
+        documentName: "Motion for Preliminary Approval",
+        pageNumber: 6,
+        quote:
+          "The proposed settlement class consists of approximately 800,000 individuals whose location data was tracked.",
+      },
+      attorneyFeesPercentage: {
+        documentName: "Fee Motion",
+        pageNumber: 4,
+        quote:
+          "Plaintiff's counsel respectfully requests fees of 30% of the common fund.",
+      },
+      baseCashCompensation: {
+        documentName: "Preliminary Settlement Agreement",
+        pageNumber: 16,
+        quote: "Valid claimants shall receive a flat payment of $50 per claim.",
+      },
+      claimsSubmitted: {
+        documentName: "Preliminary Claims Report",
+        pageNumber: 2,
+        quote: "To date, approximately 200,000 claims have been submitted.",
+      },
+    },
   },
   {
     id: "4",
@@ -389,6 +457,50 @@ export const mockCases: Case[] = [
     creditMonitoring: true,
     creditMonitoringAmount: 5000000,
     excessFundsDisposition: "Cy pres",
+    citations: {
+      settlementAmount: {
+        documentName: "Final Settlement Agreement",
+        pageNumber: 15,
+        quote:
+          "The Total Settlement Amount shall be Eighteen Million Seven Hundred Fifty Thousand Dollars ($18,750,000.00).",
+      },
+      classSize: {
+        documentName: "Expert Declaration",
+        pageNumber: 9,
+        quote:
+          "Based on defendant's records, approximately 1.2 million patients had their protected health information exposed.",
+      },
+      attorneyFeesPercentage: {
+        documentName: "Motion for Attorney Fees",
+        pageNumber: 5,
+        quote:
+          "Class Counsel seeks an award of 22% of the Settlement Fund for attorney's fees.",
+      },
+      baseCashCompensation: {
+        documentName: "Final Settlement Agreement",
+        pageNumber: 21,
+        quote:
+          "Class Members with valid claims shall receive $150 as base compensation for the breach.",
+      },
+      claimsSubmitted: {
+        documentName: "Claims Administrator Report",
+        pageNumber: 4,
+        quote:
+          "A total of 480,000 valid claims were received, representing a 40% claims rate.",
+      },
+      creditMonitoringAmount: {
+        documentName: "Final Settlement Agreement",
+        pageNumber: 30,
+        quote:
+          "Five Million Dollars ($5,000,000) shall be allocated for credit monitoring and identity theft protection services.",
+      },
+      injunctiveReliefAmount: {
+        documentName: "Final Settlement Agreement",
+        pageNumber: 38,
+        quote:
+          "Defendant commits to invest Three Million Dollars ($3,000,000) in security improvements over the next three years.",
+      },
+    },
   },
   {
     id: "5",
@@ -450,6 +562,50 @@ export const mockCases: Case[] = [
     creditMonitoring: true,
     creditMonitoringAmount: 8000000,
     excessFundsDisposition: "Redistribution",
+    citations: {
+      settlementAmount: {
+        documentName: "Settlement Agreement and Release",
+        pageNumber: 11,
+        quote:
+          "The Settlement Amount of Fifteen Million Two Hundred Thousand Dollars ($15,200,000) shall be deposited into an escrow account.",
+      },
+      classSize: {
+        documentName: "Declaration in Support of Final Approval",
+        pageNumber: 7,
+        quote:
+          "Records indicate that approximately 3.2 million customer accounts were compromised in the data breach.",
+      },
+      lodestardAmount: {
+        documentName: "Motion for Attorney's Fees",
+        pageNumber: 12,
+        quote:
+          "The lodestar amount, based on reasonable hours and rates, totals $3,800,000.",
+      },
+      multiplier: {
+        documentName: "Motion for Attorney's Fees",
+        pageNumber: 15,
+        quote:
+          "A modest multiplier of 1.2 is appropriate given the risks and results achieved.",
+      },
+      baseCashCompensation: {
+        documentName: "Settlement Agreement and Release",
+        pageNumber: 19,
+        quote:
+          "Each Settlement Class Member shall be entitled to receive $100 in base compensation.",
+      },
+      claimsSubmitted: {
+        documentName: "Final Claims Administration Report",
+        pageNumber: 3,
+        quote:
+          "The Claims Administrator processed 960,000 approved claims during the claims period.",
+      },
+      creditMonitoringAmount: {
+        documentName: "Settlement Agreement and Release",
+        pageNumber: 26,
+        quote:
+          "Eight Million Dollars ($8,000,000) is allocated for credit monitoring and identity restoration services.",
+      },
+    },
   },
   {
     id: "6",
@@ -500,6 +656,44 @@ export const mockCases: Case[] = [
     creditMonitoring: true,
     creditMonitoringAmount: 2500000,
     excessFundsDisposition: "Cy pres",
+    citations: {
+      settlementAmount: {
+        documentName: "Settlement Agreement",
+        pageNumber: 13,
+        quote:
+          "The gross Settlement Fund shall be Nine Million Eight Hundred Thousand Dollars ($9,800,000.00).",
+      },
+      classSize: {
+        documentName: "Class Certification Motion",
+        pageNumber: 8,
+        quote:
+          "Defendant's records show that approximately 1.8 million customers used payment cards at affected locations.",
+      },
+      attorneyFeesPercentage: {
+        documentName: "Fee Application",
+        pageNumber: 6,
+        quote:
+          "Class Counsel requests attorney's fees of twenty-eight percent (28%) of the Settlement Fund.",
+      },
+      baseCashCompensation: {
+        documentName: "Settlement Agreement",
+        pageNumber: 20,
+        quote:
+          "Authorized Claimants shall receive eighty dollars ($80) as a base cash payment.",
+      },
+      claimsSubmitted: {
+        documentName: "Claims Report",
+        pageNumber: 2,
+        quote:
+          "540,000 timely and valid claims were submitted, representing a 30% participation rate.",
+      },
+      creditMonitoringAmount: {
+        documentName: "Settlement Agreement",
+        pageNumber: 24,
+        quote:
+          "Two Million Five Hundred Thousand Dollars ($2,500,000) shall be reserved for credit monitoring services.",
+      },
+    },
   },
   {
     id: "7",
@@ -548,6 +742,43 @@ export const mockCases: Case[] = [
     creditMonitoring: true,
     creditMonitoringAmount: 1800000,
     excessFundsDisposition: "Reversion",
+    citations: {
+      settlementAmount: {
+        documentName: "Stipulation of Settlement",
+        pageNumber: 9,
+        quote:
+          "The Settlement provides for a Common Fund of Six Million Five Hundred Thousand Dollars ($6,500,000).",
+      },
+      classSize: {
+        documentName: "Motion for Final Approval",
+        pageNumber: 5,
+        quote:
+          "The Settlement Class includes approximately 450,000 students and applicants whose data was exposed.",
+      },
+      attorneyFeesPercentage: {
+        documentName: "Motion for Attorneys' Fees",
+        pageNumber: 4,
+        quote:
+          "Plaintiff's Counsel request an award of attorneys' fees equal to 25% of the Settlement Fund.",
+      },
+      baseCashCompensation: {
+        documentName: "Stipulation of Settlement",
+        pageNumber: 17,
+        quote:
+          "Each Class Member who submits a valid Claim Form shall receive sixty dollars ($60).",
+      },
+      claimsSubmitted: {
+        documentName: "Claims Administrator Declaration",
+        pageNumber: 3,
+        quote: "135,000 Class Members submitted valid claims by the deadline.",
+      },
+      creditMonitoringAmount: {
+        documentName: "Stipulation of Settlement",
+        pageNumber: 23,
+        quote:
+          "One Million Eight Hundred Thousand Dollars ($1,800,000) is designated for credit monitoring services.",
+      },
+    },
   },
   {
     id: "8",
@@ -606,6 +837,56 @@ export const mockCases: Case[] = [
     creditMonitoring: true,
     creditMonitoringAmount: 12000000,
     excessFundsDisposition: "Redistribution",
+    citations: {
+      settlementAmount: {
+        documentName: "Settlement Agreement and Release",
+        pageNumber: 16,
+        quote:
+          "The total monetary value of the Settlement is Twenty-Two Million Five Hundred Thousand Dollars ($22,500,000).",
+      },
+      classSize: {
+        documentName: "Expert Report on Class Size",
+        pageNumber: 11,
+        quote:
+          "Analysis of defendant's databases reveals that 5.6 million unique individuals were affected by the breach.",
+      },
+      lodestardAmount: {
+        documentName: "Declaration in Support of Fee Request",
+        pageNumber: 18,
+        quote:
+          "Counsel's lodestar totals $5,625,000, representing 9,375 hours of attorney and professional time.",
+      },
+      multiplier: {
+        documentName: "Declaration in Support of Fee Request",
+        pageNumber: 21,
+        quote:
+          "Given the exceptional results achieved, a multiplier of 1.0 is requested, resulting in no enhancement.",
+      },
+      baseCashCompensation: {
+        documentName: "Settlement Agreement and Release",
+        pageNumber: 25,
+        quote:
+          "Valid claimants will receive a payment of one hundred twenty-five dollars ($125).",
+      },
+      claimsSubmitted: {
+        documentName: "Final Report of Claims Administrator",
+        pageNumber: 4,
+        quote:
+          "The Claims Administrator received 1,680,000 valid and timely claims.",
+      },
+      creditMonitoringAmount: {
+        documentName: "Settlement Agreement and Release",
+        pageNumber: 32,
+        quote:
+          "Twelve Million Dollars ($12,000,000) shall be allocated to provide credit monitoring to all Settlement Class Members.",
+      },
+      injunctiveReliefAmount: {
+        documentName: "Settlement Agreement and Release",
+        pageNumber: 41,
+        quote:
+          "Defendant shall spend no less than Five Million Dollars ($5,000,000) on the implementation of enhanced security measures.",
+      },
+    },
   },
 ];
 
