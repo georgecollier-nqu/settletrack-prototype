@@ -312,7 +312,7 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
 
               {/* Tabbed Details */}
               <Card>
-                <CardContent className="p-0">
+                <CardContent className="p-6">
                   <Tabs defaultValue="financial" className="w-full">
                     <TabsList className="grid w-full grid-cols-5">
                       <TabsTrigger value="financial">Financial</TabsTrigger>
@@ -324,7 +324,7 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                       </TabsTrigger>
                     </TabsList>
 
-                    <TabsContent value="financial" className="p-6 space-y-4">
+                    <TabsContent value="financial" className="mt-6 space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <h4 className="font-medium mb-2">Settlement Fund</h4>
@@ -461,7 +461,7 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                       )}
                     </TabsContent>
 
-                    <TabsContent value="parties" className="p-6 space-y-4">
+                    <TabsContent value="parties" className="mt-6 space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <h4 className="font-medium mb-3 flex items-center gap-2">
@@ -494,7 +494,7 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                       </div>
                     </TabsContent>
 
-                    <TabsContent value="breach" className="p-6 space-y-4">
+                    <TabsContent value="breach" className="mt-6 space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <h4 className="font-medium mb-3 flex items-center gap-2">
@@ -523,7 +523,7 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                       </div>
                     </TabsContent>
 
-                    <TabsContent value="relief" className="p-6 space-y-4">
+                    <TabsContent value="relief" className="mt-6 space-y-4">
                       {case_.injunctiveReliefAmount && (
                         <div className="mb-4">
                           <h4 className="font-medium mb-2">
@@ -589,7 +589,7 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
 
                     <TabsContent
                       value="reimbursements"
-                      className="p-6 space-y-4"
+                      className="mt-6 space-y-4"
                     >
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {case_.baseCashCompensation !== undefined && (
@@ -746,16 +746,6 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                   >
                     <Copy className="mr-2 h-4 w-4" />
                     Copy Citation
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start"
-                    asChild
-                  >
-                    <a href={`/dashboard/cases/search?similar=${case_.id}`}>
-                      <FileText className="mr-2 h-4 w-4" />
-                      Find Similar Cases
-                    </a>
                   </Button>
                   <Button
                     variant="outline"

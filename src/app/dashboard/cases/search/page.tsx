@@ -61,10 +61,10 @@ import {
   MapPin,
   FileText,
   Building,
+  ArrowRight,
 } from "lucide-react";
 
 import { mockCases, filterOptions, type Case } from "@/lib/mock-data";
-import { CaseDataOutput } from "@/components/case-data-output";
 
 // —————————————————————————————————————————————————————————————————————————————
 // SCHEMAS
@@ -449,340 +449,363 @@ export default function CaseSearchPage() {
       <DashboardHeader title="Case Search" />
 
       <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-muted/30">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-          {/* Filters */}
-          <div className="lg:col-span-1 h-fit max-h-[calc(100vh-8rem)] overflow-y-auto bg-white rounded-lg border shadow-sm">
-            <div className="p-4 md:p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-semibold">Filters</h2>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 p-0"
-                  onClick={() => {
-                    form.reset();
-                  }}
-                >
-                  <RotateCcw className="h-4 w-4" />
-                </Button>
-              </div>
+        <div className="max-w-7xl mx-auto flex flex-col gap-6">
+          {/* Top Section: Filters and Stats */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+            {/* Filters */}
+            <div className="lg:col-span-1 h-fit max-h-[calc(100vh-8rem)] overflow-y-auto bg-white rounded-lg border shadow-sm">
+              <div className="p-4 md:p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-lg font-semibold">Filters</h2>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0"
+                    onClick={() => {
+                      form.reset();
+                    }}
+                  >
+                    <RotateCcw className="h-4 w-4" />
+                  </Button>
+                </div>
 
-              <Form {...form}>
-                <div className="space-y-4">
-                  {filterGroups.map((group, index) => (
-                    <div key={group.id}>
-                      {index > 0 && <div className="h-px bg-border mb-4" />}
-                      <Collapsible
-                        open={openGroups[group.id]}
-                        onOpenChange={(open) =>
-                          setOpenGroups((prev) => ({
-                            ...prev,
-                            [group.id]: open,
-                          }))
-                        }
-                      >
-                        <CollapsibleTrigger className="flex items-center justify-between w-full hover:text-primary transition-colors group cursor-pointer">
-                          <div className="flex items-center gap-2">
-                            <group.icon className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
-                            <span className="text-sm font-medium">
-                              {group.label}
-                            </span>
-                          </div>
-                          <ChevronDown
-                            className={`h-4 w-4 transition-transform text-muted-foreground group-hover:text-primary ${openGroups[group.id] ? "rotate-180" : ""}`}
-                          />
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <div className="space-y-3 mt-3">
-                            {group.filters.map((cfg) => (
-                              <FormField
-                                key={cfg.name}
-                                control={form.control}
-                                name={cfg.name}
-                                render={({ field }) =>
-                                  cfg.type === "checkbox" ? (
-                                    <label className="flex items-center space-x-3 cursor-pointer">
-                                      <Checkbox
-                                        checked={!!field.value}
-                                        onCheckedChange={field.onChange}
-                                      />
-                                      <span className="text-sm font-normal">
-                                        {cfg.label}
-                                      </span>
-                                    </label>
-                                  ) : (
-                                    <FormItem>
-                                      <FormLabel className="text-sm">
-                                        {cfg.label}
-                                      </FormLabel>
-                                      {cfg.type === "text" && (
-                                        <FormControl>
-                                          {cfg.name === "searchTerm" ? (
-                                            <div className="relative">
-                                              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Form {...form}>
+                  <div className="space-y-4">
+                    {filterGroups.map((group, index) => (
+                      <div key={group.id}>
+                        {index > 0 && <div className="h-px bg-border mb-4" />}
+                        <Collapsible
+                          open={openGroups[group.id]}
+                          onOpenChange={(open) =>
+                            setOpenGroups((prev) => ({
+                              ...prev,
+                              [group.id]: open,
+                            }))
+                          }
+                        >
+                          <CollapsibleTrigger className="flex items-center justify-between w-full hover:text-primary transition-colors group cursor-pointer">
+                            <div className="flex items-center gap-2">
+                              <group.icon className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
+                              <span className="text-sm font-medium">
+                                {group.label}
+                              </span>
+                            </div>
+                            <ChevronDown
+                              className={`h-4 w-4 transition-transform text-muted-foreground group-hover:text-primary ${openGroups[group.id] ? "rotate-180" : ""}`}
+                            />
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <div className="space-y-3 mt-3">
+                              {group.filters.map((cfg) => (
+                                <FormField
+                                  key={cfg.name}
+                                  control={form.control}
+                                  name={cfg.name}
+                                  render={({ field }) =>
+                                    cfg.type === "checkbox" ? (
+                                      <label className="flex items-center space-x-3 cursor-pointer">
+                                        <Checkbox
+                                          checked={!!field.value}
+                                          onCheckedChange={field.onChange}
+                                        />
+                                        <span className="text-sm font-normal">
+                                          {cfg.label}
+                                        </span>
+                                      </label>
+                                    ) : (
+                                      <FormItem>
+                                        <FormLabel className="text-sm">
+                                          {cfg.label}
+                                        </FormLabel>
+                                        {cfg.type === "text" && (
+                                          <FormControl>
+                                            {cfg.name === "searchTerm" ? (
+                                              <div className="relative">
+                                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                                <Input
+                                                  placeholder={cfg.placeholder}
+                                                  className="pl-10 h-9"
+                                                  {...field}
+                                                  value={
+                                                    (field.value as string) ||
+                                                    ""
+                                                  }
+                                                />
+                                              </div>
+                                            ) : (
                                               <Input
                                                 placeholder={cfg.placeholder}
-                                                className="pl-10 h-9"
+                                                className="h-9"
                                                 {...field}
                                                 value={
                                                   (field.value as string) || ""
                                                 }
                                               />
-                                            </div>
-                                          ) : (
+                                            )}
+                                          </FormControl>
+                                        )}
+                                        {cfg.type === "number" && (
+                                          <FormControl>
                                             <Input
-                                              placeholder={cfg.placeholder}
+                                              type="number"
+                                              min={cfg.min}
+                                              max={cfg.max}
                                               className="h-9"
                                               {...field}
                                               value={
-                                                (field.value as string) || ""
+                                                (field.value as number) || ""
+                                              }
+                                              onChange={(e) =>
+                                                field.onChange(
+                                                  e.target.value
+                                                    ? Number(e.target.value)
+                                                    : undefined,
+                                                )
                                               }
                                             />
-                                          )}
-                                        </FormControl>
-                                      )}
-                                      {cfg.type === "number" && (
-                                        <FormControl>
-                                          <Input
-                                            type="number"
-                                            min={cfg.min}
-                                            max={cfg.max}
-                                            className="h-9"
-                                            {...field}
-                                            value={
-                                              (field.value as number) || ""
-                                            }
-                                            onChange={(e) =>
-                                              field.onChange(
-                                                e.target.value
-                                                  ? Number(e.target.value)
-                                                  : undefined,
-                                              )
-                                            }
-                                          />
-                                        </FormControl>
-                                      )}
-                                      {cfg.type === "select" && (
-                                        <Controller
-                                          control={form.control}
-                                          name={cfg.name}
-                                          render={({ field: ctl }) => {
-                                            const currentValues =
-                                              (ctl.value as
-                                                | string[]
-                                                | undefined) || [];
+                                          </FormControl>
+                                        )}
+                                        {cfg.type === "select" && (
+                                          <Controller
+                                            control={form.control}
+                                            name={cfg.name}
+                                            render={({ field: ctl }) => {
+                                              const currentValues =
+                                                (ctl.value as
+                                                  | string[]
+                                                  | undefined) || [];
 
-                                            // Use MultiSelect for settlement type
-                                            if (cfg.name === "settlementType") {
+                                              // Use MultiSelect for settlement type
+                                              if (
+                                                cfg.name === "settlementType"
+                                              ) {
+                                                return (
+                                                  <MultiSelect
+                                                    options={cfg.options!}
+                                                    value={currentValues}
+                                                    onChange={ctl.onChange}
+                                                    placeholder={`Select ${cfg.label.toLowerCase()}…`}
+                                                  />
+                                                );
+                                              }
+
                                               return (
-                                                <MultiSelect
-                                                  options={cfg.options!}
-                                                  value={currentValues}
-                                                  onChange={ctl.onChange}
-                                                  placeholder={`Select ${cfg.label.toLowerCase()}…`}
-                                                />
-                                              );
-                                            }
-
-                                            return (
-                                              <>
-                                                <Select
-                                                  value=""
-                                                  onValueChange={(val) => {
-                                                    if (
-                                                      !currentValues.includes(
-                                                        val,
-                                                      )
-                                                    ) {
-                                                      ctl.onChange([
-                                                        ...currentValues,
-                                                        val,
-                                                      ]);
-                                                    }
-                                                  }}
-                                                >
-                                                  <SelectTrigger className="h-9">
-                                                    <SelectValue
-                                                      placeholder={`Select ${cfg.label.toLowerCase()}…`}
-                                                    />
-                                                  </SelectTrigger>
-                                                  <SelectContent>
-                                                    {cfg.options!.map((opt) => (
-                                                      <SelectItem
-                                                        key={opt}
-                                                        value={opt}
-                                                      >
-                                                        {opt}
-                                                      </SelectItem>
-                                                    ))}
-                                                  </SelectContent>
-                                                </Select>
-                                                {currentValues.length > 0 && (
-                                                  <div className="flex flex-wrap gap-1 mt-2">
-                                                    {currentValues.map(
-                                                      (v: string) => (
-                                                        <Badge
-                                                          key={v}
-                                                          variant="secondary"
-                                                          className="text-xs py-0.5"
-                                                        >
-                                                          {v}
-                                                          <button
-                                                            type="button"
-                                                            onClick={(e) => {
-                                                              e.preventDefault();
-                                                              ctl.onChange(
-                                                                currentValues.filter(
-                                                                  (x: string) =>
-                                                                    x !== v,
-                                                                ),
-                                                              );
-                                                            }}
-                                                            className="ml-1 hover:text-destructive"
+                                                <>
+                                                  <Select
+                                                    value=""
+                                                    onValueChange={(val) => {
+                                                      if (
+                                                        !currentValues.includes(
+                                                          val,
+                                                        )
+                                                      ) {
+                                                        ctl.onChange([
+                                                          ...currentValues,
+                                                          val,
+                                                        ]);
+                                                      }
+                                                    }}
+                                                  >
+                                                    <SelectTrigger className="h-9">
+                                                      <SelectValue
+                                                        placeholder={`Select ${cfg.label.toLowerCase()}…`}
+                                                      />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                      {cfg.options!.map(
+                                                        (opt) => (
+                                                          <SelectItem
+                                                            key={opt}
+                                                            value={opt}
                                                           >
-                                                            ×
-                                                          </button>
-                                                        </Badge>
-                                                      ),
-                                                    )}
-                                                  </div>
-                                                )}
-                                              </>
-                                            );
-                                          }}
-                                        />
-                                      )}
-                                      <FormMessage />
-                                    </FormItem>
-                                  )
-                                }
-                              />
-                            ))}
-                          </div>
-                        </CollapsibleContent>
-                      </Collapsible>
-                    </div>
-                  ))}
-                </div>
-              </Form>
-            </div>
-          </div>
-
-          {/* Results */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              <StatCard label="Total Cases" value={formatNumber(stats.count)} />
-              <StatCard
-                label="Avg Settlement"
-                value={formatCurrency(stats.mean)}
-              />
-              <StatCard
-                label="Median Settlement"
-                value={formatCurrency(stats.median)}
-              />
-              <StatCard
-                label="Avg Per Claimant"
-                value={formatCurrency(stats.avgPerClaimant)}
-              />
-              <StatCard
-                label="Total Value"
-                value={formatCurrency(stats.total)}
-              />
-            </div>
-
-            {/* Data Analysis - Always Visible */}
-            <CaseDataOutput cases={filtered} />
-
-            {/* Case Results Table */}
-            <Card className="p-4 md:p-6">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                <p className="font-medium">
-                  Search Results ({formatNumber(filtered.length)} cases)
-                </p>
-                <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={!filtered.length}
-                    onClick={() => setShowSave(true)}
-                  >
-                    <Save className="mr-2 h-4 w-4" />
-                    Save Search
-                  </Button>
-                </div>
+                                                            {opt}
+                                                          </SelectItem>
+                                                        ),
+                                                      )}
+                                                    </SelectContent>
+                                                  </Select>
+                                                  {currentValues.length > 0 && (
+                                                    <div className="flex flex-wrap gap-1 mt-2">
+                                                      {currentValues.map(
+                                                        (v: string) => (
+                                                          <Badge
+                                                            key={v}
+                                                            variant="secondary"
+                                                            className="text-xs py-0.5"
+                                                          >
+                                                            {v}
+                                                            <button
+                                                              type="button"
+                                                              onClick={(e) => {
+                                                                e.preventDefault();
+                                                                ctl.onChange(
+                                                                  currentValues.filter(
+                                                                    (
+                                                                      x: string,
+                                                                    ) =>
+                                                                      x !== v,
+                                                                  ),
+                                                                );
+                                                              }}
+                                                              className="ml-1 hover:text-destructive"
+                                                            >
+                                                              ×
+                                                            </button>
+                                                          </Badge>
+                                                        ),
+                                                      )}
+                                                    </div>
+                                                  )}
+                                                </>
+                                              );
+                                            }}
+                                          />
+                                        )}
+                                        <FormMessage />
+                                      </FormItem>
+                                    )
+                                  }
+                                />
+                              ))}
+                            </div>
+                          </CollapsibleContent>
+                        </Collapsible>
+                      </div>
+                    ))}
+                  </div>
+                </Form>
               </div>
-              {filtered.length > 0 ? (
-                <div className="rounded-md border overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Case Name</TableHead>
-                        <TableHead>Court</TableHead>
-                        <TableHead>Year</TableHead>
-                        <TableHead className="text-right">Settlement</TableHead>
-                        <TableHead className="text-right">Class Size</TableHead>
-                        <TableHead>Type</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filtered.map((c) => (
-                        <TableRow
-                          key={c.id}
-                          className="hover:bg-muted/50 cursor-pointer"
-                          onClick={() =>
-                            router.push(`/dashboard/cases/${c.id}`)
-                          }
-                        >
-                          <TableCell>
-                            <div>
-                              <p className="font-medium">{c.name}</p>
-                              <p className="text-sm text-muted-foreground">
-                                {c.docketId}
-                              </p>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div>
-                              <p className="font-medium">{c.court}</p>
-                              <p className="text-sm text-muted-foreground">
-                                {c.state}
-                              </p>
-                            </div>
-                          </TableCell>
-                          <TableCell>{c.year}</TableCell>
-                          <TableCell className="text-right font-medium text-primary">
-                            {formatCurrency(c.settlementAmount)}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {formatNumber(c.classSize)}
-                          </TableCell>
-                          <TableCell>
-                            <Badge
-                              variant={
-                                c.settlementType === "Final"
-                                  ? "default"
-                                  : "secondary"
-                              }
-                            >
-                              {c.settlementType}
-                            </Badge>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-lg font-medium">No cases found</p>
-                  <p className="text-muted-foreground">
-                    Try adjusting your filters.
-                  </p>
-                </div>
-              )}
-            </Card>
+            </div>
+
+            {/* Stats and Data Analysis */}
+            <div className="lg:col-span-2 space-y-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <StatCard
+                  label="Total Cases"
+                  value={formatNumber(stats.count)}
+                />
+                <StatCard
+                  label="Avg Settlement"
+                  value={formatCurrency(stats.mean)}
+                />
+                <StatCard
+                  label="Median Settlement"
+                  value={formatCurrency(stats.median)}
+                />
+                <StatCard
+                  label="Avg Per Claimant"
+                  value={formatCurrency(stats.avgPerClaimant)}
+                />
+                <StatCard
+                  label="Total Value"
+                  value={formatCurrency(stats.total)}
+                />
+              </div>
+            </div>
           </div>
+
+          {/* Bottom Section: Search Results - Full Width */}
+          <Card className="p-4 md:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+              <p className="font-medium">
+                Search Results ({formatNumber(filtered.length)} cases)
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={!filtered.length}
+                  onClick={() => setShowSave(true)}
+                >
+                  <Save className="mr-2 h-4 w-4" />
+                  Save Search
+                </Button>
+              </div>
+            </div>
+            {filtered.length > 0 ? (
+              <div className="rounded-md border overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Case Name</TableHead>
+                      <TableHead>Court</TableHead>
+                      <TableHead>Year</TableHead>
+                      <TableHead className="text-right">Settlement</TableHead>
+                      <TableHead className="text-right">Class Size</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead className="w-[100px]"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filtered.map((c) => (
+                      <TableRow
+                        key={c.id}
+                        className="hover:bg-primary/5 transition-colors cursor-pointer"
+                        onClick={() => router.push(`/dashboard/cases/${c.id}`)}
+                      >
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{c.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {c.docketId}
+                            </p>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{c.court}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {c.state}
+                            </p>
+                          </div>
+                        </TableCell>
+                        <TableCell>{c.year}</TableCell>
+                        <TableCell className="text-right font-medium text-primary">
+                          {formatCurrency(c.settlementAmount)}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {formatNumber(c.classSize)}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              c.settlementType === "Final"
+                                ? "default"
+                                : "secondary"
+                            }
+                          >
+                            {c.settlementType}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 px-2"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push(`/dashboard/cases/${c.id}`);
+                            }}
+                          >
+                            View
+                            <ArrowRight className="ml-1 h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-lg font-medium">No cases found</p>
+                <p className="text-muted-foreground">
+                  Try adjusting your filters.
+                </p>
+              </div>
+            )}
+          </Card>
         </div>
       </main>
 
