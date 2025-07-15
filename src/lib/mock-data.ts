@@ -1,4 +1,21 @@
 // Mock data for SettleTrack case database
+
+export interface Citation {
+  documentName: string;
+  pageNumber: number;
+  quote: string;
+}
+
+export interface FieldCitations {
+  settlementAmount?: Citation;
+  classSize?: Citation;
+  attorneyFeesPercentage?: Citation;
+  baseCashCompensation?: Citation;
+  claimsSubmitted?: Citation;
+  creditMonitoringAmount?: Citation;
+  // Add more fields as needed
+}
+
 export interface Case {
   id: string;
   name: string;
@@ -15,6 +32,7 @@ export interface Case {
   piiAffected: string[];
   causeOfBreach: string;
   classType: string[];
+  caseType: string;
   hasMinorSubclass: boolean;
   defenseCounsel: string;
   plaintiffCounsel: string;
@@ -53,6 +71,7 @@ export interface Case {
   creditMonitoring: boolean;
   creditMonitoringAmount?: number;
   excessFundsDisposition?: "Redistribution" | "Cy pres" | "Reversion";
+  citations?: FieldCitations;
 }
 
 export const mockCases: Case[] = [
@@ -72,6 +91,7 @@ export const mockCases: Case[] = [
     piiAffected: ["Name", "Address", "Email", "Phone"],
     causeOfBreach: "Ransomware",
     classType: ["Consumers"],
+    caseType: "Data Breach",
     hasMinorSubclass: false,
     defenseCounsel: "Williams & Connolly LLP",
     plaintiffCounsel: "Lieff Cabraser Heimann & Bernstein LLP",
@@ -115,6 +135,38 @@ export const mockCases: Case[] = [
     creditMonitoring: true,
     creditMonitoringAmount: 2000000,
     excessFundsDisposition: "Cy pres",
+    citations: {
+      settlementAmount: {
+        documentName: "Settlement Agreement",
+        pageNumber: 12,
+        quote:
+          "The total settlement fund shall be Eight Million Five Hundred Thousand Dollars ($8,500,000.00).",
+      },
+      classSize: {
+        documentName: "Motion for Final Approval",
+        pageNumber: 8,
+        quote:
+          "The Settlement Class consists of approximately 500,000 individuals whose personal information was compromised.",
+      },
+      attorneyFeesPercentage: {
+        documentName: "Fee Motion",
+        pageNumber: 3,
+        quote:
+          "Class Counsel requests attorneys' fees in the amount of 25% of the Settlement Fund.",
+      },
+      baseCashCompensation: {
+        documentName: "Settlement Agreement",
+        pageNumber: 18,
+        quote:
+          "Each claimant who submits a valid claim shall receive $125 in base compensation.",
+      },
+      claimsSubmitted: {
+        documentName: "Claims Administrator Report",
+        pageNumber: 2,
+        quote:
+          "As of the claims deadline, 125,000 valid claims have been submitted.",
+      },
+    },
   },
   {
     id: "2",
@@ -132,6 +184,7 @@ export const mockCases: Case[] = [
     piiAffected: ["Name", "SSN", "Address", "Payment Info"],
     causeOfBreach: "Phishing Attack",
     classType: ["Consumers"],
+    caseType: "Data Breach",
     hasMinorSubclass: true,
     defenseCounsel: "Gibson, Dunn & Crutcher LLP",
     plaintiffCounsel: "Hagens Berman Sobol Shapiro LLP",
@@ -192,6 +245,7 @@ export const mockCases: Case[] = [
     piiAffected: ["Name", "Email", "Geolocation"],
     causeOfBreach: "System Vulnerability",
     classType: ["Consumers"],
+    caseType: "Data Breach",
     hasMinorSubclass: false,
     defenseCounsel: "Latham & Watkins LLP",
     plaintiffCounsel: "Robbins Geller Rudman & Dowd LLP",
@@ -240,6 +294,7 @@ export const mockCases: Case[] = [
     piiAffected: ["Name", "SSN", "Medical Records", "Insurance Info"],
     causeOfBreach: "Insider Threat",
     classType: ["Patients"],
+    caseType: "Healthcare",
     hasMinorSubclass: true,
     defenseCounsel: "King & Spalding LLP",
     plaintiffCounsel: "Keller Rohrback L.L.P.",
@@ -294,6 +349,7 @@ export const mockCases: Case[] = [
     piiAffected: ["Name", "SSN", "Bank Account", "Credit Card"],
     causeOfBreach: "Ransomware",
     classType: ["Consumers"],
+    caseType: "Financial Services",
     hasMinorSubclass: false,
     defenseCounsel: "Cravath, Swaine & Moore LLP",
     plaintiffCounsel: "Bernstein Litowitz Berger & Grossmann LLP",
@@ -354,6 +410,7 @@ export const mockCases: Case[] = [
     piiAffected: ["Name", "Address", "Payment Info"],
     causeOfBreach: "Payment System Hack",
     classType: ["Consumers"],
+    caseType: "Retail",
     hasMinorSubclass: false,
     defenseCounsel: "O'Melveny & Myers LLP",
     plaintiffCounsel: "Milberg Coleman Bryson Phillips Grossman PLLC",
@@ -403,6 +460,7 @@ export const mockCases: Case[] = [
     piiAffected: ["Name", "SSN", "Student Records"],
     causeOfBreach: "Database Misconfiguration",
     classType: ["Consumers", "Students"],
+    caseType: "Education",
     hasMinorSubclass: true,
     defenseCounsel: "Ropes & Gray LLP",
     plaintiffCounsel: "Labaton Sucharow LLP",
@@ -451,6 +509,7 @@ export const mockCases: Case[] = [
     piiAffected: ["Name", "SSN", "Policy Numbers", "Medical Info"],
     causeOfBreach: "Third-party Vendor",
     classType: ["Consumers"],
+    caseType: "Financial Services",
     hasMinorSubclass: false,
     defenseCounsel: "Skadden, Arps, Slate, Meagher & Flom LLP",
     plaintiffCounsel: "Hausfeld LLP",
@@ -495,6 +554,14 @@ export const mockCases: Case[] = [
 ];
 
 export const filterOptions = {
+  caseTypes: [
+    "Data Breach",
+    "Healthcare",
+    "Financial Services",
+    "Retail",
+    "Technology",
+    "Education",
+  ],
   states: [
     "Alabama",
     "Alaska",

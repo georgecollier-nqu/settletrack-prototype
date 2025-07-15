@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CitationTooltip } from "@/components/ui/citation-tooltip";
 import {
   Dialog,
   DialogContent,
@@ -184,9 +185,13 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                     <p className="text-sm text-muted-foreground">
                       Settlement Amount
                     </p>
-                    <p className="text-2xl font-bold mt-1 text-primary">
-                      {formatCurrency(case_.settlementAmount)}
-                    </p>
+                    <CitationTooltip
+                      citation={case_.citations?.settlementAmount}
+                    >
+                      <p className="text-2xl font-bold mt-1 text-primary">
+                        {formatCurrency(case_.settlementAmount)}
+                      </p>
+                    </CitationTooltip>
                   </div>
                   <DollarSign className="h-6 w-6 text-primary" />
                 </div>
@@ -198,9 +203,11 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Class Size</p>
-                    <p className="text-2xl font-bold mt-1">
-                      {formatNumber(case_.classSize)}
-                    </p>
+                    <CitationTooltip citation={case_.citations?.classSize}>
+                      <p className="text-2xl font-bold mt-1">
+                        {formatNumber(case_.classSize)}
+                      </p>
+                    </CitationTooltip>
                   </div>
                   <Users className="h-6 w-6 text-primary" />
                 </div>
@@ -351,9 +358,23 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                             {formatCurrency(attorneyFeesAmount)}
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            {case_.attorneyFeesMethod === "Percentage"
-                              ? `${case_.attorneyFeesPercentage}% of settlement`
-                              : `Lodestar: ${formatCurrency(case_.lodestardAmount || 0)} × ${case_.multiplier}`}
+                            {case_.attorneyFeesMethod === "Percentage" ? (
+                              <CitationTooltip
+                                citation={
+                                  case_.citations?.attorneyFeesPercentage
+                                }
+                              >
+                                <span>
+                                  {case_.attorneyFeesPercentage}% of settlement
+                                </span>
+                              </CitationTooltip>
+                            ) : (
+                              <span>
+                                Lodestar:{" "}
+                                {formatCurrency(case_.lodestardAmount || 0)} ×{" "}
+                                {case_.multiplier}
+                              </span>
+                            )}
                           </p>
                           <p className="text-xs text-muted-foreground mt-1">
                             {case_.attorneyFeesPaidFromFund
@@ -374,9 +395,13 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
 
                         <div>
                           <h4 className="font-medium mb-2">Claims Submitted</h4>
-                          <p className="text-lg font-semibold">
-                            {formatNumber(case_.claimsSubmitted)}
-                          </p>
+                          <CitationTooltip
+                            citation={case_.citations?.claimsSubmitted}
+                          >
+                            <p className="text-lg font-semibold">
+                              {formatNumber(case_.claimsSubmitted)}
+                            </p>
+                          </CitationTooltip>
                           <p className="text-sm text-muted-foreground">
                             {case_.claimsSubmittedPercent}% participation rate
                           </p>
@@ -572,9 +597,13 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                             <h4 className="font-medium mb-3">
                               Base Cash Compensation
                             </h4>
-                            <p className="text-xl font-semibold">
-                              {formatCurrency(case_.baseCashCompensation)}
-                            </p>
+                            <CitationTooltip
+                              citation={case_.citations?.baseCashCompensation}
+                            >
+                              <p className="text-xl font-semibold">
+                                {formatCurrency(case_.baseCashCompensation)}
+                              </p>
+                            </CitationTooltip>
                             <p className="text-sm text-muted-foreground">
                               Per claimant who submits a claim
                             </p>

@@ -48,6 +48,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { MultiSelect } from "@/components/ui/multi-select";
 
 import {
   Search,
@@ -60,7 +61,6 @@ import {
   MapPin,
   FileText,
   Building,
-  BarChart3,
 } from "lucide-react";
 
 import { mockCases, filterOptions, type Case } from "@/lib/mock-data";
@@ -83,6 +83,7 @@ const filterSchema = z.object({
   piiAffected: z.array(z.string()).optional(),
   causeOfBreach: z.array(z.string()).optional(),
   classType: z.array(z.string()).optional(),
+  caseType: z.array(z.string()).optional(),
   isMDL: z.boolean().optional(),
   hasMinor: z.boolean().optional(),
   creditMon: z.boolean().optional(),
@@ -225,7 +226,13 @@ const filterGroups: FilterGroup[] = [
         name: "settlementType",
         label: "Settlement Type",
         type: "select",
-        options: ["Preliminary", "Final"],
+        options: ["Preliminary", "Final", "Both"],
+      },
+      {
+        name: "caseType",
+        label: "Case Type",
+        type: "select",
+        options: filterOptions.caseTypes,
       },
       {
         name: "classType",
@@ -306,6 +313,7 @@ function useFilteredCases(cases: Case[]) {
         piiAffected,
         causeOfBreach,
         classType,
+        caseType,
         isMDL,
         hasMinor,
         creditMon,
@@ -343,6 +351,7 @@ function useFilteredCases(cases: Case[]) {
         !classType.some((ct) => c.classType.includes(ct))
       )
         return false;
+      if (caseType?.length && !caseType.includes(c.caseType)) return false;
       if (isMDL !== undefined && c.isMultiDistrictLitigation !== isMDL)
         return false;
       if (hasMinor !== undefined && c.hasMinorSubclass !== hasMinor)
@@ -357,8 +366,11 @@ function useFilteredCases(cases: Case[]) {
       )
         return false;
       if (judgeName?.length && !judgeName.includes(c.judgeName)) return false;
-      if (settlementType?.length && !settlementType.includes(c.settlementType))
-        return false;
+      if (settlementType?.length) {
+        const includesBoth = settlementType.includes("Both");
+        const matchesType = settlementType.includes(c.settlementType);
+        if (!includesBoth && !matchesType) return false;
+      }
       return true;
     });
   }, [cases, values]);
@@ -368,7 +380,8 @@ function useFilteredCases(cases: Case[]) {
 
 function useStatistics(cases: Case[]) {
   return useMemo(() => {
-    if (!cases.length) return { count: 0, mean: 0, median: 0, total: 0 };
+    if (!cases.length)
+      return { count: 0, mean: 0, median: 0, total: 0, avgPerClaimant: 0 };
     const amounts = cases.map((c) => c.settlementAmount).sort((a, b) => a - b);
     const total = amounts.reduce((a, b) => a + b, 0);
     const mean = total / amounts.length;
@@ -376,7 +389,16 @@ function useStatistics(cases: Case[]) {
       amounts.length % 2 === 0
         ? (amounts[amounts.length / 2 - 1] + amounts[amounts.length / 2]) / 2
         : amounts[Math.floor(amounts.length / 2)];
-    return { count: cases.length, mean, median, total };
+
+    // Calculate average payout per claimant
+    const totalClaimsSubmitted = cases.reduce(
+      (sum, c) => sum + (c.claimsSubmitted || 0),
+      0,
+    );
+    const avgPerClaimant =
+      totalClaimsSubmitted > 0 ? total / totalClaimsSubmitted : 0;
+
+    return { count: cases.length, mean, median, total, avgPerClaimant };
   }, [cases]);
 }
 
@@ -386,10 +408,10 @@ function useStatistics(cases: Case[]) {
 
 function StatCard({ label, value }: { label: string; value: string | number }) {
   return (
-    <Card className="p-4">
+    <Card className="p-3 md:p-4">
       <div>
-        <p className="text-sm text-muted-foreground">{label}</p>
-        <p className="text-2xl font-bold mt-1">{value}</p>
+        <p className="text-xs md:text-sm text-muted-foreground">{label}</p>
+        <p className="text-lg md:text-2xl font-bold mt-1">{value}</p>
       </div>
     </Card>
   );
@@ -404,7 +426,6 @@ export default function CaseSearchPage() {
   const { form, filtered } = useFilteredCases(mockCases);
   const stats = useStatistics(filtered);
   const [showSave, setShowSave] = React.useState(false);
-  const [showDataOutput, setShowDataOutput] = React.useState(false);
   const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(
     () =>
       filterGroups.reduce(
@@ -427,11 +448,11 @@ export default function CaseSearchPage() {
     <>
       <DashboardHeader title="Case Search" />
 
-      <main className="flex-1 overflow-y-auto p-6 bg-muted/30">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-muted/30">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
           {/* Filters */}
           <div className="lg:col-span-1 h-fit max-h-[calc(100vh-8rem)] overflow-y-auto bg-white rounded-lg border shadow-sm">
-            <div className="p-6">
+            <div className="p-4 md:p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg font-semibold">Filters</h2>
                 <Button
@@ -550,6 +571,19 @@ export default function CaseSearchPage() {
                                               (ctl.value as
                                                 | string[]
                                                 | undefined) || [];
+
+                                            // Use MultiSelect for settlement type
+                                            if (cfg.name === "settlementType") {
+                                              return (
+                                                <MultiSelect
+                                                  options={cfg.options!}
+                                                  value={currentValues}
+                                                  onChange={ctl.onChange}
+                                                  placeholder={`Select ${cfg.label.toLowerCase()}…`}
+                                                />
+                                              );
+                                            }
+
                                             return (
                                               <>
                                                 <Select
@@ -636,7 +670,7 @@ export default function CaseSearchPage() {
 
           {/* Results */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
               <StatCard label="Total Cases" value={formatNumber(stats.count)} />
               <StatCard
                 label="Avg Settlement"
@@ -647,117 +681,107 @@ export default function CaseSearchPage() {
                 value={formatCurrency(stats.median)}
               />
               <StatCard
+                label="Avg Per Claimant"
+                value={formatCurrency(stats.avgPerClaimant)}
+              />
+              <StatCard
                 label="Total Value"
                 value={formatCurrency(stats.total)}
               />
             </div>
 
-            {showDataOutput ? (
-              <CaseDataOutput cases={filtered} />
-            ) : (
-              <Card className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <p className="font-medium">
-                    Search Results ({formatNumber(filtered.length)} cases)
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setShowDataOutput(true)}
-                      disabled={!filtered.length}
-                    >
-                      <BarChart3 className="mr-2 h-4 w-4" />
-                      Data Output
-                    </Button>
-                    <div className="w-px h-6 bg-border" />
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      disabled={!filtered.length}
-                      onClick={() => setShowSave(true)}
-                    >
-                      <Save className="mr-2 h-4 w-4" />
-                      Save Search
-                    </Button>
-                  </div>
+            {/* Data Analysis - Always Visible */}
+            <CaseDataOutput cases={filtered} />
+
+            {/* Case Results Table */}
+            <Card className="p-4 md:p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <p className="font-medium">
+                  Search Results ({formatNumber(filtered.length)} cases)
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={!filtered.length}
+                    onClick={() => setShowSave(true)}
+                  >
+                    <Save className="mr-2 h-4 w-4" />
+                    Save Search
+                  </Button>
                 </div>
-                {filtered.length > 0 ? (
-                  <div className="rounded-md border">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Case Name</TableHead>
-                          <TableHead>Court</TableHead>
-                          <TableHead>Year</TableHead>
-                          <TableHead className="text-right">
-                            Settlement
-                          </TableHead>
-                          <TableHead className="text-right">
-                            Class Size
-                          </TableHead>
-                          <TableHead>Type</TableHead>
+              </div>
+              {filtered.length > 0 ? (
+                <div className="rounded-md border overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Case Name</TableHead>
+                        <TableHead>Court</TableHead>
+                        <TableHead>Year</TableHead>
+                        <TableHead className="text-right">Settlement</TableHead>
+                        <TableHead className="text-right">Class Size</TableHead>
+                        <TableHead>Type</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filtered.map((c) => (
+                        <TableRow
+                          key={c.id}
+                          className="hover:bg-muted/50 cursor-pointer"
+                          onClick={() =>
+                            router.push(`/dashboard/cases/${c.id}`)
+                          }
+                        >
+                          <TableCell>
+                            <div>
+                              <p className="font-medium">{c.name}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {c.docketId}
+                              </p>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div>
+                              <p className="font-medium">{c.court}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {c.state}
+                              </p>
+                            </div>
+                          </TableCell>
+                          <TableCell>{c.year}</TableCell>
+                          <TableCell className="text-right font-medium text-primary">
+                            {formatCurrency(c.settlementAmount)}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {formatNumber(c.classSize)}
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant={
+                                c.settlementType === "Final"
+                                  ? "default"
+                                  : "secondary"
+                              }
+                            >
+                              {c.settlementType}
+                            </Badge>
+                          </TableCell>
                         </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filtered.map((c) => (
-                          <TableRow
-                            key={c.id}
-                            className="hover:bg-muted/50 cursor-pointer"
-                            onClick={() =>
-                              router.push(`/dashboard/cases/${c.id}`)
-                            }
-                          >
-                            <TableCell>
-                              <div>
-                                <p className="font-medium">{c.name}</p>
-                                <p className="text-sm text-muted-foreground">
-                                  {c.docketId}
-                                </p>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div>
-                                <p className="font-medium">{c.court}</p>
-                                <p className="text-sm text-muted-foreground">
-                                  {c.state}
-                                </p>
-                              </div>
-                            </TableCell>
-                            <TableCell>{c.year}</TableCell>
-                            <TableCell className="text-right font-medium text-primary">
-                              {formatCurrency(c.settlementAmount)}
-                            </TableCell>
-                            <TableCell className="text-right">
-                              {formatNumber(c.classSize)}
-                            </TableCell>
-                            <TableCell>
-                              <Badge
-                                variant={
-                                  c.settlementType === "Final"
-                                    ? "default"
-                                    : "secondary"
-                                }
-                              >
-                                {c.settlementType}
-                              </Badge>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-lg font-medium">No cases found</p>
-                    <p className="text-muted-foreground">
-                      Try adjusting your filters.
-                    </p>
-                  </div>
-                )}
-              </Card>
-            )}
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-lg font-medium">No cases found</p>
+                  <p className="text-muted-foreground">
+                    Try adjusting your filters.
+                  </p>
+                </div>
+              )}
+            </Card>
           </div>
         </div>
       </main>

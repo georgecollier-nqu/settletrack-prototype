@@ -303,7 +303,7 @@ export function CaseDataOutput({ cases }: CaseDataOutputProps) {
       </Card>
 
       <Tabs defaultValue="settlement" className="w-full">
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="flex flex-wrap h-auto gap-1 p-1 md:grid md:grid-cols-7">
           <TabsTrigger value="settlement">Settlement</TabsTrigger>
           <TabsTrigger value="attorney">Attorney Fees</TabsTrigger>
           <TabsTrigger value="class">Class/Claims</TabsTrigger>
@@ -320,7 +320,7 @@ export function CaseDataOutput({ cases }: CaseDataOutputProps) {
               <CardTitle>Settlement Fund</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">
                     Average Gross Settlement
@@ -455,7 +455,7 @@ export function CaseDataOutput({ cases }: CaseDataOutputProps) {
                       </span>
                     </div>
                     <Progress value={stats.lodestarMethodFreq} />
-                    <div className="grid grid-cols-2 gap-4 mt-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
                       <p className="text-sm text-muted-foreground">
                         Average lodestar: {formatCurrency(stats.avgLodestar)}
                       </p>
@@ -577,7 +577,7 @@ export function CaseDataOutput({ cases }: CaseDataOutputProps) {
 
               <div>
                 <h4 className="font-medium mb-3">Class Members</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-muted-foreground mb-1">
                       Average number of claims submitted
@@ -607,7 +607,7 @@ export function CaseDataOutput({ cases }: CaseDataOutputProps) {
               <CardTitle>Individual Reimbursements</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
                 <div>
                   <h4 className="font-medium mb-3">Base Compensation</h4>
                   <div>
@@ -644,7 +644,7 @@ export function CaseDataOutput({ cases }: CaseDataOutputProps) {
                         {formatCurrency(stats.avgMaxDocumentedTime)}
                       </p>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <p className="text-sm text-muted-foreground">
                           Max hours
@@ -678,7 +678,7 @@ export function CaseDataOutput({ cases }: CaseDataOutputProps) {
                         {formatCurrency(stats.avgMaxUndocumented)}
                       </p>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <p className="text-sm text-muted-foreground">
                           Max hours
@@ -832,7 +832,7 @@ export function CaseDataOutput({ cases }: CaseDataOutputProps) {
                     <h4 className="font-medium mb-3">
                       Third-Party Assessments
                     </h4>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                       {Object.entries(stats.thirdPartyAssessments).map(
                         ([assessment, count]) => (
                           <div
