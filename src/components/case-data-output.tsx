@@ -289,19 +289,6 @@ export function CaseDataOutput({ cases }: CaseDataOutputProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Data Output Analysis</CardTitle>
-          <CardDescription>
-            The statistics below were drawn from a set of{" "}
-            <span className="font-semibold text-foreground">
-              {stats.totalCases} applicable cases
-            </span>
-          </CardDescription>
-        </CardHeader>
-      </Card>
-
       <Tabs defaultValue="settlement" className="w-full">
         <TabsList className="flex flex-wrap h-auto gap-1 p-1 md:grid md:grid-cols-7">
           <TabsTrigger value="settlement">Settlement</TabsTrigger>
