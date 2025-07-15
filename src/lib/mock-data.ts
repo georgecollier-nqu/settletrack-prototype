@@ -8,11 +8,31 @@ export interface Citation {
 
 export interface FieldCitations {
   settlementAmount?: Citation;
+  settlementDate?: Citation;
   classSize?: Citation;
   attorneyFeesPercentage?: Citation;
   baseCashCompensation?: Citation;
   claimsSubmitted?: Citation;
   creditMonitoringAmount?: Citation;
+  lodestardAmount?: Citation;
+  multiplier?: Citation;
+  classRepServiceAwards?: Citation;
+  claimsAdminCosts?: Citation;
+  maxReimbursementOutOfPocket?: Citation;
+  maxReimbursementDocumentedTime?: Citation;
+  maxReimbursementUndocumented?: Citation;
+  injunctiveReliefAmount?: Citation;
+  proRataAmount?: Citation;
+  plaintiffCounsel?: Citation;
+  defenseCounsel?: Citation;
+  causeOfBreach?: Citation;
+  piiAffected?: Citation;
+  injunctiveRelief?: Citation;
+  thirdPartyAssessments?: Citation;
+  summary?: Citation;
+  court?: Citation;
+  state?: Citation;
+  judgeName?: Citation;
   // Add more fields as needed
 }
 
@@ -165,6 +185,42 @@ export const mockCases: Case[] = [
         pageNumber: 2,
         quote:
           "As of the claims deadline, 125,000 valid claims have been submitted.",
+      },
+      plaintiffCounsel: {
+        documentName: "Notice of Appearance",
+        pageNumber: 1,
+        quote:
+          "Lieff Cabraser Heimann & Bernstein LLP appears as counsel for the plaintiff class.",
+      },
+      defenseCounsel: {
+        documentName: "Notice of Appearance",
+        pageNumber: 3,
+        quote:
+          "Williams & Connolly LLP represents the defendant in this matter.",
+      },
+      causeOfBreach: {
+        documentName: "Complaint",
+        pageNumber: 15,
+        quote:
+          "The data breach was caused by a sophisticated ransomware attack that encrypted defendant's systems.",
+      },
+      piiAffected: {
+        documentName: "Expert Report",
+        pageNumber: 22,
+        quote:
+          "The compromised data included names, addresses, email addresses, and phone numbers of affected individuals.",
+      },
+      injunctiveRelief: {
+        documentName: "Settlement Agreement",
+        pageNumber: 35,
+        quote:
+          "Defendant agrees to implement comprehensive security measures including employee training, MFA, and regular security assessments.",
+      },
+      injunctiveReliefAmount: {
+        documentName: "Settlement Agreement",
+        pageNumber: 36,
+        quote:
+          "Defendant shall allocate $1,500,000 for implementation of the agreed-upon security enhancements.",
       },
     },
   },

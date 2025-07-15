@@ -14,7 +14,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CitationTooltip } from "@/components/ui/citation-tooltip";
+import { StatWithTooltip } from "@/components/ui/stat-with-tooltip";
+import { ValueWithTooltip } from "@/components/ui/value-with-tooltip";
 import {
   Dialog,
   DialogContent,
@@ -181,18 +182,12 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      Settlement Amount
-                    </p>
-                    <CitationTooltip
-                      citation={case_.citations?.settlementAmount}
-                    >
-                      <p className="text-2xl font-bold mt-1 text-primary">
-                        {formatCurrency(case_.settlementAmount)}
-                      </p>
-                    </CitationTooltip>
-                  </div>
+                  <StatWithTooltip
+                    label="Settlement Amount"
+                    value={formatCurrency(case_.settlementAmount)}
+                    citation={case_.citations?.settlementAmount}
+                    valueClassName="text-2xl text-primary"
+                  />
                   <DollarSign className="h-6 w-6 text-primary" />
                 </div>
               </CardContent>
@@ -201,14 +196,13 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Class Size</p>
-                    <CitationTooltip citation={case_.citations?.classSize}>
-                      <p className="text-2xl font-bold mt-1">
-                        {formatNumber(case_.classSize)}
-                      </p>
-                    </CitationTooltip>
-                  </div>
+                  <StatWithTooltip
+                    label="Class Size"
+                    value={formatNumber(case_.classSize)}
+                    description="Affected individuals"
+                    citation={case_.citations?.classSize}
+                    valueClassName="text-2xl"
+                  />
                   <Users className="h-6 w-6 text-primary" />
                 </div>
               </CardContent>
@@ -217,14 +211,12 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      Settlement Date
-                    </p>
-                    <p className="text-lg font-bold mt-1">
-                      {formatDate(case_.date)}
-                    </p>
-                  </div>
+                  <StatWithTooltip
+                    label="Settlement Date"
+                    value={formatDate(case_.date)}
+                    citation={case_.citations?.settlementDate}
+                    valueClassName="text-lg"
+                  />
                   <Calendar className="h-6 w-6 text-primary" />
                 </div>
               </CardContent>
@@ -233,15 +225,13 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Claims Rate</p>
-                    <p className="text-2xl font-bold mt-1">
-                      {case_.claimsSubmittedPercent}%
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {formatNumber(case_.claimsSubmitted)} claims
-                    </p>
-                  </div>
+                  <StatWithTooltip
+                    label="Claims Rate"
+                    value={`${case_.claimsSubmittedPercent}%`}
+                    description={`${formatNumber(case_.claimsSubmitted)} claims`}
+                    citation={case_.citations?.claimsSubmitted}
+                    valueClassName="text-2xl"
+                  />
                   <FileText className="h-6 w-6 text-primary" />
                 </div>
               </CardContent>
@@ -259,9 +249,12 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                 <CardContent className="space-y-4">
                   <div>
                     <h3 className="font-medium mb-2">Summary</h3>
-                    <p className="text-sm text-muted-foreground">
+                    <ValueWithTooltip
+                      citation={case_.citations?.summary}
+                      className="text-sm text-muted-foreground"
+                    >
                       {case_.summary}
-                    </p>
+                    </ValueWithTooltip>
                   </div>
 
                   <Separator />
@@ -272,10 +265,18 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                         <MapPin className="h-4 w-4" />
                         Jurisdiction
                       </h4>
-                      <p className="text-sm">{case_.court}</p>
-                      <p className="text-sm text-muted-foreground">
+                      <ValueWithTooltip
+                        citation={case_.citations?.court}
+                        className="text-sm"
+                      >
+                        {case_.court}
+                      </ValueWithTooltip>
+                      <ValueWithTooltip
+                        citation={case_.citations?.state}
+                        className="text-sm text-muted-foreground"
+                      >
                         {case_.state}
-                      </p>
+                      </ValueWithTooltip>
                     </div>
 
                     <div>
@@ -283,7 +284,12 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                         <Gavel className="h-4 w-4" />
                         Presiding Judge
                       </h4>
-                      <p className="text-sm">{case_.judgeName}</p>
+                      <ValueWithTooltip
+                        citation={case_.citations?.judgeName}
+                        className="text-sm"
+                      >
+                        {case_.judgeName}
+                      </ValueWithTooltip>
                     </div>
                   </div>
 
@@ -327,10 +333,12 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                     <TabsContent value="financial" className="mt-6 space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <h4 className="font-medium mb-2">Settlement Fund</h4>
-                          <p className="text-2xl font-bold text-primary">
-                            {formatCurrency(case_.settlementAmount)}
-                          </p>
+                          <StatWithTooltip
+                            label="Settlement Fund"
+                            value={formatCurrency(case_.settlementAmount)}
+                            citation={case_.citations?.settlementAmount}
+                            valueClassName="text-2xl text-primary"
+                          />
                           {case_.baseSettlementAmount && (
                             <div className="mt-1 space-y-1">
                               <p className="text-sm text-muted-foreground">
@@ -353,29 +361,20 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                         </div>
 
                         <div>
-                          <h4 className="font-medium mb-2">Attorney Fees</h4>
-                          <p className="text-lg font-semibold">
-                            {formatCurrency(attorneyFeesAmount)}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {case_.attorneyFeesMethod === "Percentage" ? (
-                              <CitationTooltip
-                                citation={
-                                  case_.citations?.attorneyFeesPercentage
-                                }
-                              >
-                                <span>
-                                  {case_.attorneyFeesPercentage}% of settlement
-                                </span>
-                              </CitationTooltip>
-                            ) : (
-                              <span>
-                                Lodestar:{" "}
-                                {formatCurrency(case_.lodestardAmount || 0)} ×{" "}
-                                {case_.multiplier}
-                              </span>
-                            )}
-                          </p>
+                          <StatWithTooltip
+                            label="Attorney Fees"
+                            value={formatCurrency(attorneyFeesAmount)}
+                            description={
+                              case_.attorneyFeesMethod === "Percentage"
+                                ? `${case_.attorneyFeesPercentage}% of settlement`
+                                : `Lodestar: ${formatCurrency(case_.lodestardAmount || 0)} × ${case_.multiplier}`
+                            }
+                            citation={
+                              case_.attorneyFeesMethod === "Percentage"
+                                ? case_.citations?.attorneyFeesPercentage
+                                : case_.citations?.lodestardAmount
+                            }
+                          />
                           <p className="text-xs text-muted-foreground mt-1">
                             {case_.attorneyFeesPaidFromFund
                               ? "Paid from fund"
@@ -383,69 +382,50 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                           </p>
                         </div>
 
-                        <div>
-                          <h4 className="font-medium mb-2">Class Size</h4>
-                          <p className="text-lg font-semibold">
-                            {formatNumber(case_.classSize)}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Affected individuals
-                          </p>
-                        </div>
+                        <StatWithTooltip
+                          label="Class Size"
+                          value={formatNumber(case_.classSize)}
+                          description="Affected individuals"
+                          citation={case_.citations?.classSize}
+                        />
 
-                        <div>
-                          <h4 className="font-medium mb-2">Claims Submitted</h4>
-                          <CitationTooltip
-                            citation={case_.citations?.claimsSubmitted}
-                          >
-                            <p className="text-lg font-semibold">
-                              {formatNumber(case_.claimsSubmitted)}
-                            </p>
-                          </CitationTooltip>
-                          <p className="text-sm text-muted-foreground">
-                            {case_.claimsSubmittedPercent}% participation rate
-                          </p>
-                        </div>
+                        <StatWithTooltip
+                          label="Claims Submitted"
+                          value={formatNumber(case_.claimsSubmitted)}
+                          description={`${case_.claimsSubmittedPercent}% participation rate`}
+                          citation={case_.citations?.claimsSubmitted}
+                        />
 
                         {case_.classRepServiceAwards && (
-                          <div>
-                            <h4 className="font-medium mb-2">
-                              Class Rep Awards
-                            </h4>
-                            <p className="text-lg font-semibold">
-                              {formatCurrency(case_.classRepServiceAwards)}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              Per named plaintiff
-                            </p>
-                          </div>
+                          <StatWithTooltip
+                            label="Class Rep Awards"
+                            value={formatCurrency(case_.classRepServiceAwards)}
+                            description="Per named plaintiff"
+                            citation={case_.citations?.classRepServiceAwards}
+                          />
                         )}
 
                         {case_.claimsAdminCosts && (
-                          <div>
-                            <h4 className="font-medium mb-2">Admin Costs</h4>
-                            <p className="text-lg font-semibold">
-                              {formatCurrency(case_.claimsAdminCosts)}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              Claims administration
-                            </p>
-                          </div>
+                          <StatWithTooltip
+                            label="Admin Costs"
+                            value={formatCurrency(case_.claimsAdminCosts)}
+                            description="Claims administration"
+                            citation={case_.citations?.claimsAdminCosts}
+                          />
                         )}
                       </div>
 
                       {case_.creditMonitoring &&
                         case_.creditMonitoringAmount && (
                           <div className="pt-4 border-t">
-                            <h4 className="font-medium mb-2">
-                              Credit Monitoring
-                            </h4>
-                            <p className="text-lg font-semibold">
-                              {formatCurrency(case_.creditMonitoringAmount)}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              Allocated for credit monitoring services
-                            </p>
+                            <StatWithTooltip
+                              label="Credit Monitoring"
+                              value={formatCurrency(
+                                case_.creditMonitoringAmount,
+                              )}
+                              description="Allocated for credit monitoring services"
+                              citation={case_.citations?.creditMonitoringAmount}
+                            />
                           </div>
                         )}
 
@@ -468,7 +448,12 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                             <Building className="h-4 w-4" />
                             Plaintiff&apos;s Counsel
                           </h4>
-                          <p className="text-sm">{case_.plaintiffCounsel}</p>
+                          <ValueWithTooltip
+                            citation={case_.citations?.plaintiffCounsel}
+                            className="text-sm"
+                          >
+                            {case_.plaintiffCounsel}
+                          </ValueWithTooltip>
                         </div>
 
                         <div>
@@ -476,7 +461,12 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                             <Shield className="h-4 w-4" />
                             Defense Counsel
                           </h4>
-                          <p className="text-sm">{case_.defenseCounsel}</p>
+                          <ValueWithTooltip
+                            citation={case_.citations?.defenseCounsel}
+                            className="text-sm"
+                          >
+                            {case_.defenseCounsel}
+                          </ValueWithTooltip>
                         </div>
                       </div>
 
@@ -501,24 +491,32 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                             <AlertCircle className="h-4 w-4" />
                             Cause of Breach
                           </h4>
-                          <Badge variant="destructive">
-                            {case_.causeOfBreach}
-                          </Badge>
+                          <ValueWithTooltip
+                            citation={case_.citations?.causeOfBreach}
+                          >
+                            <Badge variant="destructive">
+                              {case_.causeOfBreach}
+                            </Badge>
+                          </ValueWithTooltip>
                         </div>
 
                         <div>
                           <h4 className="font-medium mb-3">PII Affected</h4>
-                          <div className="flex flex-wrap gap-1">
-                            {case_.piiAffected.map((pii) => (
-                              <Badge
-                                key={pii}
-                                variant="outline"
-                                className="text-xs"
-                              >
-                                {pii}
-                              </Badge>
-                            ))}
-                          </div>
+                          <ValueWithTooltip
+                            citation={case_.citations?.piiAffected}
+                          >
+                            <div className="flex flex-wrap gap-1">
+                              {case_.piiAffected.map((pii) => (
+                                <Badge
+                                  key={pii}
+                                  variant="outline"
+                                  className="text-xs"
+                                >
+                                  {pii}
+                                </Badge>
+                              ))}
+                            </div>
+                          </ValueWithTooltip>
                         </div>
                       </div>
                     </TabsContent>
@@ -526,12 +524,12 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                     <TabsContent value="relief" className="mt-6 space-y-4">
                       {case_.injunctiveReliefAmount && (
                         <div className="mb-4">
-                          <h4 className="font-medium mb-2">
-                            Total Injunctive Relief Amount
-                          </h4>
-                          <p className="text-2xl font-bold text-primary">
-                            {formatCurrency(case_.injunctiveReliefAmount)}
-                          </p>
+                          <StatWithTooltip
+                            label="Total Injunctive Relief Amount"
+                            value={formatCurrency(case_.injunctiveReliefAmount)}
+                            citation={case_.citations?.injunctiveReliefAmount}
+                            valueClassName="text-2xl text-primary"
+                          />
                         </div>
                       )}
 
@@ -540,17 +538,21 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                           <CheckCircle className="h-4 w-4" />
                           Injunctive Relief Measures
                         </h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                          {case_.injunctiveRelief.map((relief) => (
-                            <div
-                              key={relief}
-                              className="flex items-center gap-2 text-sm"
-                            >
-                              <CheckCircle className="h-3 w-3 text-green-600" />
-                              {relief}
-                            </div>
-                          ))}
-                        </div>
+                        <ValueWithTooltip
+                          citation={case_.citations?.injunctiveRelief}
+                        >
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            {case_.injunctiveRelief.map((relief) => (
+                              <div
+                                key={relief}
+                                className="flex items-center gap-2 text-sm"
+                              >
+                                <CheckCircle className="h-3 w-3 text-green-600" />
+                                {relief}
+                              </div>
+                            ))}
+                          </div>
+                        </ValueWithTooltip>
                       </div>
 
                       {case_.thirdPartyAssessments &&
@@ -559,13 +561,19 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                             <h4 className="font-medium mb-3">
                               Third-Party Security Assessments
                             </h4>
-                            <div className="flex flex-wrap gap-2">
-                              {case_.thirdPartyAssessments.map((assessment) => (
-                                <Badge key={assessment} variant="outline">
-                                  {assessment}
-                                </Badge>
-                              ))}
-                            </div>
+                            <ValueWithTooltip
+                              citation={case_.citations?.thirdPartyAssessments}
+                            >
+                              <div className="flex flex-wrap gap-2">
+                                {case_.thirdPartyAssessments.map(
+                                  (assessment) => (
+                                    <Badge key={assessment} variant="outline">
+                                      {assessment}
+                                    </Badge>
+                                  ),
+                                )}
+                              </div>
+                            </ValueWithTooltip>
                           </div>
                         )}
 
@@ -593,49 +601,42 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                     >
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {case_.baseCashCompensation !== undefined && (
-                          <div>
-                            <h4 className="font-medium mb-3">
-                              Base Cash Compensation
-                            </h4>
-                            <CitationTooltip
-                              citation={case_.citations?.baseCashCompensation}
-                            >
-                              <p className="text-xl font-semibold">
-                                {formatCurrency(case_.baseCashCompensation)}
-                              </p>
-                            </CitationTooltip>
-                            <p className="text-sm text-muted-foreground">
-                              Per claimant who submits a claim
-                            </p>
-                          </div>
+                          <StatWithTooltip
+                            label="Base Cash Compensation"
+                            value={formatCurrency(case_.baseCashCompensation)}
+                            description="Per claimant who submits a claim"
+                            citation={case_.citations?.baseCashCompensation}
+                            valueClassName="text-xl"
+                          />
                         )}
 
                         {case_.maxReimbursementOutOfPocket !== undefined && (
-                          <div>
-                            <h4 className="font-medium mb-3">
-                              Out of Pocket Costs
-                            </h4>
-                            <p className="text-xl font-semibold">
-                              {formatCurrency(
-                                case_.maxReimbursementOutOfPocket,
-                              )}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              Maximum reimbursement per individual
-                            </p>
-                          </div>
+                          <StatWithTooltip
+                            label="Out of Pocket Costs"
+                            value={formatCurrency(
+                              case_.maxReimbursementOutOfPocket,
+                            )}
+                            description="Maximum reimbursement per individual"
+                            citation={
+                              case_.citations?.maxReimbursementOutOfPocket
+                            }
+                            valueClassName="text-xl"
+                          />
                         )}
 
                         {case_.maxReimbursementDocumentedTime !== undefined && (
                           <div>
-                            <h4 className="font-medium mb-3">
-                              Documented Time
-                            </h4>
-                            <p className="text-xl font-semibold">
-                              {formatCurrency(
+                            <StatWithTooltip
+                              label="Documented Time"
+                              value={formatCurrency(
                                 case_.maxReimbursementDocumentedTime,
                               )}
-                            </p>
+                              description="Max reimbursement"
+                              citation={
+                                case_.citations?.maxReimbursementDocumentedTime
+                              }
+                              valueClassName="text-xl"
+                            />
                             <div className="mt-2 space-y-1">
                               {case_.maxHoursDocumented && (
                                 <p className="text-sm text-muted-foreground">
@@ -655,14 +656,17 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
 
                         {case_.maxReimbursementUndocumented !== undefined && (
                           <div>
-                            <h4 className="font-medium mb-3">
-                              Undocumented Time
-                            </h4>
-                            <p className="text-xl font-semibold">
-                              {formatCurrency(
+                            <StatWithTooltip
+                              label="Undocumented Time"
+                              value={formatCurrency(
                                 case_.maxReimbursementUndocumented,
                               )}
-                            </p>
+                              description="Max reimbursement"
+                              citation={
+                                case_.citations?.maxReimbursementUndocumented
+                              }
+                              valueClassName="text-xl"
+                            />
                             <div className="mt-2 space-y-1">
                               {case_.maxHoursUndocumented && (
                                 <p className="text-sm text-muted-foreground">
@@ -718,9 +722,12 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                             </Badge>
                             {case_.hasProRataAdjustment &&
                               case_.proRataAmount && (
-                                <span className="text-sm text-muted-foreground">
+                                <ValueWithTooltip
+                                  citation={case_.citations?.proRataAmount}
+                                  className="text-sm text-muted-foreground"
+                                >
                                   ({formatCurrency(case_.proRataAmount)})
-                                </span>
+                                </ValueWithTooltip>
                               )}
                           </div>
                         </div>

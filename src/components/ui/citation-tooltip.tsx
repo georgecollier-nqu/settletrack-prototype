@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Info, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Citation } from "@/lib/mock-data";
+import { toast } from "sonner";
 
 interface CitationTooltipProps {
   citation?: Citation;
@@ -23,57 +24,50 @@ export function CitationTooltip({ citation, children }: CitationTooltipProps) {
 
   return (
     <TooltipProvider>
-      <Tooltip delayDuration={0}>
+      <Tooltip delayDuration={300}>
         <TooltipTrigger asChild>
-          <span className="inline-flex items-center gap-1 cursor-help">
+          <span className="inline-flex items-center gap-0.5 cursor-help underline decoration-dotted underline-offset-4 decoration-muted-foreground/40">
             {children}
-            <Info className="h-3 w-3 text-muted-foreground/50 hover:text-muted-foreground transition-colors" />
           </span>
         </TooltipTrigger>
-        <TooltipContent className="max-w-sm p-0" align="start">
-          <div className="p-3 space-y-2">
-            <div className="flex items-center justify-between gap-2">
-              <h4 className="font-medium text-sm">Source Citation</h4>
+        <TooltipContent
+          className="max-w-xs p-4 bg-popover text-popover-foreground border shadow-md"
+          align="start"
+          sideOffset={5}
+        >
+          <div className="space-y-2">
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-1">
+                <p className="text-sm font-medium leading-none">
+                  {citation.documentName}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Page {citation.pageNumber}
+                </p>
+              </div>
               <Button
-                size="sm"
+                size="icon"
                 variant="ghost"
-                className="h-6 px-2 text-xs"
+                className="h-6 w-6 -mt-1 -mr-1"
                 onClick={() => {
-                  // In a real app, this would open the document
-                  console.log(
-                    `Opening ${citation.documentName} at page ${citation.pageNumber}`,
-                  );
+                  // Copy citation text to clipboard
+                  const citationText = `${citation.documentName}, Page ${citation.pageNumber}: "${citation.quote}"`;
+                  navigator.clipboard.writeText(citationText);
+
+                  // Show toast notification
+                  toast.success("Citation copied to clipboard", {
+                    description: `In a full implementation, this would open ${citation.documentName} and you can search for the copied text to find the relevant section`,
+                  });
                 }}
               >
-                <ExternalLink className="h-3 w-3 mr-1" />
-                View
+                <ExternalLink className="h-3 w-3" />
+                <span className="sr-only">View source</span>
               </Button>
             </div>
 
-            <div className="space-y-1 text-xs">
-              <div>
-                <span className="font-medium text-muted-foreground">
-                  Document:
-                </span>
-                <p className="text-foreground">{citation.documentName}</p>
-              </div>
-
-              <div>
-                <span className="font-medium text-muted-foreground">Page:</span>
-                <span className="text-foreground ml-1">
-                  {citation.pageNumber}
-                </span>
-              </div>
-
-              <div>
-                <span className="font-medium text-muted-foreground">
-                  Quote:
-                </span>
-                <p className="text-foreground italic mt-1 text-xs leading-relaxed">
-                  &ldquo;{citation.quote}&rdquo;
-                </p>
-              </div>
-            </div>
+            <blockquote className="text-xs text-muted-foreground border-l-2 pl-2 italic">
+              {citation.quote}
+            </blockquote>
           </div>
         </TooltipContent>
       </Tooltip>
