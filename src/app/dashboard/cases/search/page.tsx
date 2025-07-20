@@ -76,6 +76,7 @@ import { ValueWithTooltip } from "@/components/ui/value-with-tooltip";
 
 const filterSchema = z.object({
   searchTerm: z.string().optional(),
+  caseType: z.string().optional(), // Single selection for case type
   yearFrom: z.number().min(2000).max(2030).optional(),
   yearTo: z.number().min(2000).max(2030).optional(),
   minSettlement: z.number().min(0).optional(),
@@ -87,13 +88,10 @@ const filterSchema = z.object({
   piiAffected: z.array(z.string()).optional(),
   causeOfBreach: z.array(z.string()).optional(),
   classType: z.array(z.string()).optional(),
-  caseType: z.array(z.string()).optional(),
   isMDL: z.boolean().optional(),
   hasMinor: z.boolean().optional(),
-  creditMon: z.boolean().optional(),
   defenseCounsel: z.array(z.string()).optional(),
   plaintiffCounsel: z.array(z.string()).optional(),
-  judgeName: z.array(z.string()).optional(),
   settlementType: z.array(z.string()).optional(),
 });
 
@@ -144,10 +142,24 @@ const filterGroups: FilterGroup[] = [
     ],
   },
   {
+    id: "caseType",
+    label: "Case Type",
+    icon: FileText,
+    defaultOpen: true,
+    filters: [
+      {
+        name: "caseType",
+        label: "Case Type",
+        type: "select",
+        options: filterOptions.caseTypes,
+      },
+    ],
+  },
+  {
     id: "timeline",
     label: "Timeline",
     icon: Calendar,
-    defaultOpen: true,
+    defaultOpen: false,
     filters: [
       {
         name: "yearFrom",
@@ -166,40 +178,8 @@ const filterGroups: FilterGroup[] = [
     ],
   },
   {
-    id: "financial",
-    label: "Financial Details",
-    icon: CircleDollarSign,
-    defaultOpen: false,
-    filters: [
-      { name: "minSettlement", label: "Min Settlement ($)", type: "number" },
-      { name: "maxSettlement", label: "Max Settlement ($)", type: "number" },
-      { name: "minClassSize", label: "Min Class Size", type: "number" },
-      { name: "maxClassSize", label: "Max Class Size", type: "number" },
-    ],
-  },
-  {
-    id: "breach",
-    label: "Breach Information",
-    icon: Shield,
-    defaultOpen: false,
-    filters: [
-      {
-        name: "piiAffected",
-        label: "PII Affected",
-        type: "select",
-        options: filterOptions.piiTypes,
-      },
-      {
-        name: "causeOfBreach",
-        label: "Cause of Breach",
-        type: "select",
-        options: filterOptions.breachCauses,
-      },
-    ],
-  },
-  {
-    id: "location",
-    label: "Location & Court",
+    id: "court",
+    label: "Court",
     icon: MapPin,
     defaultOpen: false,
     filters: [
@@ -214,35 +194,6 @@ const filterGroups: FilterGroup[] = [
         label: "Federal Courts",
         type: "select",
         options: filterOptions.courts,
-      },
-    ],
-  },
-  {
-    id: "case-details",
-    label: "Case Details",
-    icon: FileText,
-    defaultOpen: false,
-    filters: [
-      { name: "isMDL", label: "Multi-District Litigation", type: "checkbox" },
-      { name: "hasMinor", label: "Has Minor Subclass", type: "checkbox" },
-      { name: "creditMon", label: "Credit Monitoring", type: "checkbox" },
-      {
-        name: "settlementType",
-        label: "Settlement Type",
-        type: "select",
-        options: ["Preliminary", "Final", "Both"],
-      },
-      {
-        name: "caseType",
-        label: "Case Type",
-        type: "select",
-        options: filterOptions.caseTypes,
-      },
-      {
-        name: "classType",
-        label: "Class Type",
-        type: "select",
-        options: filterOptions.classTypes,
       },
     ],
   },
@@ -264,12 +215,52 @@ const filterGroups: FilterGroup[] = [
         type: "select",
         options: filterOptions.lawFirms,
       },
+    ],
+  },
+  {
+    id: "settlement-details",
+    label: "Settlement Details",
+    icon: CircleDollarSign,
+    defaultOpen: false,
+    filters: [
+      { name: "minSettlement", label: "Min Settlement ($)", type: "number" },
+      { name: "maxSettlement", label: "Max Settlement ($)", type: "number" },
+      { name: "minClassSize", label: "Min Class Size", type: "number" },
+      { name: "maxClassSize", label: "Max Class Size", type: "number" },
       {
-        name: "judgeName",
-        label: "Judge Name",
+        name: "settlementType",
+        label: "Settlement Type",
         type: "select",
-        options: Array.from(new Set(mockCases.map((c) => c.judgeName))).sort(),
+        options: ["Preliminary", "Final"],
       },
+    ],
+  },
+  {
+    id: "case-details",
+    label: "Case Details",
+    icon: Shield,
+    defaultOpen: false,
+    filters: [
+      {
+        name: "classType",
+        label: "Class Type",
+        type: "select",
+        options: filterOptions.classTypes,
+      },
+      {
+        name: "piiAffected",
+        label: "PII Affected",
+        type: "select",
+        options: filterOptions.piiTypes,
+      },
+      {
+        name: "causeOfBreach",
+        label: "Cause of Breach",
+        type: "select",
+        options: filterOptions.breachCauses,
+      },
+      { name: "isMDL", label: "Multi-District Litigation", type: "checkbox" },
+      { name: "hasMinor", label: "Implicates Minors", type: "checkbox" },
     ],
   },
 ];
@@ -320,10 +311,8 @@ function useFilteredCases(cases: Case[]) {
         caseType,
         isMDL,
         hasMinor,
-        creditMon,
         defenseCounsel,
         plaintiffCounsel,
-        judgeName,
         settlementType,
       } = values;
 
@@ -335,6 +324,7 @@ function useFilteredCases(cases: Case[]) {
       ) {
         return false;
       }
+      if (caseType && c.caseType !== caseType) return false;
       if (yearFrom && c.year < yearFrom) return false;
       if (yearTo && c.year > yearTo) return false;
       if (minSettlement && c.settlementAmount < minSettlement) return false;
@@ -355,12 +345,9 @@ function useFilteredCases(cases: Case[]) {
         !classType.some((ct) => c.classType.includes(ct))
       )
         return false;
-      if (caseType?.length && !caseType.includes(c.caseType)) return false;
       if (isMDL !== undefined && c.isMultiDistrictLitigation !== isMDL)
         return false;
       if (hasMinor !== undefined && c.hasMinorSubclass !== hasMinor)
-        return false;
-      if (creditMon !== undefined && c.creditMonitoring !== creditMon)
         return false;
       if (defenseCounsel?.length && !defenseCounsel.includes(c.defenseCounsel))
         return false;
@@ -369,12 +356,8 @@ function useFilteredCases(cases: Case[]) {
         !plaintiffCounsel.includes(c.plaintiffCounsel)
       )
         return false;
-      if (judgeName?.length && !judgeName.includes(c.judgeName)) return false;
-      if (settlementType?.length) {
-        const includesBoth = settlementType.includes("Both");
-        const matchesType = settlementType.includes(c.settlementType);
-        if (!includesBoth && !matchesType) return false;
-      }
+      if (settlementType?.length && !settlementType.includes(c.settlementType))
+        return false;
       return true;
     });
   }, [cases, values]);
@@ -598,93 +581,42 @@ export default function CaseSearchPage() {
                                             control={form.control}
                                             name={cfg.name}
                                             render={({ field: ctl }) => {
-                                              const currentValues =
-                                                (ctl.value as
-                                                  | string[]
-                                                  | undefined) || [];
-
-                                              // Use MultiSelect for settlement type
-                                              if (
-                                                cfg.name === "settlementType"
-                                              ) {
+                                              // Case Type - single select with conditional shading
+                                              if (cfg.name === "caseType") {
                                                 return (
-                                                  <MultiSelect
-                                                    options={cfg.options!}
-                                                    value={currentValues}
-                                                    onChange={ctl.onChange}
-                                                    placeholder={`Select ${cfg.label.toLowerCase()}…`}
-                                                  />
+                                                  <Select
+                                                    value={ctl.value as string || ""}
+                                                    onValueChange={ctl.onChange}
+                                                  >
+                                                    <SelectTrigger className="h-9">
+                                                      <SelectValue placeholder="Select case type…" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                      {cfg.options!.map((opt) => (
+                                                        <SelectItem
+                                                          key={opt}
+                                                          value={opt}
+                                                          disabled={opt !== "Data Breach"}
+                                                          className={opt !== "Data Breach" ? "text-muted-foreground" : ""}
+                                                        >
+                                                          {opt}
+                                                          {opt !== "Data Breach" && " (Coming Soon)"}
+                                                        </SelectItem>
+                                                      ))}
+                                                    </SelectContent>
+                                                  </Select>
                                                 );
                                               }
 
+                                              // All other selects - use MultiSelect
+                                              const currentValues = (ctl.value as string[] | undefined) || [];
                                               return (
-                                                <>
-                                                  <Select
-                                                    value=""
-                                                    onValueChange={(val) => {
-                                                      if (
-                                                        !currentValues.includes(
-                                                          val,
-                                                        )
-                                                      ) {
-                                                        ctl.onChange([
-                                                          ...currentValues,
-                                                          val,
-                                                        ]);
-                                                      }
-                                                    }}
-                                                  >
-                                                    <SelectTrigger className="h-9">
-                                                      <SelectValue
-                                                        placeholder={`Select ${cfg.label.toLowerCase()}…`}
-                                                      />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                      {cfg.options!.map(
-                                                        (opt) => (
-                                                          <SelectItem
-                                                            key={opt}
-                                                            value={opt}
-                                                          >
-                                                            {opt}
-                                                          </SelectItem>
-                                                        ),
-                                                      )}
-                                                    </SelectContent>
-                                                  </Select>
-                                                  {currentValues.length > 0 && (
-                                                    <div className="flex flex-wrap gap-1 mt-2">
-                                                      {currentValues.map(
-                                                        (v: string) => (
-                                                          <Badge
-                                                            key={v}
-                                                            variant="secondary"
-                                                            className="text-xs py-0.5"
-                                                          >
-                                                            {v}
-                                                            <button
-                                                              type="button"
-                                                              onClick={(e) => {
-                                                                e.preventDefault();
-                                                                ctl.onChange(
-                                                                  currentValues.filter(
-                                                                    (
-                                                                      x: string,
-                                                                    ) =>
-                                                                      x !== v,
-                                                                  ),
-                                                                );
-                                                              }}
-                                                              className="ml-1 hover:text-destructive"
-                                                            >
-                                                              ×
-                                                            </button>
-                                                          </Badge>
-                                                        ),
-                                                      )}
-                                                    </div>
-                                                  )}
-                                                </>
+                                                <MultiSelect
+                                                  options={cfg.options!}
+                                                  value={currentValues}
+                                                  onChange={ctl.onChange}
+                                                  placeholder={`Select ${cfg.label.toLowerCase()}…`}
+                                                />
                                               );
                                             }}
                                           />
