@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -15,30 +15,54 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight, Loader2, AlertCircle } from "lucide-react";
+import { useAuth } from "@/contexts/auth-context";
+import { MFAVerification } from "@/components/auth/mfa-verification";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login, mfaRequired, isAuthenticated } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/dashboard");
+    }
+  }, [isAuthenticated, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
 
-    // Simulate authentication
-    setTimeout(() => {
-      if (email && password) {
-        router.push("/dashboard");
-      } else {
-        setError("Please enter both email and password");
-        setIsLoading(false);
+    try {
+      const result = await login({ email, password });
+      if (!result.requiresMFA) {
+        // Navigation is handled by the auth context
       }
-    }, 1000);
+    } catch (err) {
+      setError("Invalid email or password");
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  const handleCancelMFA = () => {
+    window.location.reload();
+  };
+
+  // Show MFA verification if required
+  if (mfaRequired) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <MFAVerification onCancel={handleCancelMFA} />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -71,9 +95,16 @@ export default function LoginPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
                 <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
+
+              <div className="bg-muted/50 p-3 rounded-md text-sm space-y-1">
+                <p className="font-medium">Demo Credentials:</p>
+                <p>Admin: john@lawfirm.com / password</p>
+                <p>User: jane@lawfirm.com / password</p>
+              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>

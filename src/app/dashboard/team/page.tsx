@@ -152,7 +152,7 @@ export default function TeamPage() {
 
   const handleRoleChange = (
     memberId: string,
-    newRole: "team_leader" | "user",
+    newRole: "firm_admin" | "user",
   ) => {
     setTeamMembers((prev) =>
       prev.map((member) =>
