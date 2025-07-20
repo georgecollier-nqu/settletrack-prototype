@@ -6,7 +6,7 @@ export const AI_MODELS = {
   GPT_41: "GPT 4.1",
 } as const;
 
-export type AIModelName = typeof AI_MODELS[keyof typeof AI_MODELS];
+export type AIModelName = (typeof AI_MODELS)[keyof typeof AI_MODELS];
 
 // Settlement types
 export const SETTLEMENT_TYPES = {

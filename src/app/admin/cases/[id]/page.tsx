@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { CASE_STATUS, AI_MODELS } from "@/lib/constants";
+import { CASE_STATUS } from "@/lib/constants";
 import { mockCaseData, mockDocuments } from "@/lib/mock-case-details";
-import type { ExtractedField, EditFieldData, EditValues, FieldSource } from "./types";
+import type { ExtractedField, EditFieldData, EditValues } from "./types";
 import {
   CaseHeader,
   DataFieldSection,
@@ -20,7 +20,7 @@ export default function CaseDetailsPage() {
   const [adminNotes, setAdminNotes] = useState("");
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [editFieldData, setEditFieldData] = useState<EditFieldData | null>(
-    null
+    null,
   );
   const [editValues, setEditValues] = useState<EditValues>({
     value: "",
@@ -36,12 +36,19 @@ export default function CaseDetailsPage() {
     // Initialize with the default selected values from mockCaseData
     const initial: Record<string, number> = {};
     Object.entries(mockCaseData).forEach(([key, field]) => {
-      if (typeof field === 'object' && field !== null && 'modelExtractions' in field) {
+      if (
+        typeof field === "object" &&
+        field !== null &&
+        "modelExtractions" in field
+      ) {
         const extractedField = field as ExtractedField;
-        if (extractedField.modelExtractions && extractedField.modelExtractions.length > 0) {
+        if (
+          extractedField.modelExtractions &&
+          extractedField.modelExtractions.length > 0
+        ) {
           // Find the index of the selected extraction or default to 0
           const selectedIndex = extractedField.modelExtractions.findIndex(
-            (ext) => ext.isSelected
+            (ext) => ext.isSelected,
           );
           initial[key] = selectedIndex >= 0 ? selectedIndex : 0;
         }
@@ -54,7 +61,7 @@ export default function CaseDetailsPage() {
     field: string,
     label: string,
     data: ExtractedField,
-    fieldType: string = "text"
+    fieldType: string = "text",
   ) => {
     // If we have model extractions, use the selected one based on state
     let valueToEdit = data.value;
@@ -109,10 +116,10 @@ export default function CaseDetailsPage() {
   // Handle selecting a model extraction
   const handleSelectModelExtraction = (
     fieldKey: string,
-    modelIndex: number
+    modelIndex: number,
   ) => {
     console.log(
-      `Selected ${fieldKey} extraction from model index ${modelIndex}`
+      `Selected ${fieldKey} extraction from model index ${modelIndex}`,
     );
     setSelectedExtractions((prev) => ({
       ...prev,
@@ -122,7 +129,10 @@ export default function CaseDetailsPage() {
 
   return (
     <>
-      <CaseHeader caseId={mockCaseData.id.value} caseName={mockCaseData.name.value} />
+      <CaseHeader
+        caseId={mockCaseData.id.value}
+        caseName={mockCaseData.name.value}
+      />
 
       {/* Content */}
       <main className="flex-1 overflow-y-auto p-6 bg-muted/30">
@@ -149,8 +159,8 @@ export default function CaseDetailsPage() {
           <DocumentsList documents={mockDocuments} />
 
           {/* Data Sections */}
-          <DataFieldSection 
-            mockCaseData={mockCaseData} 
+          <DataFieldSection
+            mockCaseData={mockCaseData}
             selectedExtractions={selectedExtractions}
             onEdit={handleEdit}
             onSelectModelExtraction={handleSelectModelExtraction}

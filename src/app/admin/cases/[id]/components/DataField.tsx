@@ -16,7 +16,7 @@ interface DataFieldProps {
     field: string,
     label: string,
     data: ExtractedField,
-    fieldType: string
+    fieldType: string,
   ) => void;
   onSelectModelExtraction?: (fieldKey: string, modelIndex: number) => void;
 }
@@ -104,7 +104,7 @@ export function DataField({
                       <span className="text-lg font-semibold">
                         {displayValue(
                           extraction.value,
-                          extraction.displayValue
+                          extraction.displayValue,
                         )}
                       </span>
                     </div>
@@ -150,9 +150,7 @@ export function DataField({
               <div className="flex items-center gap-2 text-muted-foreground">
                 <FileText className="h-3 w-3" />
                 <span className="font-medium">{data.source.document}</span>
-                {data.source.page > 0 && (
-                  <span>• Page {data.source.page}</span>
-                )}
+                {data.source.page > 0 && <span>• Page {data.source.page}</span>}
               </div>
               {data.source.text && (
                 <p className="text-gray-600 italic">

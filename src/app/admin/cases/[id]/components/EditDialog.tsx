@@ -43,7 +43,7 @@ export function EditDialog({
 }: EditDialogProps) {
   const getSelectOptions = () => {
     if (!editFieldData) return [];
-    
+
     switch (editFieldData.field) {
       case "settlementType":
         return SELECT_OPTIONS.SETTLEMENT_TYPE;

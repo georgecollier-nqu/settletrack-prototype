@@ -1,8 +1,8 @@
 // Mock data for case details page
-import type { FieldSource, ExtractedField, ModelExtraction } from "@/app/admin/cases/[id]/types";
+import type { MockCaseData } from "@/app/admin/cases/[id]/types";
 import { AI_MODELS } from "@/lib/constants";
 
-export const mockCaseData = {
+export const mockCaseData: MockCaseData = {
   // Basic Information
   id: {
     value: "SET-123456-A",
