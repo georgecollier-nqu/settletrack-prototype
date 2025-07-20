@@ -47,10 +47,10 @@ export function DataFieldSection({
   }) => {
     const fieldData = mockCaseData[fieldKey];
     // Type guard to ensure we have an ExtractedField
-    if (typeof fieldData === 'string') {
+    if (typeof fieldData === "string") {
       return null; // Skip non-ExtractedField properties like status, flaggedBy, etc.
     }
-    
+
     return (
       <DataField
         icon={icon}

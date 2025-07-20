@@ -30,8 +30,8 @@ export function CaseHeader({ caseId, caseName }: CaseHeaderProps) {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between">
+      <div className="w-full px-6 py-4">
+        <div className="flex items-center justify-between w-full">
           <div>
             <h1 className="text-2xl font-serif font-bold">
               QC Review: {caseId}
