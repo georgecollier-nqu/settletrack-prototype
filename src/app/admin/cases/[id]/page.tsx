@@ -47,10 +47,20 @@ interface FieldSource {
   text: string;
 }
 
+interface ModelExtraction<T = unknown> {
+  value: T;
+  displayValue?: string;
+  source: FieldSource;
+  model: "Gemini 2.5 Pro" | "GPT 4.1";
+  isSelected?: boolean;
+}
+
 interface ExtractedField<T = unknown> {
   value: T;
   displayValue?: string;
   source: FieldSource;
+  // Support multiple model extractions
+  modelExtractions?: ModelExtraction<T>[];
 }
 
 // Mock data structure with all 48 fields
@@ -139,6 +149,30 @@ const mockCaseData = {
       page: 12,
       text: "...the total settlement fund shall be TWO MILLION FIVE HUNDRED THOUSAND DOLLARS ($2,500,000)...",
     },
+    modelExtractions: [
+      {
+        value: 2500000,
+        displayValue: "$2,500,000",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 12,
+          text: "...the total settlement fund shall be TWO MILLION FIVE HUNDRED THOUSAND DOLLARS ($2,500,000)...",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: true,
+      },
+      {
+        value: 2750000,
+        displayValue: "$2,750,000",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 14,
+          text: "...including all contingent amounts, the maximum settlement exposure is $2,750,000...",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: false,
+      },
+    ],
   },
   baseSettlementAmount: {
     value: 2000000,
@@ -184,6 +218,30 @@ const mockCaseData = {
       page: 18,
       text: "...fees not to exceed one-third (33.3%)...",
     },
+    modelExtractions: [
+      {
+        value: 33.3,
+        displayValue: "33.3%",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 18,
+          text: "...fees not to exceed one-third (33.3%)...",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: true,
+      },
+      {
+        value: 30,
+        displayValue: "30%",
+        source: {
+          document: "motion_for_fees.pdf",
+          page: 5,
+          text: "Class counsel requests 30% of the settlement fund",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: false,
+      },
+    ],
   },
   attorneyFeesPaidFromFund: {
     value: true,
@@ -225,6 +283,30 @@ const mockCaseData = {
       page: 3,
       text: "...approximately 15,000 individuals...",
     },
+    modelExtractions: [
+      {
+        value: 15000,
+        displayValue: "15,000",
+        source: {
+          document: "notice_of_class.pdf",
+          page: 3,
+          text: "...approximately 15,000 individuals...",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+      {
+        value: 15234,
+        displayValue: "15,234",
+        source: {
+          document: "claims_report.pdf",
+          page: 2,
+          text: "Total class members identified: 15,234",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+    ],
   },
   classType: {
     value: ["Consumers", "Employees"],
@@ -297,6 +379,30 @@ const mockCaseData = {
       page: 5,
       text: "Base compensation of $125 per claimant",
     },
+    modelExtractions: [
+      {
+        value: 125,
+        displayValue: "$125",
+        source: {
+          document: "notice_of_class.pdf",
+          page: 5,
+          text: "Base compensation of $125 per claimant",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: false,
+      },
+      {
+        value: 150,
+        displayValue: "$150",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 22,
+          text: "Each valid claimant shall receive $150 base payment",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: true,
+      },
+    ],
   },
   maxReimbursementOutOfPocket: {
     value: 5000,
@@ -534,18 +640,27 @@ export default function CaseDetailsPage() {
     data: ExtractedField,
     fieldType: string = "text",
   ) => {
+    // If we have model extractions, use the selected one
+    const selectedExtraction = data.modelExtractions?.find((e) => e.isSelected);
+    const valueToEdit = selectedExtraction
+      ? selectedExtraction.value
+      : data.value;
+    const sourceToEdit = selectedExtraction
+      ? selectedExtraction.source
+      : data.source;
+
     setEditFieldData({
       field,
       label,
-      currentValue: data.value,
-      currentSource: data.source,
+      currentValue: valueToEdit,
+      currentSource: sourceToEdit,
       fieldType,
     });
     setEditValues({
-      value: data.value || "",
-      document: data.source.document,
-      page: data.source.page.toString(),
-      text: data.source.text,
+      value: valueToEdit || "",
+      document: sourceToEdit.document,
+      page: sourceToEdit.page.toString(),
+      text: sourceToEdit.text,
     });
     setShowEditDialog(true);
   };
@@ -571,6 +686,17 @@ export default function CaseDetailsPage() {
     router.push("/admin/cases");
   };
 
+  // Handle selecting a model extraction
+  const handleSelectModelExtraction = (
+    fieldKey: string,
+    modelIndex: number,
+  ) => {
+    console.log(
+      `Selected ${fieldKey} extraction from model index ${modelIndex}`,
+    );
+    // In a real implementation, this would update the backend
+  };
+
   // Component for displaying a data field with source
   const DataField = ({
     icon,
@@ -588,17 +714,21 @@ export default function CaseDetailsPage() {
     // Don't render if no value and no source
     if (!data.value && !data.source.document) return null;
 
-    const displayValue = () => {
+    const displayValue = (value: unknown, displayValueOverride?: string) => {
       if (fieldType === "boolean") {
-        return data.value ? "Yes" : "No";
+        return value ? "Yes" : "No";
       } else if (fieldType === "array") {
-        return Array.isArray(data.value) ? data.value.join(", ") : "";
-      } else if (data.displayValue) {
-        return data.displayValue;
+        return Array.isArray(value) ? value.join(", ") : "";
+      } else if (displayValueOverride) {
+        return displayValueOverride;
       } else {
-        return data.value?.toString() || "Not specified";
+        return value?.toString() || "Not specified";
       }
     };
+
+    // Check if we have multiple model extractions
+    const hasMultipleExtractions =
+      data.modelExtractions && data.modelExtractions.length > 1;
 
     return (
       <div className="border rounded-lg p-4 space-y-3 bg-white">
@@ -617,21 +747,92 @@ export default function CaseDetailsPage() {
           </Button>
         </div>
 
-        <div className="text-lg font-semibold">{displayValue()}</div>
+        {hasMultipleExtractions ? (
+          // Show multiple model extractions
+          <div className="space-y-3">
+            {data.modelExtractions!.map((extraction, index) => (
+              <div
+                key={`${fieldKey}-${extraction.model}`}
+                className={`border rounded-lg p-3 cursor-pointer transition-all ${
+                  extraction.isSelected
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-200 hover:border-gray-300"
+                }`}
+                onClick={() => handleSelectModelExtraction(fieldKey, index)}
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <input
+                        type="radio"
+                        name={`${fieldKey}-selection`}
+                        checked={extraction.isSelected || false}
+                        onChange={() =>
+                          handleSelectModelExtraction(fieldKey, index)
+                        }
+                        className="text-blue-600"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                      <span className="text-lg font-semibold">
+                        {displayValue(
+                          extraction.value,
+                          extraction.displayValue,
+                        )}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground ml-6">
+                      <span className="font-medium text-xs bg-gray-100 px-2 py-0.5 rounded">
+                        {extraction.model}
+                      </span>
+                    </div>
+                  </div>
+                </div>
 
-        {data.source.document && (
-          <div className="bg-gray-50 rounded p-3 space-y-1 text-sm">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <FileText className="h-3 w-3" />
-              <span className="font-medium">{data.source.document}</span>
-              {data.source.page > 0 && <span>• Page {data.source.page}</span>}
-            </div>
-            {data.source.text && (
-              <p className="text-gray-600 italic">
-                &quot;{data.source.text}&quot;
-              </p>
-            )}
+                {extraction.source.document && (
+                  <div className="bg-gray-50 rounded p-2 space-y-1 text-sm ml-6">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <FileText className="h-3 w-3" />
+                      <span className="font-medium">
+                        {extraction.source.document}
+                      </span>
+                      {extraction.source.page > 0 && (
+                        <span>• Page {extraction.source.page}</span>
+                      )}
+                    </div>
+                    {extraction.source.text && (
+                      <p className="text-gray-600 italic text-xs">
+                        &quot;{extraction.source.text}&quot;
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
+        ) : (
+          // Show single value (original behavior)
+          <>
+            <div className="text-lg font-semibold">
+              {displayValue(data.value, data.displayValue)}
+            </div>
+
+            {data.source.document && (
+              <div className="bg-gray-50 rounded p-3 space-y-1 text-sm">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <FileText className="h-3 w-3" />
+                  <span className="font-medium">{data.source.document}</span>
+                  {data.source.page > 0 && (
+                    <span>• Page {data.source.page}</span>
+                  )}
+                </div>
+                {data.source.text && (
+                  <p className="text-gray-600 italic">
+                    &quot;{data.source.text}&quot;
+                  </p>
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
     );
