@@ -67,7 +67,6 @@ import {
 
 import { mockCases, filterOptions, type Case } from "@/lib/mock-data";
 import { CaseDataOutput } from "@/components/case-data-output";
-import { cn } from "@/lib/utils";
 import { generateCaseSearchPDF, prepareCaseDataForExport } from "@/lib/pdf-export";
 import { ValueWithTooltip } from "@/components/ui/value-with-tooltip";
 
