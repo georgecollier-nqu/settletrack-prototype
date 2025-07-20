@@ -4,23 +4,15 @@ import React, { useMemo } from "react";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { type Case } from "@/lib/mock-data";
+import { TermWithDefinition } from "@/components/ui/definition-tooltip";
 
 interface CaseDataOutputProps {
   cases: Case[];
@@ -290,14 +282,13 @@ export function CaseDataOutput({ cases }: CaseDataOutputProps) {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="settlement" className="w-full">
-        <TabsList className="flex flex-wrap h-auto gap-1 p-1 md:grid md:grid-cols-7">
+        <TabsList className="flex flex-wrap h-auto gap-1 p-1 md:grid md:grid-cols-6">
           <TabsTrigger value="settlement">Settlement</TabsTrigger>
           <TabsTrigger value="attorney">Attorney Fees</TabsTrigger>
           <TabsTrigger value="class">Class/Claims</TabsTrigger>
           <TabsTrigger value="reimbursement">Reimbursements</TabsTrigger>
           <TabsTrigger value="injunctive">Injunctive</TabsTrigger>
           <TabsTrigger value="excess">Excess Funds</TabsTrigger>
-          <TabsTrigger value="sources">Sources</TabsTrigger>
         </TabsList>
 
         {/* Settlement Fund Tab */}
@@ -317,17 +308,21 @@ export function CaseDataOutput({ cases }: CaseDataOutputProps) {
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">
-                    Average Base Settlement
-                  </p>
+                  <TermWithDefinition term="Base Settlement Amount">
+                    <p className="text-sm text-muted-foreground mb-1">
+                      Average Base Settlement
+                    </p>
+                  </TermWithDefinition>
                   <p className="text-2xl font-bold">
                     {formatCurrency(stats.avgBaseSettlement)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">
-                    Average Contingent Settlement
-                  </p>
+                  <TermWithDefinition term="Contingent Settlement">
+                    <p className="text-sm text-muted-foreground mb-1">
+                      Average Contingent Settlement
+                    </p>
+                  </TermWithDefinition>
                   <p className="text-2xl font-bold">
                     {formatCurrency(stats.avgContingentSettlement)}
                   </p>
@@ -420,9 +415,11 @@ export function CaseDataOutput({ cases }: CaseDataOutputProps) {
                 <div className="space-y-4">
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium">
-                        Percentage of the Fund
-                      </span>
+                      <TermWithDefinition term="Percentage Method">
+                        <span className="text-sm font-medium">
+                          Percentage of the Fund
+                        </span>
+                      </TermWithDefinition>
                       <span className="text-sm">
                         {stats.percentageMethodFreq.toFixed(0)}%
                       </span>
@@ -434,9 +431,11 @@ export function CaseDataOutput({ cases }: CaseDataOutputProps) {
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium">
-                        Lodestar with Multiplier
-                      </span>
+                      <TermWithDefinition term="Lodestar Method">
+                        <span className="text-sm font-medium">
+                          Lodestar with Multiplier
+                        </span>
+                      </TermWithDefinition>
                       <span className="text-sm">
                         {stats.lodestarMethodFreq.toFixed(0)}%
                       </span>
@@ -575,7 +574,9 @@ export function CaseDataOutput({ cases }: CaseDataOutputProps) {
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground mb-1">
-                      Average claims submission rate
+                      <TermWithDefinition term="Claims Rate">
+                        Average claims submission rate
+                      </TermWithDefinition>
                     </p>
                     <p className="text-xl font-semibold">
                       {stats.avgClaimsPercent.toFixed(1)}%
@@ -591,7 +592,9 @@ export function CaseDataOutput({ cases }: CaseDataOutputProps) {
         <TabsContent value="reimbursement" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Individual Reimbursements</CardTitle>
+              <TermWithDefinition term="Individual Payout">
+                <CardTitle>Individual Reimbursements</CardTitle>
+              </TermWithDefinition>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
@@ -733,7 +736,9 @@ export function CaseDataOutput({ cases }: CaseDataOutputProps) {
         <TabsContent value="injunctive" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Injunctive Relief</CardTitle>
+              <TermWithDefinition term="Injunctive Relief">
+                <CardTitle>Injunctive Relief</CardTitle>
+              </TermWithDefinition>
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
@@ -896,7 +901,9 @@ export function CaseDataOutput({ cases }: CaseDataOutputProps) {
         <TabsContent value="excess" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Excess Funds</CardTitle>
+              <TermWithDefinition term="Excess Funds Disposition">
+                <CardTitle>Excess Funds</CardTitle>
+              </TermWithDefinition>
             </CardHeader>
             <CardContent>
               <div>
@@ -917,7 +924,9 @@ export function CaseDataOutput({ cases }: CaseDataOutputProps) {
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">Cy pres</span>
+                    <TermWithDefinition term="Cy Pres">
+                      <span className="text-sm">Cy pres</span>
+                    </TermWithDefinition>
                     <div className="flex items-center gap-2">
                       <Progress
                         value={stats.excessFundsStats.cyPres}
@@ -946,43 +955,6 @@ export function CaseDataOutput({ cases }: CaseDataOutputProps) {
           </Card>
         </TabsContent>
 
-        {/* Sources Tab */}
-        <TabsContent value="sources" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Sources</CardTitle>
-              <CardDescription>Cases included in this analysis</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Case Name</TableHead>
-                      <TableHead>Docket ID</TableHead>
-                      <TableHead>Court</TableHead>
-                      <TableHead>Year</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {cases.map((case_) => (
-                      <TableRow key={case_.id}>
-                        <TableCell className="font-medium">
-                          {case_.name}
-                        </TableCell>
-                        <TableCell>
-                          <code className="text-xs">{case_.docketId}</code>
-                        </TableCell>
-                        <TableCell>{case_.court}</TableCell>
-                        <TableCell>{case_.year}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
       </Tabs>
     </div>
   );

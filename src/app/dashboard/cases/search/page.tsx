@@ -62,11 +62,14 @@ import {
   FileText,
   Building,
   ArrowRight,
+  Download,
 } from "lucide-react";
 
 import { mockCases, filterOptions, type Case } from "@/lib/mock-data";
 import { CaseDataOutput } from "@/components/case-data-output";
 import { cn } from "@/lib/utils";
+import { generateCaseSearchPDF, prepareCaseDataForExport } from "@/lib/pdf-export";
+import { ValueWithTooltip } from "@/components/ui/value-with-tooltip";
 
 // —————————————————————————————————————————————————————————————————————————————
 // SCHEMAS
@@ -429,6 +432,30 @@ export default function CaseSearchPage() {
     saveForm.reset();
   };
 
+  const handleExportPDF = () => {
+    const exportData = filtered.map(prepareCaseDataForExport);
+    const filterValues = form.getValues();
+    
+    // Build filter summary
+    const filterSummary: string[] = [];
+    if (filterValues.searchTerm) filterSummary.push(`Search: "${filterValues.searchTerm}"`);
+    if (filterValues.yearFrom || filterValues.yearTo) {
+      filterSummary.push(`Years: ${filterValues.yearFrom || ''}–${filterValues.yearTo || ''}`);
+    }
+    if (filterValues.minSettlement || filterValues.maxSettlement) {
+      filterSummary.push(`Settlement: ${formatCurrency(filterValues.minSettlement || 0)}–${formatCurrency(filterValues.maxSettlement || 999999999)}`);
+    }
+    if (filterValues.states?.length) filterSummary.push(`States: ${filterValues.states.join(', ')}`);
+    if (filterValues.courts?.length) filterSummary.push(`Courts: ${filterValues.courts.length} selected`);
+    
+    generateCaseSearchPDF(exportData, {
+      title: 'Case Search Results Report',
+      subtitle: `${filtered.length} cases matching criteria`,
+      filterSummary: filterSummary.length > 0 ? filterSummary.join(' | ') : 'No filters applied',
+      generatedBy: 'Vibe Kanban Case Search',
+    });
+  };
+
   return (
     <>
       <DashboardHeader title="Case Search" />
@@ -652,6 +679,15 @@ export default function CaseSearchPage() {
                   size="sm"
                   variant="outline"
                   disabled={!filtered.length}
+                  onClick={handleExportPDF}
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Export PDF
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={!filtered.length}
                   onClick={() => setShowSave(true)}
                 >
                   <Save className="mr-2 h-4 w-4" />
@@ -698,10 +734,22 @@ export default function CaseSearchPage() {
                         </TableCell>
                         <TableCell>{c.year}</TableCell>
                         <TableCell className="text-right font-medium text-primary">
-                          {formatCurrency(c.settlementAmount)}
+                          {c.citations?.settlementAmount ? (
+                            <ValueWithTooltip citation={c.citations.settlementAmount}>
+                              {formatCurrency(c.settlementAmount)}
+                            </ValueWithTooltip>
+                          ) : (
+                            formatCurrency(c.settlementAmount)
+                          )}
                         </TableCell>
                         <TableCell className="text-right">
-                          {formatNumber(c.classSize)}
+                          {c.citations?.classSize ? (
+                            <ValueWithTooltip citation={c.citations.classSize}>
+                              {formatNumber(c.classSize)}
+                            </ValueWithTooltip>
+                          ) : (
+                            formatNumber(c.classSize)
+                          )}
                         </TableCell>
                         <TableCell>
                           <Badge
