@@ -69,6 +69,20 @@ const mockCaseData = {
   id: {
     value: "SET-123456-A",
     source: { document: "docket.pdf", page: 1, text: "Case No. SET-123456-A" },
+    modelExtractions: [
+      {
+        value: "SET-123456-A",
+        source: { document: "docket.pdf", page: 1, text: "Case No. SET-123456-A" },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: true,
+      },
+      {
+        value: "SET-123456",
+        source: { document: "complaint.pdf", page: 1, text: "Case Number SET-123456" },
+        model: "GPT 4.1" as const,
+        isSelected: false,
+      },
+    ],
   },
   name: {
     value: "In re Data Breach Litigation",
@@ -77,6 +91,28 @@ const mockCaseData = {
       page: 1,
       text: "In re Data Breach Litigation",
     },
+    modelExtractions: [
+      {
+        value: "In re Data Breach Litigation",
+        source: {
+          document: "complaint.pdf",
+          page: 1,
+          text: "In re Data Breach Litigation",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+      {
+        value: "In re: Data Breach Class Action Litigation",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 1,
+          text: "In re: Data Breach Class Action Litigation",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+    ],
   },
   docketId: {
     value: "1:2024cv04221",
@@ -85,6 +121,28 @@ const mockCaseData = {
       page: 1,
       text: "Docket No. 1:2024cv04221",
     },
+    modelExtractions: [
+      {
+        value: "1:2024cv04221",
+        source: {
+          document: "docket.pdf",
+          page: 1,
+          text: "Docket No. 1:2024cv04221",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+      {
+        value: "1:24-cv-04221",
+        source: {
+          document: "complaint.pdf",
+          page: 1,
+          text: "Case No. 1:24-cv-04221",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+    ],
   },
   court: {
     value: "S.D.N.Y.",
@@ -93,10 +151,46 @@ const mockCaseData = {
       page: 1,
       text: "Southern District of New York",
     },
+    modelExtractions: [
+      {
+        value: "S.D.N.Y.",
+        source: {
+          document: "complaint.pdf",
+          page: 1,
+          text: "Southern District of New York",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+      {
+        value: "SDNY",
+        source: {
+          document: "docket.pdf",
+          page: 1,
+          text: "United States District Court, SDNY",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+    ],
   },
   state: {
     value: "NY",
     source: { document: "complaint.pdf", page: 1, text: "State of New York" },
+    modelExtractions: [
+      {
+        value: "NY",
+        source: { document: "complaint.pdf", page: 1, text: "State of New York" },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: true,
+      },
+      {
+        value: "New York",
+        source: { document: "settlement_agreement.pdf", page: 1, text: "State of New York" },
+        model: "GPT 4.1" as const,
+        isSelected: false,
+      },
+    ],
   },
   year: {
     value: 2024,
@@ -105,6 +199,28 @@ const mockCaseData = {
       page: 1,
       text: "Dated this 15th day of March, 2024",
     },
+    modelExtractions: [
+      {
+        value: 2024,
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 1,
+          text: "Dated this 15th day of March, 2024",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: false,
+      },
+      {
+        value: 2024,
+        source: {
+          document: "docket.pdf",
+          page: 1,
+          text: "Filed in 2024",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: true,
+      },
+    ],
   },
   date: {
     value: "2024-03-15",
@@ -113,6 +229,28 @@ const mockCaseData = {
       page: 1,
       text: "March 15, 2024",
     },
+    modelExtractions: [
+      {
+        value: "2024-03-15",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 1,
+          text: "March 15, 2024",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: true,
+      },
+      {
+        value: "03/15/2024",
+        source: {
+          document: "fairness_hearing.pdf",
+          page: 2,
+          text: "Final approval granted on 03/15/2024",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: false,
+      },
+    ],
   },
   summary: {
     value:
@@ -122,6 +260,30 @@ const mockCaseData = {
       page: 1,
       text: "This settlement resolves claims related to a data breach...",
     },
+    modelExtractions: [
+      {
+        value:
+          "Class action settlement regarding data breach affecting customer information",
+        source: {
+          document: "notice_of_class.pdf",
+          page: 1,
+          text: "This settlement resolves claims related to a data breach...",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+      {
+        value:
+          "Settlement of consumer class action arising from 2023 data security incident involving personally identifiable information",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 2,
+          text: "This Agreement resolves consumer class action claims stemming from the 2023 data security incident...",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+    ],
   },
   judgeName: {
     value: "Hon. Sarah Johnson",
@@ -130,6 +292,28 @@ const mockCaseData = {
       page: 1,
       text: "Before: Hon. Sarah Johnson, U.S.D.J.",
     },
+    modelExtractions: [
+      {
+        value: "Hon. Sarah Johnson",
+        source: {
+          document: "docket.pdf",
+          page: 1,
+          text: "Before: Hon. Sarah Johnson, U.S.D.J.",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+      {
+        value: "Judge Sarah L. Johnson",
+        source: {
+          document: "fairness_hearing.pdf",
+          page: 1,
+          text: "The Honorable Sarah L. Johnson presiding",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+    ],
   },
   settlementType: {
     value: "Final",
@@ -138,6 +322,28 @@ const mockCaseData = {
       page: 1,
       text: "FINAL SETTLEMENT AGREEMENT",
     },
+    modelExtractions: [
+      {
+        value: "Final",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 1,
+          text: "FINAL SETTLEMENT AGREEMENT",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+      {
+        value: "Final Settlement",
+        source: {
+          document: "fairness_hearing.pdf",
+          page: 15,
+          text: "The Court grants final settlement approval",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+    ],
   },
 
   // Financial Fields
@@ -182,6 +388,30 @@ const mockCaseData = {
       page: 12,
       text: "...base settlement amount of $2,000,000...",
     },
+    modelExtractions: [
+      {
+        value: 2000000,
+        displayValue: "$2,000,000",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 12,
+          text: "...base settlement amount of $2,000,000...",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+      {
+        value: 2000000,
+        displayValue: "$2,000,000.00",
+        source: {
+          document: "fairness_hearing.pdf",
+          page: 8,
+          text: "The base settlement fund is established at $2,000,000.00",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+    ],
   },
   contingentSettlementAmount: {
     value: 500000,
@@ -191,6 +421,30 @@ const mockCaseData = {
       page: 13,
       text: "...contingent amount up to $500,000...",
     },
+    modelExtractions: [
+      {
+        value: 500000,
+        displayValue: "$500,000",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 13,
+          text: "...contingent amount up to $500,000...",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+      {
+        value: 500000,
+        displayValue: "$500,000",
+        source: {
+          document: "notice_of_class.pdf",
+          page: 4,
+          text: "Additional contingent payments may total up to five hundred thousand dollars ($500,000)",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+    ],
   },
   isSettlementCapped: {
     value: true,
@@ -199,6 +453,28 @@ const mockCaseData = {
       page: 13,
       text: "The total settlement shall not exceed $2,500,000",
     },
+    modelExtractions: [
+      {
+        value: true,
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 13,
+          text: "The total settlement shall not exceed $2,500,000",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+      {
+        value: true,
+        source: {
+          document: "fairness_hearing.pdf",
+          page: 10,
+          text: "Settlement payments are capped at a maximum of two million five hundred thousand dollars",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+    ],
   },
 
   // Attorney Fees
@@ -209,6 +485,28 @@ const mockCaseData = {
       page: 18,
       text: "Attorney fees calculated as percentage of fund",
     },
+    modelExtractions: [
+      {
+        value: "Percentage",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 18,
+          text: "Attorney fees calculated as percentage of fund",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: true,
+      },
+      {
+        value: "Percentage of Fund",
+        source: {
+          document: "motion_for_fees.pdf",
+          page: 2,
+          text: "Counsel seeks fees based on percentage of fund method",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: false,
+      },
+    ],
   },
   attorneyFeesPercentage: {
     value: 33.3,
@@ -250,12 +548,67 @@ const mockCaseData = {
       page: 18,
       text: "...fees shall be paid from the Settlement Fund...",
     },
+    modelExtractions: [
+      {
+        value: true,
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 18,
+          text: "...fees shall be paid from the Settlement Fund...",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: false,
+      },
+      {
+        value: true,
+        source: {
+          document: "fairness_hearing.pdf",
+          page: 12,
+          text: "Attorney fees to be deducted from the gross settlement fund",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: true,
+      },
+    ],
   },
   lodestardAmount: {
     value: undefined,
     source: { document: "", page: 0, text: "" },
+    modelExtractions: [
+      {
+        value: undefined,
+        source: { document: "", page: 0, text: "" },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: true,
+      },
+      {
+        value: 750000,
+        displayValue: "$750,000",
+        source: { document: "motion_for_fees.pdf", page: 8, text: "Lodestar calculation totals $750,000" },
+        model: "GPT 4.1" as const,
+        isSelected: false,
+      },
+    ],
   },
-  multiplier: { value: undefined, source: { document: "", page: 0, text: "" } },
+  multiplier: { 
+    value: undefined, 
+    source: { document: "", page: 0, text: "" },
+    modelExtractions: [
+      {
+        value: undefined,
+        source: { document: "", page: 0, text: "" },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+      {
+        value: 1.1,
+        displayValue: "1.1x",
+        source: { document: "motion_for_fees.pdf", page: 8, text: "Applying a modest multiplier of 1.1" },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+    ],
+  },
   attorneyFeesReimbursement: {
     value: 50000,
     displayValue: "$50,000",
@@ -264,6 +617,30 @@ const mockCaseData = {
       page: 19,
       text: "...reimbursement of expenses up to $50,000...",
     },
+    modelExtractions: [
+      {
+        value: 50000,
+        displayValue: "$50,000",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 19,
+          text: "...reimbursement of expenses up to $50,000...",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+      {
+        value: 47500,
+        displayValue: "$47,500",
+        source: {
+          document: "motion_for_fees.pdf",
+          page: 10,
+          text: "Actual litigation expenses totaling $47,500",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+    ],
   },
   attorneyFeesReimbursementFromFund: {
     value: true,
@@ -272,6 +649,28 @@ const mockCaseData = {
       page: 19,
       text: "...expenses paid from Settlement Fund...",
     },
+    modelExtractions: [
+      {
+        value: true,
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 19,
+          text: "...expenses paid from Settlement Fund...",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+      {
+        value: true,
+        source: {
+          document: "fairness_hearing.pdf",
+          page: 12,
+          text: "Litigation costs and expenses shall be reimbursed from the fund",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+    ],
   },
 
   // Class Information
@@ -315,6 +714,28 @@ const mockCaseData = {
       page: 3,
       text: "...consumers and employees affected...",
     },
+    modelExtractions: [
+      {
+        value: ["Consumers", "Employees"],
+        source: {
+          document: "notice_of_class.pdf",
+          page: 3,
+          text: "...consumers and employees affected...",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+      {
+        value: ["Consumer", "Employee", "Former Employee"],
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 5,
+          text: "Class members include consumers, current employees, and former employees",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+    ],
   },
   hasMinorSubclass: {
     value: false,
@@ -323,6 +744,28 @@ const mockCaseData = {
       page: 4,
       text: "No minor subclass identified",
     },
+    modelExtractions: [
+      {
+        value: false,
+        source: {
+          document: "notice_of_class.pdf",
+          page: 4,
+          text: "No minor subclass identified",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: true,
+      },
+      {
+        value: false,
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 8,
+          text: "The settlement does not include a separate subclass for minors",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: false,
+      },
+    ],
   },
   isMultiDistrictLitigation: {
     value: false,
@@ -331,6 +774,28 @@ const mockCaseData = {
       page: 1,
       text: "Single district litigation",
     },
+    modelExtractions: [
+      {
+        value: false,
+        source: {
+          document: "docket.pdf",
+          page: 1,
+          text: "Single district litigation",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: false,
+      },
+      {
+        value: false,
+        source: {
+          document: "complaint.pdf",
+          page: 2,
+          text: "This action is not an MDL proceeding",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: true,
+      },
+    ],
   },
 
   // Claims Data
@@ -342,6 +807,30 @@ const mockCaseData = {
       page: 1,
       text: "Total claims received: 3,200",
     },
+    modelExtractions: [
+      {
+        value: 3200,
+        displayValue: "3,200",
+        source: {
+          document: "claims_report.pdf",
+          page: 1,
+          text: "Total claims received: 3,200",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+      {
+        value: 3187,
+        displayValue: "3,187",
+        source: {
+          document: "claims_report.pdf",
+          page: 5,
+          text: "Valid claims submitted: 3,187",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+    ],
   },
   claimsSubmittedPercent: {
     value: 21.3,
@@ -351,6 +840,30 @@ const mockCaseData = {
       page: 1,
       text: "Claims rate: 21.3%",
     },
+    modelExtractions: [
+      {
+        value: 21.3,
+        displayValue: "21.3%",
+        source: {
+          document: "claims_report.pdf",
+          page: 1,
+          text: "Claims rate: 21.3%",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+      {
+        value: 21,
+        displayValue: "21%",
+        source: {
+          document: "fairness_hearing.pdf",
+          page: 14,
+          text: "Approximately 21% of class members submitted claims",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+    ],
   },
   claimsAdminCosts: {
     value: 150000,
@@ -360,6 +873,30 @@ const mockCaseData = {
       page: 20,
       text: "Claims administration costs: $150,000",
     },
+    modelExtractions: [
+      {
+        value: 150000,
+        displayValue: "$150,000",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 20,
+          text: "Claims administration costs: $150,000",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: true,
+      },
+      {
+        value: 145000,
+        displayValue: "$145,000",
+        source: {
+          document: "claims_report.pdf",
+          page: 8,
+          text: "Total administration costs: One hundred forty-five thousand dollars ($145,000)",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: false,
+      },
+    ],
   },
   claimsAdminCostsFromFund: {
     value: true,
@@ -368,6 +905,28 @@ const mockCaseData = {
       page: 20,
       text: "...administration costs paid from fund...",
     },
+    modelExtractions: [
+      {
+        value: true,
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 20,
+          text: "...administration costs paid from fund...",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: false,
+      },
+      {
+        value: true,
+        source: {
+          document: "fairness_hearing.pdf",
+          page: 11,
+          text: "Claims administration expenses shall be deducted from the settlement fund",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: true,
+      },
+    ],
   },
 
   // Individual Compensation
@@ -412,6 +971,30 @@ const mockCaseData = {
       page: 6,
       text: "Up to $5,000 for out-of-pocket losses",
     },
+    modelExtractions: [
+      {
+        value: 5000,
+        displayValue: "$5,000",
+        source: {
+          document: "notice_of_class.pdf",
+          page: 6,
+          text: "Up to $5,000 for out-of-pocket losses",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+      {
+        value: 5000,
+        displayValue: "$5,000.00",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 23,
+          text: "Maximum reimbursement for documented losses: $5,000.00",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+    ],
   },
   maxReimbursementDocumentedTime: {
     value: 500,
@@ -421,6 +1004,30 @@ const mockCaseData = {
       page: 6,
       text: "Up to $500 for documented time",
     },
+    modelExtractions: [
+      {
+        value: 500,
+        displayValue: "$500",
+        source: {
+          document: "notice_of_class.pdf",
+          page: 6,
+          text: "Up to $500 for documented time",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+      {
+        value: 500,
+        displayValue: "$500",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 24,
+          text: "Time spent remedying breach: maximum $500",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+    ],
   },
   maxHoursDocumented: {
     value: 10,
@@ -430,6 +1037,30 @@ const mockCaseData = {
       page: 6,
       text: "Maximum 10 hours documented time",
     },
+    modelExtractions: [
+      {
+        value: 10,
+        displayValue: "10",
+        source: {
+          document: "notice_of_class.pdf",
+          page: 6,
+          text: "Maximum 10 hours documented time",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+      {
+        value: 10,
+        displayValue: "10 hours",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 24,
+          text: "Up to ten (10) hours of documented time",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+    ],
   },
   ratePerHourDocumented: {
     value: 50,
@@ -439,6 +1070,30 @@ const mockCaseData = {
       page: 6,
       text: "At $50 per hour for documented time",
     },
+    modelExtractions: [
+      {
+        value: 50,
+        displayValue: "$50/hour",
+        source: {
+          document: "notice_of_class.pdf",
+          page: 6,
+          text: "At $50 per hour for documented time",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: true,
+      },
+      {
+        value: 50,
+        displayValue: "$50.00/hr",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 24,
+          text: "Compensated at fifty dollars ($50.00) per hour",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: false,
+      },
+    ],
   },
   maxReimbursementUndocumented: {
     value: 250,
@@ -448,6 +1103,30 @@ const mockCaseData = {
       page: 7,
       text: "Up to $250 for undocumented time",
     },
+    modelExtractions: [
+      {
+        value: 250,
+        displayValue: "$250",
+        source: {
+          document: "notice_of_class.pdf",
+          page: 7,
+          text: "Up to $250 for undocumented time",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: false,
+      },
+      {
+        value: 250,
+        displayValue: "$250",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 24,
+          text: "Undocumented time compensation: maximum two hundred fifty dollars ($250)",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: true,
+      },
+    ],
   },
   maxHoursUndocumented: {
     value: 5,
@@ -457,6 +1136,30 @@ const mockCaseData = {
       page: 7,
       text: "Maximum 5 hours undocumented",
     },
+    modelExtractions: [
+      {
+        value: 5,
+        displayValue: "5",
+        source: {
+          document: "notice_of_class.pdf",
+          page: 7,
+          text: "Maximum 5 hours undocumented",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+      {
+        value: 5,
+        displayValue: "5 hours",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 24,
+          text: "Up to five (5) hours without documentation",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+    ],
   },
   ratePerHourUndocumented: {
     value: 50,
@@ -466,6 +1169,30 @@ const mockCaseData = {
       page: 7,
       text: "At $50 per hour",
     },
+    modelExtractions: [
+      {
+        value: 50,
+        displayValue: "$50/hour",
+        source: {
+          document: "notice_of_class.pdf",
+          page: 7,
+          text: "At $50 per hour",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+      {
+        value: 50,
+        displayValue: "$50 per hour",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 24,
+          text: "Same rate of $50 per hour applies",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+    ],
   },
   allowBothDocAndUndoc: {
     value: false,
@@ -474,6 +1201,28 @@ const mockCaseData = {
       page: 7,
       text: "Cannot claim both documented and undocumented",
     },
+    modelExtractions: [
+      {
+        value: false,
+        source: {
+          document: "notice_of_class.pdf",
+          page: 7,
+          text: "Cannot claim both documented and undocumented",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: true,
+      },
+      {
+        value: false,
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 25,
+          text: "Claimants must choose either documented OR undocumented time compensation",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: false,
+      },
+    ],
   },
   hasProRataAdjustment: {
     value: true,
@@ -482,14 +1231,66 @@ const mockCaseData = {
       page: 15,
       text: "Pro rata adjustment if claims exceed fund",
     },
+    modelExtractions: [
+      {
+        value: true,
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 15,
+          text: "Pro rata adjustment if claims exceed fund",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: false,
+      },
+      {
+        value: true,
+        source: {
+          document: "fairness_hearing.pdf",
+          page: 13,
+          text: "Claims will be reduced pro rata if total exceeds available funds",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: true,
+      },
+    ],
   },
   proRataAmount: {
     value: undefined,
     source: { document: "", page: 0, text: "" },
+    modelExtractions: [
+      {
+        value: undefined,
+        source: { document: "", page: 0, text: "" },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+      {
+        value: 0.85,
+        displayValue: "85%",
+        source: { document: "claims_report.pdf", page: 10, text: "Pro rata factor applied: 0.85" },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+    ],
   },
   supplementalReimbursement: {
     value: undefined,
     source: { document: "", page: 0, text: "" },
+    modelExtractions: [
+      {
+        value: undefined,
+        source: { document: "", page: 0, text: "" },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: true,
+      },
+      {
+        value: 100,
+        displayValue: "$100",
+        source: { document: "notice_of_class.pdf", page: 8, text: "Additional $100 for identity theft victims" },
+        model: "GPT 4.1" as const,
+        isSelected: false,
+      },
+    ],
   },
 
   // Class Representative Awards
@@ -501,6 +1302,30 @@ const mockCaseData = {
       page: 21,
       text: "Service awards of $10,000 to each representative",
     },
+    modelExtractions: [
+      {
+        value: 10000,
+        displayValue: "$10,000",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 21,
+          text: "Service awards of $10,000 to each representative",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: false,
+      },
+      {
+        value: 10000,
+        displayValue: "$10,000.00",
+        source: {
+          document: "fairness_hearing.pdf",
+          page: 16,
+          text: "Court approves incentive award of ten thousand dollars ($10,000.00) per named plaintiff",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: true,
+      },
+    ],
   },
   classRepAwardsFromFund: {
     value: true,
@@ -509,6 +1334,28 @@ const mockCaseData = {
       page: 21,
       text: "Service awards paid from Settlement Fund",
     },
+    modelExtractions: [
+      {
+        value: true,
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 21,
+          text: "Service awards paid from Settlement Fund",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+      {
+        value: true,
+        source: {
+          document: "fairness_hearing.pdf",
+          page: 16,
+          text: "Incentive awards shall be paid from the common fund",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+    ],
   },
 
   // Breach Information
@@ -519,6 +1366,28 @@ const mockCaseData = {
       page: 5,
       text: "Social Security numbers, names, addresses, dates of birth",
     },
+    modelExtractions: [
+      {
+        value: ["SSN", "Name", "Address", "DOB"],
+        source: {
+          document: "complaint.pdf",
+          page: 5,
+          text: "Social Security numbers, names, addresses, dates of birth",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: true,
+      },
+      {
+        value: ["Social Security Number", "Full Name", "Home Address", "Date of Birth", "Driver's License"],
+        source: {
+          document: "notice_of_class.pdf",
+          page: 2,
+          text: "Exposed data included: Social Security Numbers, full names, home addresses, dates of birth, and driver's license numbers",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: false,
+      },
+    ],
   },
   causeOfBreach: {
     value: "Ransomware",
@@ -527,6 +1396,28 @@ const mockCaseData = {
       page: 3,
       text: "...ransomware attack on systems...",
     },
+    modelExtractions: [
+      {
+        value: "Ransomware",
+        source: {
+          document: "complaint.pdf",
+          page: 3,
+          text: "...ransomware attack on systems...",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+      {
+        value: "Ransomware Attack",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 3,
+          text: "The data breach resulted from a ransomware attack by unauthorized third parties",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+    ],
   },
 
   // Parties
@@ -537,6 +1428,28 @@ const mockCaseData = {
       page: 2,
       text: "Defense counsel: Smith & Associates LLP",
     },
+    modelExtractions: [
+      {
+        value: "Smith & Associates LLP",
+        source: {
+          document: "docket.pdf",
+          page: 2,
+          text: "Defense counsel: Smith & Associates LLP",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+      {
+        value: "Smith & Associates, LLP",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 30,
+          text: "Attorneys for Defendant: Smith & Associates, LLP",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+    ],
   },
   plaintiffCounsel: {
     value: "Johnson Law Group",
@@ -545,6 +1458,28 @@ const mockCaseData = {
       page: 2,
       text: "Plaintiff counsel: Johnson Law Group",
     },
+    modelExtractions: [
+      {
+        value: "Johnson Law Group",
+        source: {
+          document: "docket.pdf",
+          page: 2,
+          text: "Plaintiff counsel: Johnson Law Group",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+      {
+        value: "Johnson Law Group PC",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 30,
+          text: "Class Counsel: Johnson Law Group PC",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+    ],
   },
 
   // Injunctive Relief
@@ -555,6 +1490,28 @@ const mockCaseData = {
       page: 25,
       text: "Enhanced employee training, quarterly security assessments, vendor security requirements",
     },
+    modelExtractions: [
+      {
+        value: ["Employee training", "Security assessments", "Vendor requirements"],
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 25,
+          text: "Enhanced employee training, quarterly security assessments, vendor security requirements",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: false,
+      },
+      {
+        value: ["Mandatory cybersecurity training", "Quarterly penetration testing", "Third-party vendor audits", "Data encryption"],
+        source: {
+          document: "fairness_hearing.pdf",
+          page: 17,
+          text: "Injunctive relief includes: mandatory cybersecurity training for all employees, quarterly penetration testing, third-party vendor security audits, and implementation of data encryption standards",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: true,
+      },
+    ],
   },
   injunctiveReliefAmount: {
     value: 500000,
@@ -564,6 +1521,30 @@ const mockCaseData = {
       page: 26,
       text: "Defendant shall spend no less than $500,000 on security improvements",
     },
+    modelExtractions: [
+      {
+        value: 500000,
+        displayValue: "$500,000",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 26,
+          text: "Defendant shall spend no less than $500,000 on security improvements",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: true,
+      },
+      {
+        value: 550000,
+        displayValue: "$550,000",
+        source: {
+          document: "fairness_hearing.pdf",
+          page: 18,
+          text: "Total security improvement commitment: five hundred fifty thousand dollars ($550,000)",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: false,
+      },
+    ],
   },
   thirdPartyAssessments: {
     value: ["SOC 2", "ISO 27001"],
@@ -572,6 +1553,28 @@ const mockCaseData = {
       page: 26,
       text: "Annual SOC 2 and ISO 27001 assessments required",
     },
+    modelExtractions: [
+      {
+        value: ["SOC 2", "ISO 27001"],
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 26,
+          text: "Annual SOC 2 and ISO 27001 assessments required",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+      {
+        value: ["SOC 2 Type II", "ISO 27001", "PCI DSS"],
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 27,
+          text: "Required assessments: SOC 2 Type II audit, ISO 27001 certification, and PCI DSS compliance where applicable",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+    ],
   },
 
   // Additional Benefits
@@ -582,6 +1585,28 @@ const mockCaseData = {
       page: 8,
       text: "Two years of credit monitoring provided",
     },
+    modelExtractions: [
+      {
+        value: true,
+        source: {
+          document: "notice_of_class.pdf",
+          page: 8,
+          text: "Two years of credit monitoring provided",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+      {
+        value: true,
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 22,
+          text: "Credit monitoring services will be provided for 24 months",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+    ],
   },
   creditMonitoringAmount: {
     value: 300000,
@@ -591,6 +1616,30 @@ const mockCaseData = {
       page: 22,
       text: "Credit monitoring services valued at $300,000",
     },
+    modelExtractions: [
+      {
+        value: 300000,
+        displayValue: "$300,000",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 22,
+          text: "Credit monitoring services valued at $300,000",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: true,
+      },
+      {
+        value: 320000,
+        displayValue: "$320,000",
+        source: {
+          document: "fairness_hearing.pdf",
+          page: 15,
+          text: "Estimated value of credit monitoring services: three hundred twenty thousand dollars ($320,000)",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: false,
+      },
+    ],
   },
   excessFundsDisposition: {
     value: "Cy pres",
@@ -599,6 +1648,28 @@ const mockCaseData = {
       page: 30,
       text: "Excess funds distributed cy pres to privacy organizations",
     },
+    modelExtractions: [
+      {
+        value: "Cy pres",
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 30,
+          text: "Excess funds distributed cy pres to privacy organizations",
+        },
+        model: "Gemini 2.5 Pro" as const,
+        isSelected: true,
+      },
+      {
+        value: "Cy Pres Distribution",
+        source: {
+          document: "fairness_hearing.pdf",
+          page: 19,
+          text: "Any unclaimed funds shall be distributed cy pres to Electronic Frontier Foundation and Privacy Rights Clearinghouse",
+        },
+        model: "GPT 4.1" as const,
+        isSelected: false,
+      },
+    ],
   },
 
   // Admin fields
