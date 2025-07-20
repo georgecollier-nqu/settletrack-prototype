@@ -1,5 +1,4 @@
 import { useAuth } from "@/contexts/auth-context";
-import { UserRole } from "@/types/user";
 
 interface Permissions {
   canAccessTeamManagement: boolean;

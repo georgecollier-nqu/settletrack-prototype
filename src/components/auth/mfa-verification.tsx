@@ -1,7 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,12 +29,12 @@ export function MFAVerification({ onCancel }: MFAVerificationProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       setError("");
       setIsLoading(true);
       await verifyMFA({ code, rememberDevice });
-    } catch (err) {
+    } catch {
       setError("Invalid verification code. Please try again.");
     } finally {
       setIsLoading(false);
@@ -74,7 +80,9 @@ export function MFAVerification({ onCancel }: MFAVerificationProps) {
             <Checkbox
               id="remember"
               checked={rememberDevice}
-              onCheckedChange={(checked) => setRememberDevice(checked as boolean)}
+              onCheckedChange={(checked) =>
+                setRememberDevice(checked as boolean)
+              }
             />
             <Label
               htmlFor="remember"

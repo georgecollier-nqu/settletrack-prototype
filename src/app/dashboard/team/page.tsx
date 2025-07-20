@@ -59,7 +59,7 @@ interface TeamMember {
   id: string;
   name: string;
   email: string;
-  role: "team_leader" | "user";
+  role: "firm_admin" | "user";
   status: "active" | "invited" | "deactivated";
   jobTitle: string;
   joinedDate: string;
@@ -78,7 +78,7 @@ export default function TeamPage() {
       id: "1",
       name: "John Doe",
       email: "john@lawfirm.com",
-      role: "team_leader",
+      role: "firm_admin",
       status: "active",
       jobTitle: "Managing Partner",
       joinedDate: "2024-01-15",
@@ -443,7 +443,7 @@ export default function TeamPage() {
                             </div>
                           </TableCell>
                           <TableCell>
-                            {member.role === "team_leader" ? (
+                            {member.role === "firm_admin" ? (
                               <Badge variant="default">Team Leader</Badge>
                             ) : (
                               <Badge variant="secondary">Member</Badge>
@@ -492,7 +492,7 @@ export default function TeamPage() {
                                         onClick={() =>
                                           handleRoleChange(
                                             member.id,
-                                            "team_leader",
+                                            "firm_admin",
                                           )
                                         }
                                       >
@@ -500,7 +500,7 @@ export default function TeamPage() {
                                         Promote to Team Leader
                                       </DropdownMenuItem>
                                     )}
-                                    {member.role === "team_leader" &&
+                                    {member.role === "firm_admin" &&
                                       member.id !== "1" && (
                                         <DropdownMenuItem
                                           onClick={() =>

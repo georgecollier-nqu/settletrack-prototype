@@ -46,10 +46,10 @@ import { toast } from "sonner";
 export default function SettingsPage() {
   const { user, updateUser, disableMFA, logout } = useAuth();
   const permissions = usePermissions();
-  
+
   const [profileData, setProfileData] = useState({
-    firstName: user?.name.split(' ')[0] || "John",
-    lastName: user?.name.split(' ')[1] || "Doe",
+    firstName: user?.name.split(" ")[0] || "John",
+    lastName: user?.name.split(" ")[1] || "Doe",
     email: user?.email || "john@lawfirm.com",
     jobTitle: user?.jobTitle || "Managing Partner",
     firmName: user?.firmName || "Smith & Associates Law Firm",
@@ -86,7 +86,7 @@ export default function SettingsPage() {
       await disableMFA(mfaPassword);
       setMFAPassword("");
       toast.success("Two-factor authentication disabled");
-    } catch (err) {
+    } catch {
       toast.error("Invalid password");
     } finally {
       setDisablingMFA(false);
@@ -134,7 +134,9 @@ export default function SettingsPage() {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium">{user?.name || "John Doe"}</p>
+                    <p className="text-sm font-medium">
+                      {user?.name || "John Doe"}
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       {user?.email || "john@lawfirm.com"}
                     </p>
@@ -450,12 +452,15 @@ export default function SettingsPage() {
                           <Alert>
                             <Shield className="h-4 w-4" />
                             <AlertDescription>
-                              Two-factor authentication is currently <strong>enabled</strong> for your account.
+                              Two-factor authentication is currently{" "}
+                              <strong>enabled</strong> for your account.
                             </AlertDescription>
                           </Alert>
                           <div className="space-y-4">
                             <div className="space-y-2">
-                              <Label htmlFor="mfa-password">Enter your password to disable MFA</Label>
+                              <Label htmlFor="mfa-password">
+                                Enter your password to disable MFA
+                              </Label>
                               <Input
                                 id="mfa-password"
                                 type="password"
@@ -469,7 +474,9 @@ export default function SettingsPage() {
                               onClick={handleDisableMFA}
                               disabled={disablingMFA || !mfaPassword}
                             >
-                              {disablingMFA ? "Disabling..." : "Disable Two-Factor Authentication"}
+                              {disablingMFA
+                                ? "Disabling..."
+                                : "Disable Two-Factor Authentication"}
                             </Button>
                           </div>
                         </>
@@ -478,7 +485,9 @@ export default function SettingsPage() {
                           <Alert>
                             <AlertCircle className="h-4 w-4" />
                             <AlertDescription>
-                              Two-factor authentication is currently <strong>disabled</strong>. Enable it to add an extra layer of security.
+                              Two-factor authentication is currently{" "}
+                              <strong>disabled</strong>. Enable it to add an
+                              extra layer of security.
                             </AlertDescription>
                           </Alert>
                           <Button onClick={() => setShowMFASetup(true)}>
@@ -585,22 +594,29 @@ export default function SettingsPage() {
                   <CardHeader>
                     <CardTitle>Privacy Preferences</CardTitle>
                     <CardDescription>
-                      Manage your communication preferences and data privacy settings
+                      Manage your communication preferences and data privacy
+                      settings
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
-                          <Label className="text-base">Marketing Communications</Label>
+                          <Label className="text-base">
+                            Marketing Communications
+                          </Label>
                           <p className="text-sm text-muted-foreground">
-                            Receive updates about new features, best practices, and product announcements
+                            Receive updates about new features, best practices,
+                            and product announcements
                           </p>
                         </div>
                         <Switch
                           checked={profileData.marketingOptIn}
                           onCheckedChange={(checked) =>
-                            setProfileData({ ...profileData, marketingOptIn: checked })
+                            setProfileData({
+                              ...profileData,
+                              marketingOptIn: checked,
+                            })
                           }
                         />
                       </div>
@@ -609,7 +625,8 @@ export default function SettingsPage() {
                         <div className="space-y-0.5">
                           <Label className="text-base">Usage Analytics</Label>
                           <p className="text-sm text-muted-foreground">
-                            Help us improve SettleTrack by sharing anonymous usage data
+                            Help us improve SettleTrack by sharing anonymous
+                            usage data
                           </p>
                         </div>
                         <Switch defaultChecked />
@@ -641,7 +658,7 @@ export default function SettingsPage() {
                   <CardHeader>
                     <CardTitle>Team Members</CardTitle>
                     <CardDescription>
-                      Manage your firm's team members and their access
+                      Manage your firm&apos;s team members and their access
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -673,36 +690,52 @@ export default function SettingsPage() {
                   <CardContent>
                     <div className="space-y-6">
                       <div>
-                        <h4 className="text-sm font-medium mb-2">Current Plan</h4>
+                        <h4 className="text-sm font-medium mb-2">
+                          Current Plan
+                        </h4>
                         <div className="p-4 border rounded-lg">
                           <div className="flex justify-between items-center">
                             <div>
                               <p className="font-medium">Professional Plan</p>
-                              <p className="text-sm text-muted-foreground">$299/month</p>
+                              <p className="text-sm text-muted-foreground">
+                                $299/month
+                              </p>
                             </div>
-                            <Button variant="outline" size="sm">Change Plan</Button>
+                            <Button variant="outline" size="sm">
+                              Change Plan
+                            </Button>
                           </div>
                         </div>
                       </div>
                       <Separator />
                       <div>
-                        <h4 className="text-sm font-medium mb-2">Payment Method</h4>
+                        <h4 className="text-sm font-medium mb-2">
+                          Payment Method
+                        </h4>
                         <div className="p-4 border rounded-lg">
                           <div className="flex justify-between items-center">
                             <div className="flex items-center gap-3">
                               <CreditCard className="h-5 w-5 text-muted-foreground" />
                               <div>
-                                <p className="font-medium">•••• •••• •••• 4242</p>
-                                <p className="text-sm text-muted-foreground">Expires 12/25</p>
+                                <p className="font-medium">
+                                  •••• •••• •••• 4242
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                  Expires 12/25
+                                </p>
                               </div>
                             </div>
-                            <Button variant="outline" size="sm">Update</Button>
+                            <Button variant="outline" size="sm">
+                              Update
+                            </Button>
                           </div>
                         </div>
                       </div>
                       <Separator />
                       <div>
-                        <h4 className="text-sm font-medium mb-2">Billing History</h4>
+                        <h4 className="text-sm font-medium mb-2">
+                          Billing History
+                        </h4>
                         <Button variant="outline" className="w-full">
                           View All Invoices
                         </Button>

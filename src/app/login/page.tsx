@@ -44,7 +44,7 @@ export default function LoginPage() {
       if (!result.requiresMFA) {
         // Navigation is handled by the auth context
       }
-    } catch (err) {
+    } catch {
       setError("Invalid email or password");
     } finally {
       setIsLoading(false);

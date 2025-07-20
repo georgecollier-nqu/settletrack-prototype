@@ -1,7 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,9 +25,15 @@ interface MFASetupDialogProps {
   onComplete?: () => void;
 }
 
-export function MFASetupDialog({ open, onOpenChange, onComplete }: MFASetupDialogProps) {
+export function MFASetupDialog({
+  open,
+  onOpenChange,
+  onComplete,
+}: MFASetupDialogProps) {
   const { setupMFA, enableMFA } = useAuth();
-  const [step, setStep] = useState<"intro" | "setup" | "verify" | "backup">("intro");
+  const [step, setStep] = useState<"intro" | "setup" | "verify" | "backup">(
+    "intro",
+  );
   const [mfaData, setMfaData] = useState<MFASetup | null>(null);
   const [verificationCode, setVerificationCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +45,7 @@ export function MFASetupDialog({ open, onOpenChange, onComplete }: MFASetupDialo
       const data = await setupMFA();
       setMfaData(data);
       setStep("setup");
-    } catch (err) {
+    } catch {
       toast.error("Failed to setup MFA. Please try again.");
     } finally {
       setIsLoading(false);
@@ -45,7 +58,7 @@ export function MFASetupDialog({ open, onOpenChange, onComplete }: MFASetupDialo
       setIsLoading(true);
       await enableMFA(verificationCode);
       setStep("backup");
-    } catch (err) {
+    } catch {
       setError("Invalid verification code. Please try again.");
     } finally {
       setIsLoading(false);
@@ -89,7 +102,8 @@ export function MFASetupDialog({ open, onOpenChange, onComplete }: MFASetupDialo
                 Enable Two-Factor Authentication
               </DialogTitle>
               <DialogDescription>
-                Add an extra layer of security to your account by requiring a verification code in addition to your password.
+                Add an extra layer of security to your account by requiring a
+                verification code in addition to your password.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
@@ -105,12 +119,15 @@ export function MFASetupDialog({ open, onOpenChange, onComplete }: MFASetupDialo
               <Alert>
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
-                  You'll need an authenticator app like Google Authenticator, Microsoft Authenticator, or Authy.
+                  You&apos;ll need an authenticator app like Google
+                  Authenticator, Microsoft Authenticator, or Authy.
                 </AlertDescription>
               </Alert>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={handleClose}>Cancel</Button>
+              <Button variant="outline" onClick={handleClose}>
+                Cancel
+              </Button>
               <Button onClick={handleStartSetup} disabled={isLoading}>
                 Continue Setup
               </Button>
@@ -123,27 +140,39 @@ export function MFASetupDialog({ open, onOpenChange, onComplete }: MFASetupDialo
             <DialogHeader>
               <DialogTitle>Scan QR Code</DialogTitle>
               <DialogDescription>
-                Scan this QR code with your authenticator app or enter the secret key manually.
+                Scan this QR code with your authenticator app or enter the
+                secret key manually.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="flex justify-center">
-                <img src={mfaData.qrCode} alt="MFA QR Code" className="border rounded" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={mfaData.qrCode}
+                  alt="MFA QR Code"
+                  className="border rounded"
+                />
               </div>
               <div className="space-y-2">
-                <Label>Can't scan? Enter this key manually:</Label>
+                <Label>Can&apos;t scan? Enter this key manually:</Label>
                 <div className="flex gap-2">
                   <code className="flex-1 px-3 py-2 bg-muted rounded text-sm font-mono break-all">
                     {mfaData.secret}
                   </code>
-                  <Button size="sm" variant="outline" onClick={handleCopySecret}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleCopySecret}
+                  >
                     <Copy className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={handleClose}>Cancel</Button>
+              <Button variant="outline" onClick={handleClose}>
+                Cancel
+              </Button>
               <Button onClick={() => setStep("verify")}>Next</Button>
             </DialogFooter>
           </>
@@ -154,7 +183,8 @@ export function MFASetupDialog({ open, onOpenChange, onComplete }: MFASetupDialo
             <DialogHeader>
               <DialogTitle>Verify Setup</DialogTitle>
               <DialogDescription>
-                Enter the 6-digit code from your authenticator app to complete setup.
+                Enter the 6-digit code from your authenticator app to complete
+                setup.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
@@ -177,8 +207,13 @@ export function MFASetupDialog({ open, onOpenChange, onComplete }: MFASetupDialo
               )}
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setStep("setup")}>Back</Button>
-              <Button onClick={handleVerify} disabled={isLoading || verificationCode.length !== 6}>
+              <Button variant="outline" onClick={() => setStep("setup")}>
+                Back
+              </Button>
+              <Button
+                onClick={handleVerify}
+                disabled={isLoading || verificationCode.length !== 6}
+              >
                 Verify & Enable
               </Button>
             </DialogFooter>
@@ -193,7 +228,8 @@ export function MFASetupDialog({ open, onOpenChange, onComplete }: MFASetupDialo
                 Two-Factor Authentication Enabled!
               </DialogTitle>
               <DialogDescription>
-                Save these backup codes in a secure place. You can use them to access your account if you lose your authenticator device.
+                Save these backup codes in a secure place. You can use them to
+                access your account if you lose your authenticator device.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
