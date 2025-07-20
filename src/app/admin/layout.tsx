@@ -21,6 +21,7 @@ import {
   Building,
   CreditCard,
   Upload,
+  ClipboardCheck,
 } from "lucide-react";
 
 interface AdminLayoutProps {
@@ -92,6 +93,17 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   >
                     <FileText className="h-5 w-5" />
                     Cases
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild className="w-full">
+                  <Link
+                    href="/admin/qc"
+                    className={getActiveClasses("/admin/qc")}
+                  >
+                    <ClipboardCheck className="h-5 w-5" />
+                    QC Workflow
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
