@@ -76,6 +76,17 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild className="w-full">
                   <Link
+                    href="/admin/firms"
+                    className={getActiveClasses("/admin/firms")}
+                  >
+                    <Building className="h-5 w-5" />
+                    Law Firms
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild className="w-full">
+                  <Link
                     href="/admin/users"
                     className={getActiveClasses("/admin/users")}
                   >
