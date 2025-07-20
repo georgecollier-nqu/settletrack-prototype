@@ -8,15 +8,23 @@ interface ValueWithTooltipProps {
   children: React.ReactNode;
   citation?: Citation;
   className?: string;
+  documentUrl?: string;
+  onViewSource?: () => void;
 }
 
 export function ValueWithTooltip({
   children,
   citation,
   className,
+  documentUrl,
+  onViewSource,
 }: ValueWithTooltipProps) {
   return (
-    <CitationTooltip citation={citation}>
+    <CitationTooltip 
+      citation={citation}
+      documentUrl={documentUrl}
+      onViewSource={onViewSource}
+    >
       <span className={className}>{children}</span>
     </CitationTooltip>
   );
