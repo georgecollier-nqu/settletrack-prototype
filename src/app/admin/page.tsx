@@ -5,23 +5,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import {
   Users,
-  Search,
   Clock,
   TrendingUp,
   UserPlus,
   Database,
   Activity,
   MousePointer,
-  FileSearch,
-  Download,
-  Eye,
-  Filter,
 } from "lucide-react";
 import {
   LineChart,
   Line,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -55,17 +48,73 @@ const featureUsageData = [
 
 // Daily feature usage breakdown
 const dailyFeatureData = [
-  { date: "Jan 1", search: 145, export: 89, filters: 67, trends: 45, citations: 34 },
-  { date: "Jan 2", search: 189, export: 112, filters: 89, trends: 67, citations: 45 },
-  { date: "Jan 3", search: 178, export: 98, filters: 78, trends: 56, citations: 41 },
-  { date: "Jan 4", search: 290, export: 156, filters: 123, trends: 89, citations: 67 },
-  { date: "Jan 5", search: 245, export: 134, filters: 101, trends: 78, citations: 56 },
-  { date: "Jan 6", search: 320, export: 178, filters: 134, trends: 98, citations: 78 },
-  { date: "Jan 7", search: 298, export: 167, filters: 125, trends: 91, citations: 71 },
+  {
+    date: "Jan 1",
+    search: 145,
+    export: 89,
+    filters: 67,
+    trends: 45,
+    citations: 34,
+  },
+  {
+    date: "Jan 2",
+    search: 189,
+    export: 112,
+    filters: 89,
+    trends: 67,
+    citations: 45,
+  },
+  {
+    date: "Jan 3",
+    search: 178,
+    export: 98,
+    filters: 78,
+    trends: 56,
+    citations: 41,
+  },
+  {
+    date: "Jan 4",
+    search: 290,
+    export: 156,
+    filters: 123,
+    trends: 89,
+    citations: 67,
+  },
+  {
+    date: "Jan 5",
+    search: 245,
+    export: 134,
+    filters: 101,
+    trends: 78,
+    citations: 56,
+  },
+  {
+    date: "Jan 6",
+    search: 320,
+    export: 178,
+    filters: 134,
+    trends: 98,
+    citations: 78,
+  },
+  {
+    date: "Jan 7",
+    search: 298,
+    export: 167,
+    filters: 125,
+    trends: 91,
+    citations: 71,
+  },
 ];
 
 // Colors for pie chart
-const COLORS = ["#2E7D5B", "#3B9671", "#4BAF87", "#5BC89D", "#6BE1B3", "#7BFAC9"];
+const COLORS = [
+  "#2E7D5B",
+  "#3B9671",
+  "#4BAF87",
+  "#5BC89D",
+  "#6BE1B3",
+  "#7BFAC9",
+];
 
 export default function AdminAnalyticsPage() {
   return (
@@ -216,13 +265,18 @@ export default function AdminAnalyticsPage() {
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        label={({ name, percentage }) => `${name} (${percentage}%)`}
+                        label={({ name, percentage }) =>
+                          `${name} (${percentage}%)`
+                        }
                         outerRadius={80}
                         fill="#8884d8"
                         dataKey="value"
                       >
                         {featureUsageData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={COLORS[index % COLORS.length]}
+                          />
                         ))}
                       </Pie>
                       <Tooltip
@@ -231,7 +285,10 @@ export default function AdminAnalyticsPage() {
                           border: "1px solid #E4E4E7",
                           borderRadius: "8px",
                         }}
-                        formatter={(value: number) => [`${value} uses`, "Total"]}
+                        formatter={(value: number) => [
+                          `${value} uses`,
+                          "Total",
+                        ]}
                       />
                     </PieChart>
                   </ResponsiveContainer>
@@ -326,9 +383,16 @@ export default function AdminAnalyticsPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {featureUsageData.slice(0, 3).map((feature, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">{feature.name}</span>
-                    <span className="text-sm font-medium">{feature.value.toLocaleString()} uses</span>
+                  <div
+                    key={index}
+                    className="flex items-center justify-between"
+                  >
+                    <span className="text-sm text-muted-foreground">
+                      {feature.name}
+                    </span>
+                    <span className="text-sm font-medium">
+                      {feature.value.toLocaleString()} uses
+                    </span>
                   </div>
                 ))}
               </CardContent>
@@ -343,16 +407,28 @@ export default function AdminAnalyticsPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Case Search</span>
-                  <span className="text-sm font-medium text-green-600">+15%</span>
+                  <span className="text-sm text-muted-foreground">
+                    Case Search
+                  </span>
+                  <span className="text-sm font-medium text-green-600">
+                    +15%
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Citation Links</span>
-                  <span className="text-sm font-medium text-green-600">+12%</span>
+                  <span className="text-sm text-muted-foreground">
+                    Citation Links
+                  </span>
+                  <span className="text-sm font-medium text-green-600">
+                    +12%
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Trend Analysis</span>
-                  <span className="text-sm font-medium text-green-600">+8%</span>
+                  <span className="text-sm text-muted-foreground">
+                    Trend Analysis
+                  </span>
+                  <span className="text-sm font-medium text-green-600">
+                    +8%
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -366,15 +442,21 @@ export default function AdminAnalyticsPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Avg. Features/User</span>
+                  <span className="text-sm text-muted-foreground">
+                    Avg. Features/User
+                  </span>
                   <span className="text-sm font-medium">3.4</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Daily Active Users</span>
+                  <span className="text-sm text-muted-foreground">
+                    Daily Active Users
+                  </span>
                   <span className="text-sm font-medium">423</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Feature Discovery</span>
+                  <span className="text-sm text-muted-foreground">
+                    Feature Discovery
+                  </span>
                   <span className="text-sm font-medium">68%</span>
                 </div>
               </CardContent>
