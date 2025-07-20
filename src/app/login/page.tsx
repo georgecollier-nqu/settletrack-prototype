@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useAuth } from "@/contexts/auth-context";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,7 +18,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ArrowRight, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -29,13 +29,15 @@ export default function LoginPage() {
     setError("");
     setIsLoading(true);
 
-    try {
-      await login(email, password);
-    } catch (error) {
-      setError("Invalid email or password");
-    } finally {
-      setIsLoading(false);
-    }
+    // Simulate authentication
+    setTimeout(() => {
+      if (email && password) {
+        router.push("/dashboard");
+      } else {
+        setError("Please enter both email and password");
+        setIsLoading(false);
+      }
+    }, 1000);
   };
 
   return (

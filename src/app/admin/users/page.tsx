@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useAuth } from "@/contexts/auth-context";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -15,7 +14,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -125,13 +123,12 @@ const mockUsers = [
 ];
 
 export default function AdminUsersPage() {
-  const { user: currentUser, canManageReviewers } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [users, setUsers] = useState(mockUsers);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState<typeof mockUsers[0] | null>(null);
   const [newUser, setNewUser] = useState({
     name: "",
     email: "",
@@ -277,12 +274,10 @@ export default function AdminUsersPage() {
             <div className="text-sm text-muted-foreground">
               {filteredUsers.length} users
             </div>
-            {canManageReviewers() && (
-              <Button onClick={() => setShowAddDialog(true)}>
-                <UserPlus className="h-4 w-4 mr-2" />
-                Add User
-              </Button>
-            )}
+            <Button onClick={() => setShowAddDialog(true)}>
+              <UserPlus className="h-4 w-4 mr-2" />
+              Add User
+            </Button>
           </div>
         </div>
       </div>
@@ -359,7 +354,7 @@ export default function AdminUsersPage() {
                         <Mail className="mr-2 h-4 w-4" />
                         Send Password Reset
                       </DropdownMenuItem>
-                      {canManageReviewers() && user.role !== "SUPERVISOR" && (
+                      {user.role !== "SUPERVISOR" && (
                         <>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem

@@ -1,13 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useAuth } from "@/contexts/auth-context";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -23,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Filter, ClipboardCheck, Clock, CheckCircle, XCircle, AlertCircle } from "lucide-react";
+import { Search, ClipboardCheck, Clock, CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 
@@ -64,15 +62,14 @@ const mockReviews = [
 const statusConfig = {
   PENDING: { label: "Pending", variant: "secondary" as const, icon: Clock },
   IN_REVIEW: { label: "In Review", variant: "default" as const, icon: ClipboardCheck },
-  CHANGES_REQUESTED: { label: "Changes Requested", variant: "warning" as const, icon: AlertCircle },
+  CHANGES_REQUESTED: { label: "Changes Requested", variant: "outline" as const, icon: AlertCircle },
   REVIEWER_APPROVED: { label: "Reviewer Approved", variant: "default" as const, icon: CheckCircle },
-  SUPERVISOR_APPROVED: { label: "Supervisor Approved", variant: "success" as const, icon: CheckCircle },
+  SUPERVISOR_APPROVED: { label: "Supervisor Approved", variant: "default" as const, icon: CheckCircle },
   REJECTED: { label: "Rejected", variant: "destructive" as const, icon: XCircle },
-  COMPLETED: { label: "Completed", variant: "success" as const, icon: CheckCircle },
+  COMPLETED: { label: "Completed", variant: "default" as const, icon: CheckCircle },
 };
 
 export default function QCDashboard() {
-  const { user, canApproveChanges } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [activeTab, setActiveTab] = useState("my-reviews");
@@ -82,7 +79,7 @@ export default function QCDashboard() {
       review.patientName.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === "all" || review.status === statusFilter;
     const matchesTab = activeTab === "all-reviews" || 
-      (activeTab === "my-reviews" && review.reviewer === user?.name) ||
+      (activeTab === "my-reviews" && review.reviewer === "Sarah Miller") ||
       (activeTab === "pending-approval" && review.status === "REVIEWER_APPROVED");
     
     return matchesSearch && matchesStatus && matchesTab;
@@ -179,9 +176,7 @@ export default function QCDashboard() {
             <TabsList>
               <TabsTrigger value="my-reviews">My Reviews</TabsTrigger>
               <TabsTrigger value="all-reviews">All Reviews</TabsTrigger>
-              {canApproveChanges() && (
-                <TabsTrigger value="pending-approval">Pending Approval</TabsTrigger>
-              )}
+              <TabsTrigger value="pending-approval">Pending Approval</TabsTrigger>
             </TabsList>
             
             <TabsContent value={activeTab} className="mt-4">

@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAuth } from "@/contexts/auth-context";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +9,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Dialog,
@@ -19,7 +17,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Table,
@@ -31,11 +28,9 @@ import {
 } from "@/components/ui/table";
 import { 
   Copy, 
-  Check, 
   X, 
   Edit2, 
   Save, 
-  History, 
   ChevronLeft,
   AlertCircle,
   CheckCircle,
@@ -44,7 +39,24 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { fieldNames } from "@/lib/mock-data";
+
+// Field names for the medical case
+const fieldNames = {
+  patientName: "Patient Name",
+  dob: "Date of Birth",
+  gender: "Gender",
+  surgeryDate: "Surgery Date",
+  surgeryType: "Surgery Type",
+  medicalRecordNumber: "Medical Record Number",
+  surgeonName: "Surgeon Name",
+  hospitalName: "Hospital Name",
+  preOpDiagnosis: "Pre-Op Diagnosis",
+  postOpDiagnosis: "Post-Op Diagnosis",
+  complications: "Complications",
+  complicationDetails: "Complication Details",
+  readmission: "Readmission",
+  readmissionReason: "Readmission Reason",
+} as const;
 
 // Mock data for model outputs
 const mockModelOutputs = {
@@ -125,14 +137,11 @@ const mockChangeLog = [
 ];
 
 export default function QCReviewPage() {
-  const { user, canApproveChanges } = useAuth();
-  const params = useParams();
   const router = useRouter();
-  const reviewId = params.id as string;
 
   const [activeTab, setActiveTab] = useState("compare");
   const [editMode, setEditMode] = useState(false);
-  const [editedData, setEditedData] = useState<any>({});
+  const [editedData, setEditedData] = useState<Record<string, string>>({});
   const [reviewNotes, setReviewNotes] = useState("");
   const [supervisorNotes, setSupervisorNotes] = useState("");
   const [showApprovalDialog, setShowApprovalDialog] = useState(false);
@@ -202,12 +211,10 @@ export default function QCReviewPage() {
               Duplicate & Edit
             </Button>
           )}
-          {canApproveChanges() && (
-            <Button variant="default" onClick={() => setShowApprovalDialog(true)}>
-              <CheckCircle className="h-4 w-4 mr-2" />
-              Approve Changes
-            </Button>
-          )}
+          <Button variant="default" onClick={() => setShowApprovalDialog(true)}>
+            <CheckCircle className="h-4 w-4 mr-2" />
+            Approve Changes
+          </Button>
         </div>
       </div>
 
@@ -255,7 +262,7 @@ export default function QCReviewPage() {
             <CardHeader>
               <CardTitle>Side-by-Side Comparison</CardTitle>
               <CardDescription>
-                Fields with differences are highlighted. Click "Duplicate & Edit" to create an editable version.
+                Fields with differences are highlighted. Click &quot;Duplicate &amp; Edit&quot; to create an editable version.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -377,7 +384,7 @@ export default function QCReviewPage() {
               ) : (
                 <div className="text-center py-12">
                   <p className="text-muted-foreground mb-4">
-                    Click "Duplicate & Edit" to create an editable version of the output
+                    Click &quot;Duplicate &amp; Edit&quot; to create an editable version of the output
                   </p>
                   <Button onClick={handleDuplicateAndEdit}>
                     <Copy className="h-4 w-4 mr-2" />
@@ -459,17 +466,15 @@ export default function QCReviewPage() {
                   className="min-h-[100px]"
                 />
               </div>
-              {canApproveChanges() && (
-                <div className="space-y-2">
-                  <Label>Supervisor Notes</Label>
-                  <Textarea
-                    placeholder="Add supervisor notes..."
-                    value={supervisorNotes}
-                    onChange={(e) => setSupervisorNotes(e.target.value)}
-                    className="min-h-[100px]"
-                  />
-                </div>
-              )}
+              <div className="space-y-2">
+                <Label>Supervisor Notes</Label>
+                <Textarea
+                  placeholder="Add supervisor notes..."
+                  value={supervisorNotes}
+                  onChange={(e) => setSupervisorNotes(e.target.value)}
+                  className="min-h-[100px]"
+                />
+              </div>
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => router.push("/admin/qc")}>
                   Cancel
