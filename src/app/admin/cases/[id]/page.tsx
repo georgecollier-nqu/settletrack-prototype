@@ -72,13 +72,21 @@ const mockCaseData = {
     modelExtractions: [
       {
         value: "SET-123456-A",
-        source: { document: "docket.pdf", page: 1, text: "Case No. SET-123456-A" },
+        source: {
+          document: "docket.pdf",
+          page: 1,
+          text: "Case No. SET-123456-A",
+        },
         model: "Gemini 2.5 Pro" as const,
         isSelected: true,
       },
       {
         value: "SET-123456",
-        source: { document: "complaint.pdf", page: 1, text: "Case Number SET-123456" },
+        source: {
+          document: "complaint.pdf",
+          page: 1,
+          text: "Case Number SET-123456",
+        },
         model: "GPT 4.1" as const,
         isSelected: false,
       },
@@ -180,13 +188,21 @@ const mockCaseData = {
     modelExtractions: [
       {
         value: "NY",
-        source: { document: "complaint.pdf", page: 1, text: "State of New York" },
+        source: {
+          document: "complaint.pdf",
+          page: 1,
+          text: "State of New York",
+        },
         model: "Gemini 2.5 Pro" as const,
         isSelected: true,
       },
       {
         value: "New York",
-        source: { document: "settlement_agreement.pdf", page: 1, text: "State of New York" },
+        source: {
+          document: "settlement_agreement.pdf",
+          page: 1,
+          text: "State of New York",
+        },
         model: "GPT 4.1" as const,
         isSelected: false,
       },
@@ -584,14 +600,18 @@ const mockCaseData = {
       {
         value: 750000,
         displayValue: "$750,000",
-        source: { document: "motion_for_fees.pdf", page: 8, text: "Lodestar calculation totals $750,000" },
+        source: {
+          document: "motion_for_fees.pdf",
+          page: 8,
+          text: "Lodestar calculation totals $750,000",
+        },
         model: "GPT 4.1" as const,
         isSelected: false,
       },
     ],
   },
-  multiplier: { 
-    value: undefined, 
+  multiplier: {
+    value: undefined,
     source: { document: "", page: 0, text: "" },
     modelExtractions: [
       {
@@ -603,7 +623,11 @@ const mockCaseData = {
       {
         value: 1.1,
         displayValue: "1.1x",
-        source: { document: "motion_for_fees.pdf", page: 8, text: "Applying a modest multiplier of 1.1" },
+        source: {
+          document: "motion_for_fees.pdf",
+          page: 8,
+          text: "Applying a modest multiplier of 1.1",
+        },
         model: "Gemini 2.5 Pro" as const,
         isSelected: false,
       },
@@ -1267,7 +1291,11 @@ const mockCaseData = {
       {
         value: 0.85,
         displayValue: "85%",
-        source: { document: "claims_report.pdf", page: 10, text: "Pro rata factor applied: 0.85" },
+        source: {
+          document: "claims_report.pdf",
+          page: 10,
+          text: "Pro rata factor applied: 0.85",
+        },
         model: "Gemini 2.5 Pro" as const,
         isSelected: false,
       },
@@ -1286,7 +1314,11 @@ const mockCaseData = {
       {
         value: 100,
         displayValue: "$100",
-        source: { document: "notice_of_class.pdf", page: 8, text: "Additional $100 for identity theft victims" },
+        source: {
+          document: "notice_of_class.pdf",
+          page: 8,
+          text: "Additional $100 for identity theft victims",
+        },
         model: "GPT 4.1" as const,
         isSelected: false,
       },
@@ -1378,7 +1410,13 @@ const mockCaseData = {
         isSelected: true,
       },
       {
-        value: ["Social Security Number", "Full Name", "Home Address", "Date of Birth", "Driver's License"],
+        value: [
+          "Social Security Number",
+          "Full Name",
+          "Home Address",
+          "Date of Birth",
+          "Driver's License",
+        ],
         source: {
           document: "notice_of_class.pdf",
           page: 2,
@@ -1492,7 +1530,11 @@ const mockCaseData = {
     },
     modelExtractions: [
       {
-        value: ["Employee training", "Security assessments", "Vendor requirements"],
+        value: [
+          "Employee training",
+          "Security assessments",
+          "Vendor requirements",
+        ],
         source: {
           document: "settlement_agreement.pdf",
           page: 25,
@@ -1502,7 +1544,12 @@ const mockCaseData = {
         isSelected: false,
       },
       {
-        value: ["Mandatory cybersecurity training", "Quarterly penetration testing", "Third-party vendor audits", "Data encryption"],
+        value: [
+          "Mandatory cybersecurity training",
+          "Quarterly penetration testing",
+          "Third-party vendor audits",
+          "Data encryption",
+        ],
         source: {
           document: "fairness_hearing.pdf",
           page: 17,
@@ -1705,20 +1752,48 @@ export default function CaseDetailsPage() {
     text: string;
   }>({ value: "", document: "", page: "", text: "" });
 
+  // State to track selected model extractions for each field
+  const [selectedExtractions, setSelectedExtractions] = useState<
+    Record<string, number>
+  >(() => {
+    // Initialize with the default selected values from mockCaseData
+    const initial: Record<string, number> = {};
+    Object.entries(mockCaseData).forEach(([key, field]) => {
+      if (
+        field &&
+        typeof field === "object" &&
+        "modelExtractions" in field &&
+        field.modelExtractions
+      ) {
+        const selectedIndex = field.modelExtractions.findIndex(
+          (e) => e.isSelected,
+        );
+        if (selectedIndex !== -1) {
+          initial[key] = selectedIndex;
+        }
+      }
+    });
+    return initial;
+  });
+
   const handleEdit = (
     field: string,
     label: string,
     data: ExtractedField,
     fieldType: string = "text",
   ) => {
-    // If we have model extractions, use the selected one
-    const selectedExtraction = data.modelExtractions?.find((e) => e.isSelected);
-    const valueToEdit = selectedExtraction
-      ? selectedExtraction.value
-      : data.value;
-    const sourceToEdit = selectedExtraction
-      ? selectedExtraction.source
-      : data.source;
+    // If we have model extractions, use the selected one based on state
+    let valueToEdit = data.value;
+    let sourceToEdit = data.source;
+
+    if (data.modelExtractions && data.modelExtractions.length > 0) {
+      const selectedIndex = selectedExtractions[field] ?? 0;
+      const selectedExtraction = data.modelExtractions[selectedIndex];
+      if (selectedExtraction) {
+        valueToEdit = selectedExtraction.value;
+        sourceToEdit = selectedExtraction.source;
+      }
+    }
 
     setEditFieldData({
       field,
@@ -1765,7 +1840,10 @@ export default function CaseDetailsPage() {
     console.log(
       `Selected ${fieldKey} extraction from model index ${modelIndex}`,
     );
-    // In a real implementation, this would update the backend
+    setSelectedExtractions((prev) => ({
+      ...prev,
+      [fieldKey]: modelIndex,
+    }));
   };
 
   // Component for displaying a data field with source
@@ -1821,64 +1899,67 @@ export default function CaseDetailsPage() {
         {hasMultipleExtractions ? (
           // Show multiple model extractions
           <div className="space-y-3">
-            {data.modelExtractions!.map((extraction, index) => (
-              <div
-                key={`${fieldKey}-${extraction.model}`}
-                className={`border rounded-lg p-3 cursor-pointer transition-all ${
-                  extraction.isSelected
-                    ? "border-blue-500 bg-blue-50"
-                    : "border-gray-200 hover:border-gray-300"
-                }`}
-                onClick={() => handleSelectModelExtraction(fieldKey, index)}
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <input
-                        type="radio"
-                        name={`${fieldKey}-selection`}
-                        checked={extraction.isSelected || false}
-                        onChange={() =>
-                          handleSelectModelExtraction(fieldKey, index)
-                        }
-                        className="text-blue-600"
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                      <span className="text-lg font-semibold">
-                        {displayValue(
-                          extraction.value,
-                          extraction.displayValue,
-                        )}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground ml-6">
-                      <span className="font-medium text-xs bg-gray-100 px-2 py-0.5 rounded">
-                        {extraction.model}
-                      </span>
+            {data.modelExtractions!.map((extraction, index) => {
+              const isSelected = selectedExtractions[fieldKey] === index;
+              return (
+                <div
+                  key={`${fieldKey}-${extraction.model}`}
+                  className={`border rounded-lg p-3 cursor-pointer transition-all ${
+                    isSelected
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
+                  onClick={() => handleSelectModelExtraction(fieldKey, index)}
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <input
+                          type="radio"
+                          name={`${fieldKey}-selection`}
+                          checked={isSelected}
+                          onChange={() =>
+                            handleSelectModelExtraction(fieldKey, index)
+                          }
+                          className="text-blue-600"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <span className="text-lg font-semibold">
+                          {displayValue(
+                            extraction.value,
+                            extraction.displayValue,
+                          )}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground ml-6">
+                        <span className="font-medium text-xs bg-gray-100 px-2 py-0.5 rounded">
+                          {extraction.model}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {extraction.source.document && (
-                  <div className="bg-gray-50 rounded p-2 space-y-1 text-sm ml-6">
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <FileText className="h-3 w-3" />
-                      <span className="font-medium">
-                        {extraction.source.document}
-                      </span>
-                      {extraction.source.page > 0 && (
-                        <span>• Page {extraction.source.page}</span>
+                  {extraction.source.document && (
+                    <div className="bg-gray-50 rounded p-2 space-y-1 text-sm ml-6">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <FileText className="h-3 w-3" />
+                        <span className="font-medium">
+                          {extraction.source.document}
+                        </span>
+                        {extraction.source.page > 0 && (
+                          <span>• Page {extraction.source.page}</span>
+                        )}
+                      </div>
+                      {extraction.source.text && (
+                        <p className="text-gray-600 italic text-xs">
+                          &quot;{extraction.source.text}&quot;
+                        </p>
                       )}
                     </div>
-                    {extraction.source.text && (
-                      <p className="text-gray-600 italic text-xs">
-                        &quot;{extraction.source.text}&quot;
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
+                  )}
+                </div>
+              );
+            })}
           </div>
         ) : (
           // Show single value (original behavior)
