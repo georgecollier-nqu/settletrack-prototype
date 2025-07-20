@@ -16,19 +16,29 @@ import {
   Search,
   FileText,
   Bookmark,
-  Users,
+  TrendingUp,
   DollarSign,
-  Clock,
   ChevronRight,
 } from "lucide-react";
 
 export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
+  // User-specific saved searches
   const savedSearches = [
-    { id: "1", name: "Data Breach > $10M", count: 156 },
-    { id: "2", name: "California Class Actions", count: 89 },
-    { id: "3", name: "2024 Settlements", count: 234 },
+    {
+      id: "1",
+      name: "Data Breach > $10M",
+      count: 156,
+      lastUsed: "2 hours ago",
+    },
+    {
+      id: "2",
+      name: "California Class Actions",
+      count: 89,
+      lastUsed: "Yesterday",
+    },
+    { id: "3", name: "2024 Settlements", count: 234, lastUsed: "3 days ago" },
   ];
 
   return (
@@ -108,11 +118,11 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      Avg. Settlement
+                      Total Settlements
                     </p>
-                    <p className="text-2xl font-bold mt-1">$8.7M</p>
+                    <p className="text-2xl font-bold mt-1">$124.3M</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Your searches
+                      Cases tracked
                     </p>
                   </div>
                   <div className="p-3 bg-secondary rounded-lg">
@@ -127,15 +137,15 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      Team Members
+                      Recent Settlements
                     </p>
                     <p className="text-2xl font-bold mt-1">12</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      5 active today
+                      Last 30 days
                     </p>
                   </div>
                   <div className="p-3 bg-secondary rounded-lg">
-                    <Users className="h-6 w-6 text-primary" />
+                    <TrendingUp className="h-6 w-6 text-primary" />
                   </div>
                 </div>
               </CardContent>
@@ -168,7 +178,8 @@ export default function DashboardPage() {
                         <div>
                           <p className="font-medium text-sm">{search.name}</p>
                           <p className="text-xs text-muted-foreground mt-1">
-                            {search.count} matching cases
+                            {search.count} matching cases • Last used{" "}
+                            {search.lastUsed}
                           </p>
                         </div>
                         <ChevronRight className="h-4 w-4 text-muted-foreground" />
@@ -188,25 +199,22 @@ export default function DashboardPage() {
             {/* Activity Feed */}
             <Card>
               <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
+                <CardTitle>Your Recent Activity</CardTitle>
                 <CardDescription>
-                  What&apos;s happening in your firm
+                  Your search history and viewed cases
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
                     <div className="p-2 bg-secondary rounded-full">
-                      <Clock className="h-4 w-4 text-primary" />
+                      <FileText className="h-4 w-4 text-primary" />
                     </div>
                     <div className="flex-1">
                       <p className="text-sm">
-                        <span className="font-medium">Sarah Johnson</span> saved
-                        a new search for
-                        <span className="font-medium">
-                          {" "}
-                          &quot;2024 Data Breach Settlements&quot;
-                        </span>
+                        You viewed case{" "}
+                        <span className="font-medium">Wilson v. DataCorp</span>{" "}
+                        - $15.2M settlement
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
                         2 hours ago
@@ -215,13 +223,15 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex items-start gap-4">
                     <div className="p-2 bg-secondary rounded-full">
-                      <FileText className="h-4 w-4 text-primary" />
+                      <Search className="h-4 w-4 text-primary" />
                     </div>
                     <div className="flex-1">
                       <p className="text-sm">
-                        New case added:{" "}
-                        <span className="font-medium">Wilson v. DataCorp</span>{" "}
-                        - $15.2M settlement
+                        You ran search for
+                        <span className="font-medium">
+                          {" "}
+                          &quot;2024 Data Breach Settlements&quot;
+                        </span>
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
                         5 hours ago
@@ -230,12 +240,14 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex items-start gap-4">
                     <div className="p-2 bg-secondary rounded-full">
-                      <Users className="h-4 w-4 text-primary" />
+                      <Bookmark className="h-4 w-4 text-primary" />
                     </div>
                     <div className="flex-1">
                       <p className="text-sm">
-                        <span className="font-medium">Michael Chen</span> joined
-                        your team
+                        You saved search{" "}
+                        <span className="font-medium">
+                          &quot;California Class Actions&quot;
+                        </span>
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
                         Yesterday
