@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 import { Bug, Loader2 } from "lucide-react"
 
 interface ReportIssueDialogProps {
@@ -21,11 +21,11 @@ interface ReportIssueDialogProps {
 export function ReportIssueDialog({
   open,
   onOpenChange,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   caseId,
   fieldPath = "",
   currentValue = ""
 }: ReportIssueDialogProps) {
-  const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     issueType: "",
@@ -38,62 +38,30 @@ export function ReportIssueDialog({
 
   const handleSubmit = async () => {
     if (!formData.issueType || !formData.description) {
-      toast({
-        title: "Validation Error",
-        description: "Please select an issue type and provide a description",
-        variant: "destructive"
-      })
+      toast.error("Please select an issue type and provide a description")
       return
     }
 
     setIsSubmitting(true)
     
-    try {
-      const response = await fetch('/api/bug-reports', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          caseId,
-          issueType: formData.issueType,
-          fieldPath: formData.fieldPath || 'general',
-          currentValue: formData.currentValue || 'N/A',
-          suggestedValue: formData.suggestedValue,
-          description: formData.description,
-          email: formData.email
-        })
+    // Simulate submission for prototype
+    setTimeout(() => {
+      toast.success("Issue Reported Successfully", {
+        description: "Thank you for helping improve our data quality. We'll review your report shortly.",
       })
       
-      const result = await response.json()
-      
-      if (result.success) {
-        toast({
-          title: "Issue Reported Successfully",
-          description: "Thank you for helping improve our data quality. We'll review your report shortly.",
-        })
-        
-        onOpenChange(false)
-        setFormData({
-          issueType: "",
-          fieldPath: "",
-          currentValue: "",
-          description: "",
-          suggestedValue: "",
-          email: ""
-        })
-      } else {
-        throw new Error(result.message || 'Failed to submit report')
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to submit issue report. Please try again.",
-        variant: "destructive"
+      onOpenChange(false)
+      setFormData({
+        issueType: "",
+        fieldPath: "",
+        currentValue: "",
+        description: "",
+        suggestedValue: "",
+        email: ""
       })
-    } finally {
+      
       setIsSubmitting(false)
-    }
+    }, 1000)
   }
 
   return (
@@ -185,7 +153,7 @@ export function ReportIssueDialog({
               onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
             />
             <p className="text-xs text-muted-foreground">
-              Provide your email if you'd like updates on this issue
+              Provide your email if you&apos;d like updates on this issue
             </p>
           </div>
         </div>

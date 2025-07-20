@@ -42,8 +42,6 @@ import {
 } from "lucide-react";
 import { mockCases } from "@/lib/mock-data";
 import { ReportIssueButton } from "@/components/bug-bounty/report-issue-button";
-import { PDFViewer } from "@/components/pdf-viewer/pdf-viewer";
-import { usePDFViewer } from "@/hooks/use-pdf-viewer";
 
 interface CaseDetailsPageProps {
   params: Promise<{
@@ -74,9 +72,6 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
   if (!case_) {
     notFound();
   }
-
-  // PDF Viewer hook
-  const { pdfViewerState, openPDFViewer, closePDFViewer, getDocumentUrlForCitation } = usePDFViewer({ caseId: case_.id });
 
   // Format currency
   const formatCurrency = (amount: number) => {
@@ -198,8 +193,6 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                     value={formatCurrency(case_.settlementAmount)}
                     citation={case_.citations?.settlementAmount}
                     valueClassName="text-2xl text-primary"
-                    documentUrl={getDocumentUrlForCitation(case_.citations?.settlementAmount)}
-                    onViewSource={() => case_.citations?.settlementAmount && openPDFViewer(case_.citations.settlementAmount)}
                   />
                   <DollarSign className="h-6 w-6 text-primary" />
                 </div>
@@ -215,8 +208,6 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                     description="Affected individuals"
                     citation={case_.citations?.classSize}
                     valueClassName="text-2xl"
-                    documentUrl={getDocumentUrlForCitation(case_.citations?.classSize)}
-                    onViewSource={() => case_.citations?.classSize && openPDFViewer(case_.citations.classSize)}
                   />
                   <Users className="h-6 w-6 text-primary" />
                 </div>
@@ -854,16 +845,6 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
           </div>
         </div>
       </main>
-
-      {/* PDF Viewer */}
-      <PDFViewer
-        open={pdfViewerState.open}
-        onOpenChange={closePDFViewer}
-        documentUrl={pdfViewerState.documentUrl}
-        documentName={pdfViewerState.documentName}
-        initialPage={pdfViewerState.initialPage}
-        highlightText={pdfViewerState.highlightText}
-      />
     </>
   );
 }

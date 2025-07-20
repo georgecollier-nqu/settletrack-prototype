@@ -76,16 +76,9 @@ const issueTypeLabels = {
   other: "Other"
 }
 
-const statusColors = {
-  pending: "warning",
-  in_review: "secondary",
-  resolved: "success",
-  rejected: "destructive"
-} as const
-
 const priorityColors = {
   high: "destructive",
-  medium: "warning",
+  medium: "default",
   low: "secondary"
 } as const
 
@@ -290,7 +283,7 @@ export default function BugReportsPage() {
                               {report.fieldPath}
                             </TableCell>
                             <TableCell>
-                              <Badge variant={report.resolution?.action === "accepted" ? "success" : "destructive"}>
+                              <Badge variant={report.resolution?.action === "accepted" ? "default" : "destructive"}>
                                 {report.resolution?.action === "accepted" ? "Accepted" : "Rejected"}
                               </Badge>
                             </TableCell>
@@ -397,7 +390,7 @@ export default function BugReportsPage() {
                   <h4 className="font-medium">Resolution</h4>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <Badge variant={selectedReport.resolution.action === "accepted" ? "success" : "destructive"}>
+                      <Badge variant={selectedReport.resolution.action === "accepted" ? "default" : "destructive"}>
                         {selectedReport.resolution.action === "accepted" ? "Accepted" : "Rejected"}
                       </Badge>
                       <span className="text-sm text-muted-foreground">

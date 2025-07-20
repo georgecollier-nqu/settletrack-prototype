@@ -12,8 +12,6 @@ interface StatWithTooltipProps {
   citation?: Citation;
   className?: string;
   valueClassName?: string;
-  documentUrl?: string;
-  onViewSource?: () => void;
 }
 
 export function StatWithTooltip({
@@ -23,17 +21,11 @@ export function StatWithTooltip({
   citation,
   className,
   valueClassName,
-  documentUrl,
-  onViewSource,
 }: StatWithTooltipProps) {
   return (
     <div className={cn("space-y-1", className)}>
       <h4 className="font-medium text-sm">{label}</h4>
-      <CitationTooltip 
-        citation={citation}
-        documentUrl={documentUrl}
-        onViewSource={onViewSource}
-      >
+      <CitationTooltip citation={citation}>
         <p className={cn("text-xl font-semibold", valueClassName)}>{value}</p>
       </CitationTooltip>
       {description && (
