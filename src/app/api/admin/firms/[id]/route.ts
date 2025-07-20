@@ -24,11 +24,12 @@ const firms: Firm[] = [];
 // GET /api/admin/firms/[id] - Get a single firm
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // In production, verify admin authentication here
-    const firm = firms.find((f) => f.id === params.id);
+    const { id } = await params;
+    const firm = firms.find((f) => f.id === id);
 
     if (!firm) {
       return NextResponse.json({ error: "Firm not found" }, { status: 404 });
@@ -47,12 +48,13 @@ export async function GET(
 // PUT /api/admin/firms/[id] - Update a firm
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // In production, verify admin authentication here
     const body = await request.json();
-    const firmIndex = firms.findIndex((f) => f.id === params.id);
+    const { id } = await params;
+    const firmIndex = firms.findIndex((f) => f.id === id);
 
     if (firmIndex === -1) {
       return NextResponse.json({ error: "Firm not found" }, { status: 404 });
@@ -62,7 +64,7 @@ export async function PUT(
     firms[firmIndex] = {
       ...firms[firmIndex],
       ...body,
-      id: params.id, // Ensure ID cannot be changed
+      id, // Ensure ID cannot be changed
       updatedAt: new Date().toISOString(),
     };
 
@@ -82,11 +84,12 @@ export async function PUT(
 // DELETE /api/admin/firms/[id] - Delete a firm
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // In production, verify admin authentication here
-    const firmIndex = firms.findIndex((f) => f.id === params.id);
+    const { id } = await params;
+    const firmIndex = firms.findIndex((f) => f.id === id);
 
     if (firmIndex === -1) {
       return NextResponse.json({ error: "Firm not found" }, { status: 404 });
