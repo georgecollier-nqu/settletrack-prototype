@@ -142,12 +142,15 @@ export default function LoginPage() {
               </div>
 
               <div className="mt-6 text-center">
-                <Link
-                  href="/signup"
-                  className="text-sm text-primary hover:underline"
-                >
-                  Create an account
-                </Link>
+                <p className="text-sm text-muted-foreground">
+                  Need an account?{" "}
+                  <Link
+                    href="/contact"
+                    className="text-primary hover:underline"
+                  >
+                    Contact our sales team
+                  </Link>
+                </p>
               </div>
             </div>
           </CardContent>
