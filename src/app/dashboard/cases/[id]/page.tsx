@@ -41,6 +41,7 @@ import {
   Gavel,
 } from "lucide-react";
 import { mockCases } from "@/lib/mock-data";
+import { ReportIssueButton } from "@/components/bug-bounty/report-issue-button";
 
 interface CaseDetailsPageProps {
   params: Promise<{
@@ -144,6 +145,11 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
               <Copy className="mr-2 h-4 w-4" />
               Copy Citation
             </Button>
+            <ReportIssueButton 
+              caseId={case_.id}
+              variant="outline"
+              showLabel={true}
+            />
             <Dialog
               open={showComparisonDialog}
               onOpenChange={setShowComparisonDialog}
