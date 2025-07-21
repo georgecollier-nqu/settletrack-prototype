@@ -39,7 +39,7 @@ import {
   ExternalLink,
   AlertCircle,
 } from "lucide-react";
-import type { Flag as FlagType } from "@/app/api/flags/route";
+import { flagsStore, type Flag as FlagType } from "@/lib/flags-store";
 
 export default function FlagsAdminPage() {
   const [flags, setFlags] = useState<FlagType[]>([]);
@@ -50,13 +50,20 @@ export default function FlagsAdminPage() {
 
   useEffect(() => {
     fetchFlags();
+
+    // Listen for storage changes
+    const handleStorageChange = () => {
+      fetchFlags();
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
-  const fetchFlags = async () => {
+  const fetchFlags = () => {
     try {
-      const response = await fetch("/api/flags");
-      const data = await response.json();
-      setFlags(data.flags || []);
+      const allFlags = flagsStore.getAll();
+      setFlags(allFlags);
     } catch {
       toast.error("Failed to fetch flags");
     } finally {
@@ -64,28 +71,21 @@ export default function FlagsAdminPage() {
     }
   };
 
-  const updateFlagStatus = async (
-    flagId: string,
-    status: FlagType["status"],
-  ) => {
+  const updateFlagStatus = (flagId: string, status: FlagType["status"]) => {
     try {
-      const response = await fetch("/api/flags", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: flagId,
-          status,
-          resolvedBy: "Admin", // In production, use actual user
-          resolutionNotes: resolutionNotes || undefined,
-        }),
+      flagsStore.update(flagId, {
+        status,
+        resolvedBy: "Admin", // In production, use actual user
+        resolutionNotes: resolutionNotes || undefined,
       });
-
-      if (!response.ok) throw new Error("Failed to update flag");
 
       toast.success(`Flag ${status}`);
       setSelectedFlag(null);
       setResolutionNotes("");
       fetchFlags();
+
+      // Trigger storage event for other tabs
+      window.dispatchEvent(new Event("storage"));
     } catch {
       toast.error("Failed to update flag status");
     }

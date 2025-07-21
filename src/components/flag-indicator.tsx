@@ -9,7 +9,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
-import type { Flag as FlagType } from "@/app/api/flags/route";
+import { flagsStore, type Flag as FlagType } from "@/lib/flags-store";
 
 interface FlagIndicatorProps {
   caseId: string;
@@ -21,11 +21,10 @@ export function FlagIndicator({ caseId, fieldName }: FlagIndicatorProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchFlags = async () => {
+    const fetchFlags = () => {
       try {
-        const response = await fetch(`/api/flags?caseId=${caseId}`);
-        const data = await response.json();
-        setFlags(data.flags || []);
+        const caseFlags = flagsStore.getByCaseId(caseId);
+        setFlags(caseFlags);
       } catch (error) {
         console.error("Failed to fetch flags:", error);
       } finally {
@@ -34,6 +33,14 @@ export function FlagIndicator({ caseId, fieldName }: FlagIndicatorProps) {
     };
 
     fetchFlags();
+
+    // Listen for storage changes
+    const handleStorageChange = () => {
+      fetchFlags();
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, [caseId]);
 
   if (loading || flags.length === 0) {

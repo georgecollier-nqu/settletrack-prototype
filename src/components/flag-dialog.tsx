@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Flag } from "lucide-react";
+import { flagsStore } from "@/lib/flags-store";
 
 interface FlagDialogProps {
   open: boolean;
@@ -53,7 +54,7 @@ export function FlagDialog({
   const [description, setDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!flagType || !description.trim()) {
@@ -64,25 +65,14 @@ export function FlagDialog({
     setIsSubmitting(true);
 
     try {
-      // TODO: Replace with actual API call
-      const response = await fetch("/api/flags", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          caseId,
-          caseName,
-          flagType,
-          description,
-          fieldContext,
-          createdAt: new Date().toISOString(),
-        }),
+      // Save to localStorage
+      flagsStore.add({
+        caseId,
+        caseName,
+        flagType,
+        description,
+        fieldContext,
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to submit flag");
-      }
 
       toast.success("Issue flagged successfully", {
         description: "Thank you for helping us improve our data quality.",
@@ -92,16 +82,11 @@ export function FlagDialog({
       setFlagType("");
       setDescription("");
       onOpenChange(false);
+
+      // Trigger a storage event to update other components
+      window.dispatchEvent(new Event("storage"));
     } catch {
-      // For now, show success even if API doesn't exist
-      toast.success("Issue flagged successfully", {
-        description: "Thank you for helping us improve our data quality.",
-      });
-
-      // Reset form and close dialog
-      setFlagType("");
-      setDescription("");
-      onOpenChange(false);
+      toast.error("Failed to save flag");
     } finally {
       setIsSubmitting(false);
     }
