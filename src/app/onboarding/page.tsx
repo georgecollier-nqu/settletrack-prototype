@@ -35,7 +35,7 @@ export default function OnboardingPage() {
 
   // Form data
   const [jobTitle, setJobTitle] = useState("");
-  const [role, setRole] = useState("lawyer");
+  const [role, setRole] = useState("user");
   const [practiceAreas, setPracticeAreas] = useState<string[]>([]);
   const [teamSize, setTeamSize] = useState("");
 
@@ -109,12 +109,11 @@ export default function OnboardingPage() {
                     <Briefcase className="h-6 w-6 text-primary" />
                   </div>
                   <CardTitle className="text-2xl font-serif">
-                    Complete Your Profile
+                    Tell us about yourself
                   </CardTitle>
                 </div>
                 <CardDescription>
-                  Welcome to your firm&apos;s SettleTrack account. Let&apos;s
-                  set up your profile.
+                  Help us personalize your SettleTrack experience
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -134,38 +133,23 @@ export default function OnboardingPage() {
                   <RadioGroup value={role} onValueChange={setRole}>
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-secondary/50">
-                        <RadioGroupItem value="lawyer" id="lawyer" />
-                        <Label
-                          htmlFor="lawyer"
-                          className="cursor-pointer flex-1"
-                        >
-                          <div className="font-medium">Lawyer</div>
+                        <RadioGroupItem value="user" id="user" />
+                        <Label htmlFor="user" className="cursor-pointer flex-1">
+                          <div className="font-medium">Team Member</div>
                           <p className="text-sm text-muted-foreground">
-                            Licensed attorney practicing law
+                            I&apos;ll be using SettleTrack with my firm
                           </p>
                         </Label>
                       </div>
                       <div className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-secondary/50">
-                        <RadioGroupItem value="paralegal" id="paralegal" />
+                        <RadioGroupItem value="team_leader" id="team_leader" />
                         <Label
-                          htmlFor="paralegal"
+                          htmlFor="team_leader"
                           className="cursor-pointer flex-1"
                         >
-                          <div className="font-medium">Paralegal</div>
+                          <div className="font-medium">Solo Practitioner</div>
                           <p className="text-sm text-muted-foreground">
-                            Legal assistant supporting attorneys
-                          </p>
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-secondary/50">
-                        <RadioGroupItem value="admin" id="admin" />
-                        <Label
-                          htmlFor="admin"
-                          className="cursor-pointer flex-1"
-                        >
-                          <div className="font-medium">Firm Administrator</div>
-                          <p className="text-sm text-muted-foreground">
-                            Managing firm operations and accounts
+                            I&apos;ll be using SettleTrack on my own
                           </p>
                         </Label>
                       </div>

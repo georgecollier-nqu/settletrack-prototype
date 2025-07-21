@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -57,8 +56,6 @@ import {
   RefreshCw,
   Plus,
 } from "lucide-react";
-import { useAuth } from "@/contexts/auth-context";
-import { usePermissions } from "@/hooks/use-permissions";
 
 interface Invoice {
   id: string;
@@ -69,19 +66,8 @@ interface Invoice {
 }
 
 export default function BillingPage() {
-  const router = useRouter();
-  const { user, logout } = useAuth();
-  const permissions = usePermissions();
   const [updateCardDialogOpen, setUpdateCardDialogOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-
-  // Check permissions
-  useEffect(() => {
-    if (!permissions.canAccessBilling) {
-      router.push("/dashboard");
-      toast.error("You don't have permission to access this page");
-    }
-  }, [permissions, router]);
 
   // Mock subscription data
   const subscription = {
@@ -203,9 +189,9 @@ export default function BillingPage() {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium">{user?.name || "John Doe"}</p>
+                    <p className="text-sm font-medium">John Doe</p>
                     <p className="text-xs text-muted-foreground">
-                      {user?.email || "john@lawfirm.com"}
+                      john@lawfirm.com
                     </p>
                   </div>
                 </DropdownMenuLabel>
@@ -219,7 +205,7 @@ export default function BillingPage() {
                   Help & Support
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-destructive" onClick={logout}>
+                <DropdownMenuItem className="text-destructive">
                   <LogOut className="mr-2 h-4 w-4" />
                   Sign Out
                 </DropdownMenuItem>

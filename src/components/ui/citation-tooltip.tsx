@@ -22,23 +22,11 @@ export function CitationTooltip({ citation, children }: CitationTooltipProps) {
     return <>{children}</>;
   }
 
-  const handleViewSource = () => {
-    // Copy citation and show notification
-    const citationText = `${citation.documentName}, Page ${citation.pageNumber}: "${citation.quote}"`;
-    navigator.clipboard.writeText(citationText);
-    toast.success("Citation copied to clipboard", {
-      description: `Source: ${citation.documentName}, Page ${citation.pageNumber}`,
-    });
-  };
-
   return (
     <TooltipProvider>
       <Tooltip delayDuration={300}>
         <TooltipTrigger asChild>
-          <span 
-            className="inline-flex items-center gap-0.5 cursor-pointer underline decoration-dotted underline-offset-4 decoration-muted-foreground/40 hover:decoration-primary transition-colors"
-            onClick={handleViewSource}
-          >
+          <span className="inline-flex items-center gap-0.5 cursor-help underline decoration-dotted underline-offset-4 decoration-muted-foreground/40">
             {children}
           </span>
         </TooltipTrigger>
@@ -61,23 +49,25 @@ export function CitationTooltip({ citation, children }: CitationTooltipProps) {
                 size="icon"
                 variant="ghost"
                 className="h-6 w-6 -mt-1 -mr-1"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleViewSource();
+                onClick={() => {
+                  // Copy citation text to clipboard
+                  const citationText = `${citation.documentName}, Page ${citation.pageNumber}: "${citation.quote}"`;
+                  navigator.clipboard.writeText(citationText);
+
+                  // Show toast notification
+                  toast.success("Citation copied to clipboard", {
+                    description: `In a full implementation, this would open ${citation.documentName} and you can search for the copied text to find the relevant section`,
+                  });
                 }}
               >
                 <ExternalLink className="h-3 w-3" />
-                <span className="sr-only">Copy citation</span>
+                <span className="sr-only">View source</span>
               </Button>
             </div>
 
             <blockquote className="text-xs text-muted-foreground border-l-2 pl-2 italic">
               {citation.quote}
             </blockquote>
-            
-            <p className="text-xs text-muted-foreground">
-              Click to copy citation
-            </p>
           </div>
         </TooltipContent>
       </Tooltip>
