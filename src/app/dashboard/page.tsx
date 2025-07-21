@@ -16,7 +16,6 @@ import {
   Search,
   FileText,
   Bookmark,
-  Users,
   DollarSign,
   Clock,
   ChevronRight,
@@ -108,11 +107,11 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      Avg. Settlement
+                      Total Settlements
                     </p>
-                    <p className="text-2xl font-bold mt-1">$8.7M</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Your searches
+                    <p className="text-2xl font-bold mt-1">$487M</p>
+                    <p className="text-xs text-success mt-1">
+                      All platform cases
                     </p>
                   </div>
                   <div className="p-3 bg-secondary rounded-lg">
@@ -127,15 +126,15 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      Team Members
+                      Recent Settlements
                     </p>
-                    <p className="text-2xl font-bold mt-1">12</p>
+                    <p className="text-2xl font-bold mt-1">$125M</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      5 active today
+                      Last 12 months
                     </p>
                   </div>
                   <div className="p-3 bg-secondary rounded-lg">
-                    <Users className="h-6 w-6 text-primary" />
+                    <Clock className="h-6 w-6 text-primary" />
                   </div>
                 </div>
               </CardContent>
@@ -190,26 +189,25 @@ export default function DashboardPage() {
               <CardHeader>
                 <CardTitle>Recent Activity</CardTitle>
                 <CardDescription>
-                  What&apos;s happening in your firm
+                  Your searches and cases viewed
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
                     <div className="p-2 bg-secondary rounded-full">
-                      <Clock className="h-4 w-4 text-primary" />
+                      <Search className="h-4 w-4 text-primary" />
                     </div>
                     <div className="flex-1">
                       <p className="text-sm">
-                        <span className="font-medium">Sarah Johnson</span> saved
-                        a new search for
+                        You searched for
                         <span className="font-medium">
                           {" "}
-                          &quot;2024 Data Breach Settlements&quot;
+                          &quot;California data breach settlements&quot;
                         </span>
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
-                        2 hours ago
+                        30 minutes ago
                       </p>
                     </div>
                   </div>
@@ -219,26 +217,44 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm">
-                        New case added:{" "}
+                        You viewed case:{" "}
                         <span className="font-medium">Wilson v. DataCorp</span>{" "}
                         - $15.2M settlement
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
-                        5 hours ago
+                        2 hours ago
                       </p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
                     <div className="p-2 bg-secondary rounded-full">
-                      <Users className="h-4 w-4 text-primary" />
+                      <Bookmark className="h-4 w-4 text-primary" />
                     </div>
                     <div className="flex-1">
                       <p className="text-sm">
-                        <span className="font-medium">Michael Chen</span> joined
-                        your team
+                        You saved a new search:
+                        <span className="font-medium">
+                          {" "}
+                          &quot;2024 Class Action Settlements&quot;
+                        </span>
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
                         Yesterday
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="p-2 bg-secondary rounded-full">
+                      <FileText className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm">
+                        You viewed case:{" "}
+                        <span className="font-medium">Smith v. TechCorp</span> -
+                        $8.5M settlement
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        2 days ago
                       </p>
                     </div>
                   </div>
