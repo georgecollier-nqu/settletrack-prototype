@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -21,6 +23,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { useAdminAuth } from "@/contexts/AdminAuthContext";
 
 // Mock data for charts
 const signupData = [
@@ -44,6 +47,21 @@ const searchData = [
 ];
 
 export default function AdminAnalyticsPage() {
+  const router = useRouter();
+  const { isHumanReviewer } = useAdminAuth();
+
+  useEffect(() => {
+    // Redirect human reviewers to QC workflow
+    if (isHumanReviewer) {
+      router.push("/admin/qc-workflow");
+    }
+  }, [isHumanReviewer, router]);
+
+  // Don't render analytics for human reviewers
+  if (isHumanReviewer) {
+    return null;
+  }
+
   return (
     <>
       {/* Header */}
