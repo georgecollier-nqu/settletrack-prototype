@@ -1,23 +1,9 @@
 "use client";
 
 import React, { useMemo } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { type Case } from "@/lib/mock-data";
@@ -290,21 +276,19 @@ export function CaseDataOutput({ cases }: CaseDataOutputProps) {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="settlement" className="w-full">
-        <TabsList className="flex flex-wrap h-auto gap-1 p-1 md:grid md:grid-cols-7">
-          <TabsTrigger value="settlement">Settlement</TabsTrigger>
-          <TabsTrigger value="attorney">Attorney Fees</TabsTrigger>
-          <TabsTrigger value="class">Class/Claims</TabsTrigger>
-          <TabsTrigger value="reimbursement">Reimbursements</TabsTrigger>
-          <TabsTrigger value="injunctive">Injunctive</TabsTrigger>
-          <TabsTrigger value="excess">Excess Funds</TabsTrigger>
-          <TabsTrigger value="sources">Sources</TabsTrigger>
+        <TabsList className="flex flex-wrap h-auto gap-1 p-1 md:grid md:grid-cols-5">
+          <TabsTrigger value="settlement">Total Settlement</TabsTrigger>
+          <TabsTrigger value="reimbursement">Individual Payout</TabsTrigger>
+          <TabsTrigger value="injunctive">Injunctive Relief</TabsTrigger>
+          <TabsTrigger value="attorney">Attorney&apos;s Fees</TabsTrigger>
+          <TabsTrigger value="other">Other</TabsTrigger>
         </TabsList>
 
-        {/* Settlement Fund Tab */}
+        {/* Total Settlement Tab */}
         <TabsContent value="settlement" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Settlement Fund</CardTitle>
+              <CardTitle>Total Settlement</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -494,104 +478,11 @@ export function CaseDataOutput({ cases }: CaseDataOutputProps) {
           </Card>
         </TabsContent>
 
-        {/* Class Representatives & Claims Tab */}
-        <TabsContent value="class" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Class Representatives & Administration</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <h4 className="font-medium mb-3">Class Representatives</h4>
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">
-                      Average service awards per named plaintiff
-                    </p>
-                    <p className="text-xl font-semibold">
-                      {formatCurrency(stats.avgServiceAwards)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium mb-2">
-                      Are the service awards paid out of the total settlement
-                      fund?
-                    </p>
-                    <div className="flex gap-4">
-                      <Badge variant="outline">
-                        Yes: {stats.serviceAwardsFromFund.toFixed(0)}%
-                      </Badge>
-                      <Badge variant="outline">
-                        No: {(100 - stats.serviceAwardsFromFund).toFixed(0)}%
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <Separator />
-
-              <div>
-                <h4 className="font-medium mb-3">
-                  Claims Administration Costs
-                </h4>
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">
-                      Average claims administration costs
-                    </p>
-                    <p className="text-xl font-semibold">
-                      {formatCurrency(stats.avgAdminCosts)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium mb-2">
-                      Are the costs paid out of the total settlement fund?
-                    </p>
-                    <div className="flex gap-4">
-                      <Badge variant="outline">
-                        Yes: {stats.adminCostsFromFund.toFixed(0)}%
-                      </Badge>
-                      <Badge variant="outline">
-                        No: {(100 - stats.adminCostsFromFund).toFixed(0)}%
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <Separator />
-
-              <div>
-                <h4 className="font-medium mb-3">Class Members</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">
-                      Average number of claims submitted
-                    </p>
-                    <p className="text-xl font-semibold">
-                      {formatNumber(Math.round(stats.avgClaimsSubmitted))}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">
-                      Average claims submission rate
-                    </p>
-                    <p className="text-xl font-semibold">
-                      {stats.avgClaimsPercent.toFixed(1)}%
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Individual Reimbursements Tab */}
+        {/* Individual Payout Tab */}
         <TabsContent value="reimbursement" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Individual Reimbursements</CardTitle>
+              <CardTitle>Individual Payout</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
@@ -892,13 +783,102 @@ export function CaseDataOutput({ cases }: CaseDataOutputProps) {
           </Card>
         </TabsContent>
 
-        {/* Excess Funds Tab */}
-        <TabsContent value="excess" className="space-y-4">
+        {/* Other Tab - Contains Class/Claims and Excess Funds */}
+        <TabsContent value="other" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Excess Funds</CardTitle>
+              <CardTitle>Other</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-6">
+              {/* Class Representatives Section */}
+              <div>
+                <h4 className="font-medium mb-3">Class Representatives</h4>
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">
+                      Average service awards per named plaintiff
+                    </p>
+                    <p className="text-xl font-semibold">
+                      {formatCurrency(stats.avgServiceAwards)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium mb-2">
+                      Are the service awards paid out of the total settlement
+                      fund?
+                    </p>
+                    <div className="flex gap-4">
+                      <Badge variant="outline">
+                        Yes: {stats.serviceAwardsFromFund.toFixed(0)}%
+                      </Badge>
+                      <Badge variant="outline">
+                        No: {(100 - stats.serviceAwardsFromFund).toFixed(0)}%
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Claims Administration Section */}
+              <div>
+                <h4 className="font-medium mb-3">
+                  Claims Administration Costs
+                </h4>
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">
+                      Average claims administration costs
+                    </p>
+                    <p className="text-xl font-semibold">
+                      {formatCurrency(stats.avgAdminCosts)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium mb-2">
+                      Are the costs paid out of the total settlement fund?
+                    </p>
+                    <div className="flex gap-4">
+                      <Badge variant="outline">
+                        Yes: {stats.adminCostsFromFund.toFixed(0)}%
+                      </Badge>
+                      <Badge variant="outline">
+                        No: {(100 - stats.adminCostsFromFund).toFixed(0)}%
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Class Members Section */}
+              <div>
+                <h4 className="font-medium mb-3">Class Members</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">
+                      Average number of claims submitted
+                    </p>
+                    <p className="text-xl font-semibold">
+                      {formatNumber(Math.round(stats.avgClaimsSubmitted))}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">
+                      Average claims submission rate
+                    </p>
+                    <p className="text-xl font-semibold">
+                      {stats.avgClaimsPercent.toFixed(1)}%
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Excess Funds Section */}
               <div>
                 <h4 className="font-medium mb-4">
                   What happens to excess funds?
@@ -941,44 +921,6 @@ export function CaseDataOutput({ cases }: CaseDataOutputProps) {
                     </div>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Sources Tab */}
-        <TabsContent value="sources" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Sources</CardTitle>
-              <CardDescription>Cases included in this analysis</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Case Name</TableHead>
-                      <TableHead>Docket ID</TableHead>
-                      <TableHead>Court</TableHead>
-                      <TableHead>Year</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {cases.map((case_) => (
-                      <TableRow key={case_.id}>
-                        <TableCell className="font-medium">
-                          {case_.name}
-                        </TableCell>
-                        <TableCell>
-                          <code className="text-xs">{case_.docketId}</code>
-                        </TableCell>
-                        <TableCell>{case_.court}</TableCell>
-                        <TableCell>{case_.year}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
               </div>
             </CardContent>
           </Card>
