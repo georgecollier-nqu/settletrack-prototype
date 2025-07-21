@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/contexts/user-context";
 import {
   Card,
   CardContent,
@@ -36,6 +37,7 @@ import {
 } from "lucide-react";
 
 export default function SettingsPage() {
+  const { user } = useUser();
   const [profileData, setProfileData] = useState({
     firstName: "John",
     lastName: "Doe",
@@ -49,6 +51,7 @@ export default function SettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [activeTab, setActiveTab] = useState("profile");
+  const [marketingEmails, setMarketingEmails] = useState(true);
 
   const handleSaveProfile = () => {
     setIsSaving(true);
@@ -142,16 +145,18 @@ export default function SettingsPage() {
             >
               Profile Information
             </button>
-            <button
-              onClick={() => setActiveTab("firm")}
-              className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-                activeTab === "firm"
-                  ? "border-[#2E7D5B] text-[#2E7D5B]"
-                  : "border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300"
-              }`}
-            >
-              Firm Details
-            </button>
+            {user?.role === "firm_admin" && (
+              <button
+                onClick={() => setActiveTab("firm")}
+                className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === "firm"
+                    ? "border-[#2E7D5B] text-[#2E7D5B]"
+                    : "border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300"
+                }`}
+              >
+                Firm Details
+              </button>
+            )}
             <button
               onClick={() => setActiveTab("security")}
               className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
@@ -328,28 +333,6 @@ export default function SettingsPage() {
                       </div>
                     </div>
 
-                    <Separator />
-
-                    <div>
-                      <h4 className="text-sm font-medium mb-4">
-                        Data & Privacy
-                      </h4>
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div className="space-y-0.5">
-                            <Label className="text-base">
-                              Marketing Communications
-                            </Label>
-                            <p className="text-sm text-muted-foreground">
-                              Receive updates about new features and best
-                              practices
-                            </p>
-                          </div>
-                          <Switch />
-                        </div>
-                      </div>
-                    </div>
-
                     <div className="flex justify-end">
                       <Button onClick={handleSaveProfile} disabled={isSaving}>
                         {isSaving ? (
@@ -460,6 +443,34 @@ export default function SettingsPage() {
                         </Button>
                       </div>
                     </form>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Privacy Settings</CardTitle>
+                    <CardDescription>
+                      Manage your communication preferences and data privacy
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <Label className="text-base">
+                            Marketing Communications
+                          </Label>
+                          <p className="text-sm text-muted-foreground">
+                            Receive updates about new features and best
+                            practices
+                          </p>
+                        </div>
+                        <Switch
+                          checked={marketingEmails}
+                          onCheckedChange={setMarketingEmails}
+                        />
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </div>

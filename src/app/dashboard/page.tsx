@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/contexts/user-context";
 import {
   Card,
   CardContent,
@@ -16,13 +17,13 @@ import {
   Search,
   FileText,
   Bookmark,
-  Users,
   DollarSign,
   Clock,
   ChevronRight,
 } from "lucide-react";
 
 export default function DashboardPage() {
+  const { user } = useUser();
   const [searchQuery, setSearchQuery] = useState("");
 
   const savedSearches = [
@@ -53,7 +54,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-3xl font-serif font-bold">
-                Welcome back, John
+                Welcome back, {user?.firstName || "User"}
               </h2>
               <p className="text-muted-foreground mt-1">
                 Here&apos;s what&apos;s happening with your settlement research
@@ -108,11 +109,11 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      Avg. Settlement
+                      Total Settlements
                     </p>
-                    <p className="text-2xl font-bold mt-1">$8.7M</p>
+                    <p className="text-2xl font-bold mt-1">$287.5M</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Your searches
+                      Firm-wide total
                     </p>
                   </div>
                   <div className="p-3 bg-secondary rounded-lg">
@@ -127,15 +128,15 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      Team Members
+                      Recent Settlements
                     </p>
-                    <p className="text-2xl font-bold mt-1">12</p>
+                    <p className="text-2xl font-bold mt-1">$45.2M</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      5 active today
+                      Last year
                     </p>
                   </div>
                   <div className="p-3 bg-secondary rounded-lg">
-                    <Users className="h-6 w-6 text-primary" />
+                    <Clock className="h-6 w-6 text-primary" />
                   </div>
                 </div>
               </CardContent>
@@ -188,24 +189,22 @@ export default function DashboardPage() {
             {/* Activity Feed */}
             <Card>
               <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
+                <CardTitle>Your Recent Activity</CardTitle>
                 <CardDescription>
-                  What&apos;s happening in your firm
+                  Your personal activity history
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
                     <div className="p-2 bg-secondary rounded-full">
-                      <Clock className="h-4 w-4 text-primary" />
+                      <Search className="h-4 w-4 text-primary" />
                     </div>
                     <div className="flex-1">
                       <p className="text-sm">
-                        <span className="font-medium">Sarah Johnson</span> saved
-                        a new search for
+                        You searched for{" "}
                         <span className="font-medium">
-                          {" "}
-                          &quot;2024 Data Breach Settlements&quot;
+                          &quot;Data Breach California 2024&quot;
                         </span>
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
@@ -219,23 +218,24 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm">
-                        New case added:{" "}
-                        <span className="font-medium">Wilson v. DataCorp</span>{" "}
-                        - $15.2M settlement
+                        You viewed case{" "}
+                        <span className="font-medium">Johnson v. TechCorp</span>
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
-                        5 hours ago
+                        4 hours ago
                       </p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
                     <div className="p-2 bg-secondary rounded-full">
-                      <Users className="h-4 w-4 text-primary" />
+                      <Bookmark className="h-4 w-4 text-primary" />
                     </div>
                     <div className="flex-1">
                       <p className="text-sm">
-                        <span className="font-medium">Michael Chen</span> joined
-                        your team
+                        You saved search{" "}
+                        <span className="font-medium">
+                          &quot;Class Action &gt; $10M&quot;
+                        </span>
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
                         Yesterday
