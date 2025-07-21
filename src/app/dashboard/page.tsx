@@ -208,7 +208,7 @@ export default function DashboardPage() {
                         </span>
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
-                        2 hours ago
+                        30 minutes ago
                       </p>
                     </div>
                   </div>
@@ -239,6 +239,21 @@ export default function DashboardPage() {
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
                         Yesterday
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="p-2 bg-secondary rounded-full">
+                      <FileText className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm">
+                        You viewed case:{" "}
+                        <span className="font-medium">Smith v. TechCorp</span> -
+                        $8.5M settlement
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        2 days ago
                       </p>
                     </div>
                   </div>

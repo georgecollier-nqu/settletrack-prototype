@@ -16,13 +16,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -49,6 +42,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { MultiSelect } from "@/components/ui/multi-select";
+import { MultiSelectWithDisabled } from "@/components/ui/multi-select-with-disabled";
 
 import {
   Search,
@@ -60,8 +54,9 @@ import {
   Shield,
   MapPin,
   FileText,
-  Building,
   ArrowRight,
+  Scale,
+  Users,
 } from "lucide-react";
 
 import { mockCases, filterOptions, type Case } from "@/lib/mock-data";
@@ -72,26 +67,27 @@ import { CaseDataOutput } from "@/components/case-data-output";
 // —————————————————————————————————————————————————————————————————————————————
 
 const filterSchema = z.object({
+  caseType: z.array(z.string()).optional(),
   searchTerm: z.string().optional(),
   yearFrom: z.number().min(2000).max(2030).optional(),
   yearTo: z.number().min(2000).max(2030).optional(),
+  courts: z.array(z.string()).optional(),
+  states: z.array(z.string()).optional(),
+  defenseCounsel: z.array(z.string()).optional(),
+  plaintiffCounsel: z.array(z.string()).optional(),
+  attorneyName: z.array(z.string()).optional(),
+  defendantIndustry: z.array(z.string()).optional(),
   minSettlement: z.number().min(0).optional(),
   maxSettlement: z.number().min(0).optional(),
   minClassSize: z.number().min(0).optional(),
   maxClassSize: z.number().min(0).optional(),
-  states: z.array(z.string()).optional(),
-  courts: z.array(z.string()).optional(),
-  piiAffected: z.array(z.string()).optional(),
-  causeOfBreach: z.array(z.string()).optional(),
-  classType: z.array(z.string()).optional(),
-  caseType: z.array(z.string()).optional(),
+  settlementType: z.array(z.string()).optional(),
+  includePreliminary: z.boolean().optional(),
   isMDL: z.boolean().optional(),
   hasMinor: z.boolean().optional(),
-  creditMon: z.boolean().optional(),
-  defenseCounsel: z.array(z.string()).optional(),
-  plaintiffCounsel: z.array(z.string()).optional(),
-  judgeName: z.array(z.string()).optional(),
-  settlementType: z.array(z.string()).optional(),
+  classType: z.array(z.string()).optional(),
+  piiAffected: z.array(z.string()).optional(),
+  causeOfBreach: z.array(z.string()).optional(),
 });
 
 type FilterValues = z.infer<typeof filterSchema>;
@@ -125,6 +121,16 @@ interface FilterGroup {
   defaultOpen?: boolean;
 }
 
+const caseTypeOptions = [
+  "Data Breach",
+  "Privacy",
+  "Product Liability",
+  "Antitrust",
+  "Securities Fraud",
+  "Consumer Fraud",
+  "Labor",
+];
+
 const filterGroups: FilterGroup[] = [
   {
     id: "search",
@@ -133,10 +139,16 @@ const filterGroups: FilterGroup[] = [
     defaultOpen: true,
     filters: [
       {
+        name: "caseType",
+        label: "Case Type",
+        type: "select",
+        options: caseTypeOptions,
+      },
+      {
         name: "searchTerm",
         label: "Search Term",
         type: "text",
-        placeholder: "Case name, docket, court…",
+        placeholder: "Case name, docket, defendant…",
       },
     ],
   },
@@ -163,40 +175,22 @@ const filterGroups: FilterGroup[] = [
     ],
   },
   {
-    id: "financial",
-    label: "Financial Details",
-    icon: CircleDollarSign,
-    defaultOpen: false,
-    filters: [
-      { name: "minSettlement", label: "Min Settlement ($)", type: "number" },
-      { name: "maxSettlement", label: "Max Settlement ($)", type: "number" },
-      { name: "minClassSize", label: "Min Class Size", type: "number" },
-      { name: "maxClassSize", label: "Max Class Size", type: "number" },
-    ],
-  },
-  {
-    id: "breach",
-    label: "Breach Information",
-    icon: Shield,
+    id: "court",
+    label: "Court",
+    icon: Scale,
     defaultOpen: false,
     filters: [
       {
-        name: "piiAffected",
-        label: "PII Affected",
+        name: "courts",
+        label: "Federal Court",
         type: "select",
-        options: filterOptions.piiTypes,
-      },
-      {
-        name: "causeOfBreach",
-        label: "Cause of Breach",
-        type: "select",
-        options: filterOptions.breachCauses,
+        options: filterOptions.courts,
       },
     ],
   },
   {
-    id: "location",
-    label: "Location & Court",
+    id: "states",
+    label: "States",
     icon: MapPin,
     defaultOpen: false,
     filters: [
@@ -206,47 +200,12 @@ const filterGroups: FilterGroup[] = [
         type: "select",
         options: filterOptions.states,
       },
-      {
-        name: "courts",
-        label: "Federal Courts",
-        type: "select",
-        options: filterOptions.courts,
-      },
-    ],
-  },
-  {
-    id: "case-details",
-    label: "Case Details",
-    icon: FileText,
-    defaultOpen: false,
-    filters: [
-      { name: "isMDL", label: "Multi-District Litigation", type: "checkbox" },
-      { name: "hasMinor", label: "Has Minor Subclass", type: "checkbox" },
-      { name: "creditMon", label: "Credit Monitoring", type: "checkbox" },
-      {
-        name: "settlementType",
-        label: "Settlement Type",
-        type: "select",
-        options: ["Preliminary", "Final", "Both"],
-      },
-      {
-        name: "caseType",
-        label: "Case Type",
-        type: "select",
-        options: filterOptions.caseTypes,
-      },
-      {
-        name: "classType",
-        label: "Class Type",
-        type: "select",
-        options: filterOptions.classTypes,
-      },
     ],
   },
   {
     id: "parties",
     label: "Parties",
-    icon: Building,
+    icon: Users,
     defaultOpen: false,
     filters: [
       {
@@ -262,10 +221,79 @@ const filterGroups: FilterGroup[] = [
         options: filterOptions.lawFirms,
       },
       {
-        name: "judgeName",
-        label: "Judge Name",
+        name: "attorneyName",
+        label: "Attorney Name",
         type: "select",
-        options: Array.from(new Set(mockCases.map((c) => c.judgeName))).sort(),
+        options: Array.from(
+          new Set(
+            mockCases.flatMap((c) => [c.defenseCounsel, c.plaintiffCounsel]),
+          ),
+        ).sort(),
+      },
+      {
+        name: "defendantIndustry",
+        label: "Defendant Industry",
+        type: "select",
+        options: filterOptions.industries,
+      },
+    ],
+  },
+  {
+    id: "financial",
+    label: "Financial Details",
+    icon: CircleDollarSign,
+    defaultOpen: false,
+    filters: [
+      { name: "minSettlement", label: "Min Settlement ($)", type: "number" },
+      { name: "maxSettlement", label: "Max Settlement ($)", type: "number" },
+      { name: "minClassSize", label: "Min Class Size", type: "number" },
+      { name: "maxClassSize", label: "Max Class Size", type: "number" },
+    ],
+  },
+  {
+    id: "case-details",
+    label: "Case Details",
+    icon: FileText,
+    defaultOpen: false,
+    filters: [
+      {
+        name: "settlementType",
+        label: "Settlement Type",
+        type: "select",
+        options: ["Preliminary", "Final"],
+      },
+      {
+        name: "includePreliminary",
+        label: "Include Preliminary Settlements",
+        type: "checkbox",
+      },
+      { name: "isMDL", label: "Multi-District Litigation", type: "checkbox" },
+      { name: "hasMinor", label: "Implicates Minors", type: "checkbox" },
+      {
+        name: "classType",
+        label: "Class Type",
+        type: "select",
+        options: filterOptions.classTypes,
+      },
+    ],
+  },
+  {
+    id: "breach",
+    label: "Breach Details",
+    icon: Shield,
+    defaultOpen: false,
+    filters: [
+      {
+        name: "piiAffected",
+        label: "PII Affected",
+        type: "select",
+        options: filterOptions.piiTypes,
+      },
+      {
+        name: "causeOfBreach",
+        label: "Cause of Breach",
+        type: "select",
+        options: filterOptions.breachCauses,
       },
     ],
   },
@@ -302,28 +330,30 @@ function useFilteredCases(cases: Case[]) {
   const filtered = useMemo(() => {
     return cases.filter((c) => {
       const {
+        caseType,
         searchTerm,
         yearFrom,
         yearTo,
+        courts,
+        states,
+        defenseCounsel,
+        plaintiffCounsel,
+        attorneyName,
+        defendantIndustry,
         minSettlement,
         maxSettlement,
         minClassSize,
         maxClassSize,
-        states,
-        courts,
-        piiAffected,
-        causeOfBreach,
-        classType,
-        caseType,
+        settlementType,
+        includePreliminary,
         isMDL,
         hasMinor,
-        creditMon,
-        defenseCounsel,
-        plaintiffCounsel,
-        judgeName,
-        settlementType,
+        classType,
+        piiAffected,
+        causeOfBreach,
       } = values;
 
+      if (caseType?.length && !caseType.includes(c.caseType)) return false;
       if (
         searchTerm &&
         ![c.name, c.docketId, c.court, c.summary].some((f) =>
@@ -334,31 +364,8 @@ function useFilteredCases(cases: Case[]) {
       }
       if (yearFrom && c.year < yearFrom) return false;
       if (yearTo && c.year > yearTo) return false;
-      if (minSettlement && c.settlementAmount < minSettlement) return false;
-      if (maxSettlement && c.settlementAmount > maxSettlement) return false;
-      if (minClassSize && c.classSize < minClassSize) return false;
-      if (maxClassSize && c.classSize > maxClassSize) return false;
-      if (states?.length && !states.includes(c.state)) return false;
       if (courts?.length && !courts.includes(c.court)) return false;
-      if (
-        piiAffected?.length &&
-        !piiAffected.some((pt) => c.piiAffected.includes(pt))
-      )
-        return false;
-      if (causeOfBreach?.length && !causeOfBreach.includes(c.causeOfBreach))
-        return false;
-      if (
-        classType?.length &&
-        !classType.some((ct) => c.classType.includes(ct))
-      )
-        return false;
-      if (caseType?.length && !caseType.includes(c.caseType)) return false;
-      if (isMDL !== undefined && c.isMultiDistrictLitigation !== isMDL)
-        return false;
-      if (hasMinor !== undefined && c.hasMinorSubclass !== hasMinor)
-        return false;
-      if (creditMon !== undefined && c.creditMonitoring !== creditMon)
-        return false;
+      if (states?.length && !states.includes(c.state)) return false;
       if (defenseCounsel?.length && !defenseCounsel.includes(c.defenseCounsel))
         return false;
       if (
@@ -366,12 +373,40 @@ function useFilteredCases(cases: Case[]) {
         !plaintiffCounsel.includes(c.plaintiffCounsel)
       )
         return false;
-      if (judgeName?.length && !judgeName.includes(c.judgeName)) return false;
-      if (settlementType?.length) {
-        const includesBoth = settlementType.includes("Both");
-        const matchesType = settlementType.includes(c.settlementType);
-        if (!includesBoth && !matchesType) return false;
+      if (attorneyName?.length) {
+        const attorneys = [c.defenseCounsel, c.plaintiffCounsel];
+        if (!attorneyName.some((name) => attorneys.includes(name)))
+          return false;
       }
+      if (defendantIndustry?.length) {
+        // Since defendantIndustry is not in the Case interface, we'll need to handle this
+        // For now, we'll use caseType as a proxy
+        // This would need to be updated when the backend provides defendant industry
+      }
+      if (minSettlement && c.settlementAmount < minSettlement) return false;
+      if (maxSettlement && c.settlementAmount > maxSettlement) return false;
+      if (minClassSize && c.classSize < minClassSize) return false;
+      if (maxClassSize && c.classSize > maxClassSize) return false;
+      if (settlementType?.length && !settlementType.includes(c.settlementType))
+        return false;
+      if (!includePreliminary && c.settlementType === "Preliminary")
+        return false;
+      if (isMDL !== undefined && c.isMultiDistrictLitigation !== isMDL)
+        return false;
+      if (hasMinor !== undefined && c.hasMinorSubclass !== hasMinor)
+        return false;
+      if (
+        classType?.length &&
+        !classType.some((ct) => c.classType.includes(ct))
+      )
+        return false;
+      if (
+        piiAffected?.length &&
+        !piiAffected.some((pt) => c.piiAffected.includes(pt))
+      )
+        return false;
+      if (causeOfBreach?.length && !causeOfBreach.includes(c.causeOfBreach))
+        return false;
       return true;
     });
   }, [cases, values]);
@@ -576,88 +611,41 @@ export default function CaseSearchPage() {
                                                   | string[]
                                                   | undefined) || [];
 
-                                              // Use MultiSelect for settlement type
-                                              if (
-                                                cfg.name === "settlementType"
-                                              ) {
+                                              // Use MultiSelect for all dropdowns
+                                              if (cfg.name === "caseType") {
+                                                // Special handling for case type with disabled options
+                                                const disabledCaseTypes =
+                                                  caseTypeOptions.filter(
+                                                    (type) =>
+                                                      type !== "Data Breach",
+                                                  );
                                                 return (
-                                                  <MultiSelect
-                                                    options={cfg.options!}
-                                                    value={currentValues}
-                                                    onChange={ctl.onChange}
-                                                    placeholder={`Select ${cfg.label.toLowerCase()}…`}
-                                                  />
+                                                  <div className="space-y-2">
+                                                    <MultiSelectWithDisabled
+                                                      options={cfg.options!}
+                                                      value={currentValues}
+                                                      onChange={ctl.onChange}
+                                                      placeholder={`Select ${cfg.label.toLowerCase()}…`}
+                                                      disabledOptions={
+                                                        disabledCaseTypes
+                                                      }
+                                                    />
+                                                    <p className="text-xs text-muted-foreground">
+                                                      Other case types will be
+                                                      available in future
+                                                      releases
+                                                    </p>
+                                                  </div>
                                                 );
                                               }
 
                                               return (
-                                                <>
-                                                  <Select
-                                                    value=""
-                                                    onValueChange={(val) => {
-                                                      if (
-                                                        !currentValues.includes(
-                                                          val,
-                                                        )
-                                                      ) {
-                                                        ctl.onChange([
-                                                          ...currentValues,
-                                                          val,
-                                                        ]);
-                                                      }
-                                                    }}
-                                                  >
-                                                    <SelectTrigger className="h-9">
-                                                      <SelectValue
-                                                        placeholder={`Select ${cfg.label.toLowerCase()}…`}
-                                                      />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                      {cfg.options!.map(
-                                                        (opt) => (
-                                                          <SelectItem
-                                                            key={opt}
-                                                            value={opt}
-                                                          >
-                                                            {opt}
-                                                          </SelectItem>
-                                                        ),
-                                                      )}
-                                                    </SelectContent>
-                                                  </Select>
-                                                  {currentValues.length > 0 && (
-                                                    <div className="flex flex-wrap gap-1 mt-2">
-                                                      {currentValues.map(
-                                                        (v: string) => (
-                                                          <Badge
-                                                            key={v}
-                                                            variant="secondary"
-                                                            className="text-xs py-0.5"
-                                                          >
-                                                            {v}
-                                                            <button
-                                                              type="button"
-                                                              onClick={(e) => {
-                                                                e.preventDefault();
-                                                                ctl.onChange(
-                                                                  currentValues.filter(
-                                                                    (
-                                                                      x: string,
-                                                                    ) =>
-                                                                      x !== v,
-                                                                  ),
-                                                                );
-                                                              }}
-                                                              className="ml-1 hover:text-destructive"
-                                                            >
-                                                              ×
-                                                            </button>
-                                                          </Badge>
-                                                        ),
-                                                      )}
-                                                    </div>
-                                                  )}
-                                                </>
+                                                <MultiSelect
+                                                  options={cfg.options!}
+                                                  value={currentValues}
+                                                  onChange={ctl.onChange}
+                                                  placeholder={`Select ${cfg.label.toLowerCase()}…`}
+                                                />
                                               );
                                             }}
                                           />
