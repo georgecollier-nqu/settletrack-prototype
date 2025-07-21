@@ -21,6 +21,7 @@ import {
   Building,
   CreditCard,
   Upload,
+  Flag,
 } from "lucide-react";
 
 interface AdminLayoutProps {
@@ -92,6 +93,17 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   >
                     <FileText className="h-5 w-5" />
                     Cases
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild className="w-full">
+                  <Link
+                    href="/admin/flags"
+                    className={getActiveClasses("/admin/flags")}
+                  >
+                    <Flag className="h-5 w-5" />
+                    Flagged Issues
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
