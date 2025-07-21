@@ -173,7 +173,9 @@ export default function FirmDetailsPage() {
               <div className="border-t pt-4">
                 <p className="text-sm text-muted-foreground">
                   When enabled, all users will be required to set up
-                  multi-factor authentication on their next login.
+                  multi-factor authentication on their next login. This helps
+                  protect your firm&apos;s data and meets compliance
+                  requirements.
                 </p>
               </div>
             </CardContent>

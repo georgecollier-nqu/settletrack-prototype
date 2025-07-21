@@ -39,13 +39,10 @@ import {
 export default function SettingsPage() {
   const { user } = useUser();
   const [profileData, setProfileData] = useState({
-    firstName: "John",
-    lastName: "Doe",
-    email: "john@lawfirm.com",
+    firstName: user?.firstName || "John",
+    lastName: user?.lastName || "Doe",
+    email: user?.email || "john@lawfirm.com",
     jobTitle: "Managing Partner",
-    firmName: "Smith & Associates Law Firm",
-    firmAddress: "123 Legal Street, New York, NY 10001",
-    firmPhone: "(555) 123-4567",
   });
 
   const [isSaving, setIsSaving] = useState(false);
@@ -145,18 +142,6 @@ export default function SettingsPage() {
             >
               Profile Information
             </button>
-            {user?.role === "firm_admin" && (
-              <button
-                onClick={() => setActiveTab("firm")}
-                className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === "firm"
-                    ? "border-[#2E7D5B] text-[#2E7D5B]"
-                    : "border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300"
-                }`}
-              >
-                Firm Details
-              </button>
-            )}
             <button
               onClick={() => setActiveTab("security")}
               className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
@@ -279,80 +264,6 @@ export default function SettingsPage() {
               </div>
             )}
 
-            {/* Firm Tab */}
-            {activeTab === "firm" && (
-              <div className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Firm Information</CardTitle>
-                    <CardDescription>
-                      Manage your firm&apos;s details and preferences
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="firmName">Firm Name</Label>
-                        <Input
-                          id="firmName"
-                          value={profileData.firmName}
-                          onChange={(e) =>
-                            setProfileData({
-                              ...profileData,
-                              firmName: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="firmAddress">Address</Label>
-                        <Input
-                          id="firmAddress"
-                          value={profileData.firmAddress}
-                          onChange={(e) =>
-                            setProfileData({
-                              ...profileData,
-                              firmAddress: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="firmPhone">Phone Number</Label>
-                        <Input
-                          id="firmPhone"
-                          type="tel"
-                          value={profileData.firmPhone}
-                          onChange={(e) =>
-                            setProfileData({
-                              ...profileData,
-                              firmPhone: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex justify-end">
-                      <Button onClick={handleSaveProfile} disabled={isSaving}>
-                        {isSaving ? (
-                          <>
-                            <Save className="mr-2 h-4 w-4 animate-spin" />
-                            Saving...
-                          </>
-                        ) : (
-                          <>
-                            <Save className="mr-2 h-4 w-4" />
-                            Save Changes
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
-
             {/* Security Tab */}
             {activeTab === "security" && (
               <div className="space-y-6">
@@ -443,6 +354,45 @@ export default function SettingsPage() {
                         </Button>
                       </div>
                     </form>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Two-Factor Authentication</CardTitle>
+                    <CardDescription>
+                      Add an extra layer of security to your account
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <Label className="text-base">
+                            Two-Factor Authentication (2FA)
+                          </Label>
+                          <p className="text-sm text-muted-foreground">
+                            {user?.mfaEnabled
+                              ? "Your account is protected with 2FA"
+                              : "Secure your account with an authenticator app"}
+                          </p>
+                        </div>
+                        <Button
+                          variant={user?.mfaEnabled ? "outline" : "default"}
+                          size="sm"
+                        >
+                          {user?.mfaEnabled ? "Manage 2FA" : "Enable 2FA"}
+                        </Button>
+                      </div>
+                      {user?.role === "regular_user" && (
+                        <Alert>
+                          <AlertDescription>
+                            Your firm requires all users to enable two-factor
+                            authentication.
+                          </AlertDescription>
+                        </Alert>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
 
