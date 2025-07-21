@@ -21,7 +21,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, ClipboardCheck, Clock, CheckCircle, XCircle, AlertCircle } from "lucide-react";
+import {
+  Search,
+  ClipboardCheck,
+  Clock,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+} from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 
@@ -61,12 +68,36 @@ const mockReviews = [
 
 const statusConfig = {
   PENDING: { label: "Pending", variant: "secondary" as const, icon: Clock },
-  IN_REVIEW: { label: "In Review", variant: "default" as const, icon: ClipboardCheck },
-  CHANGES_REQUESTED: { label: "Changes Requested", variant: "outline" as const, icon: AlertCircle },
-  REVIEWER_APPROVED: { label: "Reviewer Approved", variant: "default" as const, icon: CheckCircle },
-  SUPERVISOR_APPROVED: { label: "Supervisor Approved", variant: "default" as const, icon: CheckCircle },
-  REJECTED: { label: "Rejected", variant: "destructive" as const, icon: XCircle },
-  COMPLETED: { label: "Completed", variant: "default" as const, icon: CheckCircle },
+  IN_REVIEW: {
+    label: "In Review",
+    variant: "default" as const,
+    icon: ClipboardCheck,
+  },
+  CHANGES_REQUESTED: {
+    label: "Changes Requested",
+    variant: "outline" as const,
+    icon: AlertCircle,
+  },
+  REVIEWER_APPROVED: {
+    label: "Reviewer Approved",
+    variant: "default" as const,
+    icon: CheckCircle,
+  },
+  SUPERVISOR_APPROVED: {
+    label: "Supervisor Approved",
+    variant: "default" as const,
+    icon: CheckCircle,
+  },
+  REJECTED: {
+    label: "Rejected",
+    variant: "destructive" as const,
+    icon: XCircle,
+  },
+  COMPLETED: {
+    label: "Completed",
+    variant: "default" as const,
+    icon: CheckCircle,
+  },
 };
 
 export default function QCDashboard() {
@@ -75,21 +106,26 @@ export default function QCDashboard() {
   const [activeTab, setActiveTab] = useState("my-reviews");
 
   const filteredReviews = mockReviews.filter((review) => {
-    const matchesSearch = review.caseId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    const matchesSearch =
+      review.caseId.toLowerCase().includes(searchQuery.toLowerCase()) ||
       review.patientName.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === "all" || review.status === statusFilter;
-    const matchesTab = activeTab === "all-reviews" || 
+    const matchesStatus =
+      statusFilter === "all" || review.status === statusFilter;
+    const matchesTab =
+      activeTab === "all-reviews" ||
       (activeTab === "my-reviews" && review.reviewer === "Sarah Miller") ||
-      (activeTab === "pending-approval" && review.status === "REVIEWER_APPROVED");
-    
+      (activeTab === "pending-approval" &&
+        review.status === "REVIEWER_APPROVED");
+
     return matchesSearch && matchesStatus && matchesTab;
   });
 
   const stats = {
     totalReviews: mockReviews.length,
-    inProgress: mockReviews.filter(r => r.status === "IN_REVIEW").length,
-    pendingApproval: mockReviews.filter(r => r.status === "REVIEWER_APPROVED").length,
-    completed: mockReviews.filter(r => r.status === "COMPLETED").length,
+    inProgress: mockReviews.filter((r) => r.status === "IN_REVIEW").length,
+    pendingApproval: mockReviews.filter((r) => r.status === "REVIEWER_APPROVED")
+      .length,
+    completed: mockReviews.filter((r) => r.status === "COMPLETED").length,
   };
 
   return (
@@ -97,7 +133,9 @@ export default function QCDashboard() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-semibold">QC Workflow</h1>
-        <p className="text-muted-foreground">Review and compare model outputs for quality control</p>
+        <p className="text-muted-foreground">
+          Review and compare model outputs for quality control
+        </p>
       </div>
 
       {/* Stats */}
@@ -122,7 +160,9 @@ export default function QCDashboard() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Approval</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Pending Approval
+            </CardTitle>
             <AlertCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -163,8 +203,12 @@ export default function QCDashboard() {
                   <SelectItem value="all">All Statuses</SelectItem>
                   <SelectItem value="PENDING">Pending</SelectItem>
                   <SelectItem value="IN_REVIEW">In Review</SelectItem>
-                  <SelectItem value="REVIEWER_APPROVED">Reviewer Approved</SelectItem>
-                  <SelectItem value="SUPERVISOR_APPROVED">Supervisor Approved</SelectItem>
+                  <SelectItem value="REVIEWER_APPROVED">
+                    Reviewer Approved
+                  </SelectItem>
+                  <SelectItem value="SUPERVISOR_APPROVED">
+                    Supervisor Approved
+                  </SelectItem>
                   <SelectItem value="COMPLETED">Completed</SelectItem>
                 </SelectContent>
               </Select>
@@ -176,9 +220,11 @@ export default function QCDashboard() {
             <TabsList>
               <TabsTrigger value="my-reviews">My Reviews</TabsTrigger>
               <TabsTrigger value="all-reviews">All Reviews</TabsTrigger>
-              <TabsTrigger value="pending-approval">Pending Approval</TabsTrigger>
+              <TabsTrigger value="pending-approval">
+                Pending Approval
+              </TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value={activeTab} className="mt-4">
               <Table>
                 <TableHeader>
@@ -194,17 +240,24 @@ export default function QCDashboard() {
                 </TableHeader>
                 <TableBody>
                   {filteredReviews.map((review) => {
-                    const status = statusConfig[review.status as keyof typeof statusConfig];
+                    const status =
+                      statusConfig[review.status as keyof typeof statusConfig];
                     const StatusIcon = status.icon;
-                    
+
                     return (
                       <TableRow key={review.id}>
-                        <TableCell className="font-medium">{review.caseId}</TableCell>
+                        <TableCell className="font-medium">
+                          {review.caseId}
+                        </TableCell>
                         <TableCell>{review.patientName}</TableCell>
                         <TableCell>
                           <div className="flex gap-1">
-                            <Badge variant="outline">{review.modelOutput1.name}</Badge>
-                            <Badge variant="outline">{review.modelOutput2.name}</Badge>
+                            <Badge variant="outline">
+                              {review.modelOutput1.name}
+                            </Badge>
+                            <Badge variant="outline">
+                              {review.modelOutput2.name}
+                            </Badge>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -220,7 +273,9 @@ export default function QCDashboard() {
                         <TableCell>
                           <Button asChild size="sm">
                             <Link href={`/admin/qc/review/${review.id}`}>
-                              {review.status === "PENDING" ? "Start Review" : "View"}
+                              {review.status === "PENDING"
+                                ? "Start Review"
+                                : "View"}
                             </Link>
                           </Button>
                         </TableCell>

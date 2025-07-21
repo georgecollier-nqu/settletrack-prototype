@@ -7,12 +7,14 @@ This implementation adds a complete user management system with two user types a
 ## User Types
 
 ### 1. Regular User (`user`)
+
 - Access to Profile Information
 - Access to Security & Privacy settings
 - Can manage marketing communications preferences
 - Standard case search and dashboard features
 
 ### 2. Firm Admin (`firm_admin`)
+
 - All regular user features
 - Team Management access
 - Billing and subscription management
@@ -21,18 +23,21 @@ This implementation adds a complete user management system with two user types a
 ## Features Implemented
 
 ### Authentication System
+
 - Mock authentication with AuthContext
 - Session management using localStorage
 - Protected routes for dashboard pages
 - Role-based access control
 
 ### Multi-Factor Authentication (MFA)
+
 - Optional MFA setup for all users
 - QR code generation for authenticator apps
 - Backup codes for recovery
 - Enable/disable MFA from security settings
 
 ### Settings Page Updates
+
 - Dynamic tabs based on user role
 - Profile Information (all users)
 - Security & Privacy (all users)
@@ -44,6 +49,7 @@ This implementation adds a complete user management system with two user types a
 - Firm Details (firm admins only)
 
 ### Navigation Updates
+
 - Sidebar dynamically shows/hides menu items based on permissions
 - Team Management and Billing only visible to firm admins
 - Admin Panel only visible to super admin (admin@settletrack.com)
@@ -51,16 +57,19 @@ This implementation adds a complete user management system with two user types a
 ## Demo Credentials
 
 ### Firm Admin
+
 - Email: john@lawfirm.com
 - Password: password
 - Role: firm_admin
 
 ### Regular User
+
 - Email: jane@lawfirm.com
 - Password: password
 - Role: user
 
 ### MFA Testing
+
 - When MFA is enabled, use code: 123456
 
 ## File Structure

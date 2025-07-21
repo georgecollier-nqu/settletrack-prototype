@@ -1,7 +1,19 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
-import { User, AuthState, LoginCredentials, MFAVerification, MFASetup } from "@/types/user";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+} from "react";
+import {
+  User,
+  AuthState,
+  LoginCredentials,
+  MFAVerification,
+  MFASetup,
+} from "@/types/user";
 import { useRouter } from "next/navigation";
 
 interface AuthContextType extends AuthState {
@@ -87,53 +99,61 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         mfaRequired: false,
       });
     } else {
-      setAuthState(prev => ({ ...prev, isLoading: false }));
+      setAuthState((prev) => ({ ...prev, isLoading: false }));
     }
   }, []);
 
-  const login = useCallback(async (credentials: LoginCredentials) => {
-    // Mock authentication
-    const user = mockUsers.find(u => u.email === credentials.email);
-    
-    if (user && credentials.password === "password") { // Mock password check
-      if (user.mfaEnabled) {
-        setAuthState({
-          user,
-          isAuthenticated: false,
-          isLoading: false,
-          mfaRequired: true,
-        });
-        return { requiresMFA: true };
-      } else {
-        setAuthState({
-          user,
-          isAuthenticated: true,
-          isLoading: false,
-          mfaRequired: false,
-        });
-        localStorage.setItem("user", JSON.stringify(user));
-        router.push("/dashboard");
-        return { requiresMFA: false };
-      }
-    }
-    
-    throw new Error("Invalid credentials");
-  }, [router]);
+  const login = useCallback(
+    async (credentials: LoginCredentials) => {
+      // Mock authentication
+      const user = mockUsers.find((u) => u.email === credentials.email);
 
-  const verifyMFA = useCallback(async (verification: MFAVerification) => {
-    // Mock MFA verification
-    if (verification.code === "123456" && authState.user) { // Mock code check
-      setAuthState(prev => ({
-        ...prev,
-        isAuthenticated: true,
-        mfaRequired: false,
-      }));
-      localStorage.setItem("user", JSON.stringify(authState.user));
-      router.push("/dashboard");
-    } else {
-      throw new Error("Invalid MFA code");
-    }
-  }, [authState.user, router]);
+      if (user && credentials.password === "password") {
+        // Mock password check
+        if (user.mfaEnabled) {
+          setAuthState({
+            user,
+            isAuthenticated: false,
+            isLoading: false,
+            mfaRequired: true,
+          });
+          return { requiresMFA: true };
+        } else {
+          setAuthState({
+            user,
+            isAuthenticated: true,
+            isLoading: false,
+            mfaRequired: false,
+          });
+          localStorage.setItem("user", JSON.stringify(user));
+          router.push("/dashboard");
+          return { requiresMFA: false };
+        }
+      }
+
+      throw new Error("Invalid credentials");
+    },
+    [router],
+  );
+
+  const verifyMFA = useCallback(
+    async (verification: MFAVerification) => {
+      // Mock MFA verification
+      if (verification.code === "123456" && authState.user) {
+        // Mock code check
+        setAuthState((prev) => ({
+          ...prev,
+          isAuthenticated: true,
+          mfaRequired: false,
+        }));
+        localStorage.setItem("user", JSON.stringify(authState.user));
+        router.push("/dashboard");
+      } else {
+        throw new Error("Invalid MFA code");
+      }
+    },
+    [authState.user, router],
+  );
 
   const logout = useCallback(() => {
     localStorage.removeItem("user");
@@ -159,33 +179,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [authState.user]);
 
-  const enableMFA = useCallback(async (code: string) => {
-    if (code === "123456" && authState.user) { // Mock verification
-      const updatedUser = { ...authState.user, mfaEnabled: true };
-      setAuthState(prev => ({ ...prev, user: updatedUser }));
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-    } else {
-      throw new Error("Invalid verification code");
-    }
-  }, [authState.user]);
+  const enableMFA = useCallback(
+    async (code: string) => {
+      if (code === "123456" && authState.user) {
+        // Mock verification
+        const updatedUser = { ...authState.user, mfaEnabled: true };
+        setAuthState((prev) => ({ ...prev, user: updatedUser }));
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      } else {
+        throw new Error("Invalid verification code");
+      }
+    },
+    [authState.user],
+  );
 
-  const disableMFA = useCallback(async (password: string) => {
-    if (password === "password" && authState.user) { // Mock password check
-      const updatedUser = { ...authState.user, mfaEnabled: false };
-      setAuthState(prev => ({ ...prev, user: updatedUser }));
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-    } else {
-      throw new Error("Invalid password");
-    }
-  }, [authState.user]);
+  const disableMFA = useCallback(
+    async (password: string) => {
+      if (password === "password" && authState.user) {
+        // Mock password check
+        const updatedUser = { ...authState.user, mfaEnabled: false };
+        setAuthState((prev) => ({ ...prev, user: updatedUser }));
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      } else {
+        throw new Error("Invalid password");
+      }
+    },
+    [authState.user],
+  );
 
-  const updateUser = useCallback((updates: Partial<User>) => {
-    if (authState.user) {
-      const updatedUser = { ...authState.user, ...updates };
-      setAuthState(prev => ({ ...prev, user: updatedUser }));
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-    }
-  }, [authState.user]);
+  const updateUser = useCallback(
+    (updates: Partial<User>) => {
+      if (authState.user) {
+        const updatedUser = { ...authState.user, ...updates };
+        setAuthState((prev) => ({ ...prev, user: updatedUser }));
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      }
+    },
+    [authState.user],
+  );
 
   return (
     <AuthContext.Provider
