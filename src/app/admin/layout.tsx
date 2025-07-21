@@ -22,6 +22,7 @@ import {
   CreditCard,
   Upload,
   CheckSquare,
+  Flag,
 } from "lucide-react";
 import { AdminAuthProvider, useAdminAuth } from "@/contexts/AdminAuthContext";
 
@@ -120,6 +121,17 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
                       >
                         <FileText className="h-5 w-5" />
                         Cases
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild className="w-full">
+                      <Link
+                        href="/admin/flags"
+                        className={getActiveClasses("/admin/flags")}
+                      >
+                        <Flag className="h-5 w-5" />
+                        Flagged Issues
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
