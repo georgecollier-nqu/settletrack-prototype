@@ -59,7 +59,7 @@ interface TeamMember {
   id: string;
   name: string;
   email: string;
-  role: "firm_admin" | "user";
+  role: "team_leader" | "user";
   status: "active" | "invited" | "deactivated";
   jobTitle: string;
   joinedDate: string;
@@ -78,7 +78,7 @@ export default function TeamPage() {
       id: "1",
       name: "John Doe",
       email: "john@lawfirm.com",
-      role: "firm_admin",
+      role: "team_leader",
       status: "active",
       jobTitle: "Managing Partner",
       joinedDate: "2024-01-15",
@@ -152,7 +152,7 @@ export default function TeamPage() {
 
   const handleRoleChange = (
     memberId: string,
-    newRole: "firm_admin" | "user",
+    newRole: "team_leader" | "user",
   ) => {
     setTeamMembers((prev) =>
       prev.map((member) =>
@@ -443,7 +443,7 @@ export default function TeamPage() {
                             </div>
                           </TableCell>
                           <TableCell>
-                            {member.role === "firm_admin" ? (
+                            {member.role === "team_leader" ? (
                               <Badge variant="default">Team Leader</Badge>
                             ) : (
                               <Badge variant="secondary">Member</Badge>
@@ -492,7 +492,7 @@ export default function TeamPage() {
                                         onClick={() =>
                                           handleRoleChange(
                                             member.id,
-                                            "firm_admin",
+                                            "team_leader",
                                           )
                                         }
                                       >
@@ -500,7 +500,7 @@ export default function TeamPage() {
                                         Promote to Team Leader
                                       </DropdownMenuItem>
                                     )}
-                                    {member.role === "firm_admin" &&
+                                    {member.role === "team_leader" &&
                                       member.id !== "1" && (
                                         <DropdownMenuItem
                                           onClick={() =>

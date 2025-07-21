@@ -1037,8 +1037,6 @@ export interface SavedSearch {
   createdAt: string;
   lastUsed?: string;
   alertEnabled: boolean;
-  emailNotifications: boolean;
-  portalNotifications: boolean;
   isShared: boolean;
   createdBy: string;
   matchingCasesCount: number;
@@ -1056,8 +1054,6 @@ export const mockSavedSearches: SavedSearch[] = [
     createdAt: "2024-11-01",
     lastUsed: "2024-12-15",
     alertEnabled: true,
-    emailNotifications: true,
-    portalNotifications: true,
     isShared: false,
     createdBy: "John Doe",
     matchingCasesCount: 4,
@@ -1073,8 +1069,6 @@ export const mockSavedSearches: SavedSearch[] = [
     createdAt: "2024-10-15",
     lastUsed: "2024-12-12",
     alertEnabled: false,
-    emailNotifications: false,
-    portalNotifications: false,
     isShared: true,
     createdBy: "Sarah Johnson",
     matchingCasesCount: 3,
@@ -1089,8 +1083,6 @@ export const mockSavedSearches: SavedSearch[] = [
     createdAt: "2024-01-01",
     lastUsed: "2024-12-10",
     alertEnabled: true,
-    emailNotifications: true,
-    portalNotifications: false,
     isShared: false,
     createdBy: "John Doe",
     matchingCasesCount: 3,
@@ -1105,8 +1097,6 @@ export const mockSavedSearches: SavedSearch[] = [
     },
     createdAt: "2024-09-20",
     alertEnabled: false,
-    emailNotifications: false,
-    portalNotifications: false,
     isShared: false,
     createdBy: "Michael Chen",
     matchingCasesCount: 1,

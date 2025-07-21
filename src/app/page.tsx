@@ -76,7 +76,7 @@ export default function LandingPage() {
                 <Link href="/login">Sign In</Link>
               </Button>
               <Button asChild>
-                <Link href="/contact">Schedule Sales Call</Link>
+                <Link href="/signup">Get Started</Link>
               </Button>
             </div>
           </div>
@@ -103,8 +103,8 @@ export default function LandingPage() {
             </p>
             <div className="flex gap-4 justify-center pt-4">
               <Button size="lg" className="text-lg px-8 rounded-full" asChild>
-                <Link href="/contact">
-                  Schedule Sales Call
+                <Link href="/signup">
+                  Get Started Free
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -439,7 +439,7 @@ export default function LandingPage() {
                 </ul>
                 <div className="pt-6">
                   <Button className="w-full" variant="outline" asChild>
-                    <Link href="/contact">Contact Sales</Link>
+                    <Link href="/signup">Start Free Trial</Link>
                   </Button>
                 </div>
               </CardContent>
@@ -499,7 +499,7 @@ export default function LandingPage() {
                 </ul>
                 <div className="pt-6">
                   <Button className="w-full" asChild>
-                    <Link href="/contact">Contact Sales</Link>
+                    <Link href="/signup">Start Free Trial</Link>
                   </Button>
                 </div>
               </CardContent>
@@ -617,8 +617,8 @@ export default function LandingPage() {
               className="text-lg px-8 rounded-full"
               asChild
             >
-              <Link href="/contact">
-                Schedule Sales Call
+              <Link href="/signup">
+                Start Your Free Trial
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>

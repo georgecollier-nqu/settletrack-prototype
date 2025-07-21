@@ -63,8 +63,6 @@ import {
   BellOff,
   Play,
   Plus,
-  Mail,
-  Monitor,
 } from "lucide-react";
 import { mockSavedSearches, type SavedSearch } from "@/lib/mock-data";
 
@@ -72,8 +70,6 @@ const editSearchSchema = z.object({
   name: z.string().min(1, "Search name is required"),
   description: z.string().optional(),
   alertEnabled: z.boolean(),
-  emailNotifications: z.boolean(),
-  portalNotifications: z.boolean(),
 });
 
 type EditSearchValues = z.infer<typeof editSearchSchema>;
@@ -120,26 +116,9 @@ export default function SavedSearchesPage() {
   const toggleAlert = (searchId: string) => {
     const updatedSearches = searches.map((search) =>
       search.id === searchId
-        ? { 
-            ...search, 
-            alertEnabled: !search.alertEnabled,
-            // If turning off alerts, also turn off notifications
-            emailNotifications: !search.alertEnabled ? search.emailNotifications : false,
-            portalNotifications: !search.alertEnabled ? search.portalNotifications : false,
-          }
+        ? { ...search, alertEnabled: !search.alertEnabled }
         : search,
     );
-    setSearches(updatedSearches);
-  };
-
-  // Clear all alerts
-  const clearAllAlerts = () => {
-    const updatedSearches = searches.map((search) => ({
-      ...search,
-      alertEnabled: false,
-      emailNotifications: false,
-      portalNotifications: false,
-    }));
     setSearches(updatedSearches);
   };
 
@@ -155,8 +134,6 @@ export default function SavedSearchesPage() {
       name: search.name,
       description: search.description || "",
       alertEnabled: search.alertEnabled,
-      emailNotifications: search.emailNotifications,
-      portalNotifications: search.portalNotifications,
     });
     setShowEditDialog(true);
   };
@@ -171,8 +148,6 @@ export default function SavedSearchesPage() {
             name: values.name,
             description: values.description,
             alertEnabled: values.alertEnabled,
-            emailNotifications: values.emailNotifications,
-            portalNotifications: values.portalNotifications,
           }
         : search,
     );
@@ -247,7 +222,7 @@ export default function SavedSearchesPage() {
                           Search Name
                         </TableHead>
                         <TableHead>Created</TableHead>
-                        <TableHead>Notifications</TableHead>
+                        <TableHead>Status</TableHead>
                         <TableHead>Run</TableHead>
                         <TableHead className="w-[100px]">Actions</TableHead>
                       </TableRow>
@@ -280,23 +255,18 @@ export default function SavedSearchesPage() {
                             {formatDate(search.createdAt)}
                           </TableCell>
                           <TableCell>
-                            <div className="flex items-center gap-2">
-                              {search.emailNotifications && (
-                                <div className="flex items-center gap-1">
-                                  <Mail className="h-3.5 w-3.5 text-primary" />
-                                  <span className="text-xs text-muted-foreground">Email</span>
-                                </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleAlert(search.id)}
+                              className="h-6 w-6 p-0"
+                            >
+                              {search.alertEnabled ? (
+                                <Bell className="h-3 w-3 text-primary" />
+                              ) : (
+                                <BellOff className="h-3 w-3 text-muted-foreground" />
                               )}
-                              {search.portalNotifications && (
-                                <div className="flex items-center gap-1">
-                                  <Monitor className="h-3.5 w-3.5 text-primary" />
-                                  <span className="text-xs text-muted-foreground">Portal</span>
-                                </div>
-                              )}
-                              {!search.emailNotifications && !search.portalNotifications && (
-                                <span className="text-xs text-muted-foreground">None</span>
-                              )}
-                            </div>
+                            </Button>
                           </TableCell>
                           <TableCell>
                             <Button
@@ -439,23 +409,11 @@ export default function SavedSearchesPage() {
             </Card>
 
             <Card className="p-6">
-              <div className="mb-4 flex items-start justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold">Alert Settings</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Manage your search alerts
-                  </p>
-                </div>
-                {alertsEnabled > 0 && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => clearAllAlerts()}
-                    className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
-                  >
-                    Clear All
-                  </Button>
-                )}
+              <div className="mb-4">
+                <h3 className="text-lg font-semibold">Alert Settings</h3>
+                <p className="text-sm text-muted-foreground">
+                  Manage your search alerts
+                </p>
               </div>
               <div>
                 <div className="space-y-3">
@@ -561,56 +519,6 @@ export default function SavedSearchesPage() {
                     </FormItem>
                   )}
                 />
-
-                {editForm.watch("alertEnabled") && (
-                  <>
-                    <FormField
-                      control={editForm.control}
-                      name="emailNotifications"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <div className="space-y-1 leading-none">
-                            <FormLabel>
-                              Email notifications
-                            </FormLabel>
-                            <p className="text-sm text-muted-foreground">
-                              Receive alerts via email when new cases match
-                            </p>
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={editForm.control}
-                      name="portalNotifications"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <div className="space-y-1 leading-none">
-                            <FormLabel>
-                              Portal notifications
-                            </FormLabel>
-                            <p className="text-sm text-muted-foreground">
-                              Show alerts in the notification center
-                            </p>
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                  </>
-                )}
               </div>
 
               <DialogFooter>

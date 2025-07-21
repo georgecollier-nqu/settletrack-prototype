@@ -24,9 +24,6 @@ import {
   HelpCircle,
   Shield,
 } from "lucide-react";
-import { useAuth } from "@/contexts/auth-context";
-import { usePermissions } from "@/hooks/use-permissions";
-import { ProtectedRoute } from "@/components/auth/protected-route";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -34,8 +31,7 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
-  const { user } = useAuth();
-  const permissions = usePermissions();
+  const isTeamLeader = true; // This would come from auth context
 
   const isActivePath = (path: string) => {
     if (path === "/dashboard" && pathname === "/dashboard") return true;
@@ -50,11 +46,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   return (
-    <ProtectedRoute>
-      <SidebarProvider>
-        <div className="flex h-screen w-full bg-background">
-          {/* Sidebar Navigation */}
-          <Sidebar className="border-r bg-white">
+    <SidebarProvider>
+      <div className="flex h-screen w-full bg-background">
+        {/* Sidebar Navigation */}
+        <Sidebar className="border-r bg-white">
           <SidebarHeader className="border-b px-6 py-4">
             <Link href="/dashboard">
               <Image
@@ -116,31 +111,31 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               {/* Separator */}
               <div className="my-4 border-t" />
 
-              {permissions.canAccessTeamManagement && (
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild className="w-full">
-                    <Link
-                      href="/dashboard/team"
-                      className={getActiveClasses("/dashboard/team")}
-                    >
-                      <Users className="h-5 w-5" />
-                      Team Management
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              )}
-              {permissions.canAccessBilling && (
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild className="w-full">
-                    <Link
-                      href="/dashboard/billing"
-                      className={getActiveClasses("/dashboard/billing")}
-                    >
-                      <CreditCard className="h-5 w-5" />
-                      Billing
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+              {isTeamLeader && (
+                <>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild className="w-full">
+                      <Link
+                        href="/dashboard/team"
+                        className={getActiveClasses("/dashboard/team")}
+                      >
+                        <Users className="h-5 w-5" />
+                        Team Management
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild className="w-full">
+                      <Link
+                        href="/dashboard/billing"
+                        className={getActiveClasses("/dashboard/billing")}
+                      >
+                        <CreditCard className="h-5 w-5" />
+                        Billing
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </>
               )}
 
               <SidebarMenuItem>
@@ -170,30 +165,28 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 </SidebarMenuItem>
               </div>
 
-              {/* Admin Link - Only show for super admins */}
-              {user?.email === "admin@settletrack.com" && (
-                <div className="pt-2">
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild className="w-full">
-                      <Link
-                        href="/admin"
-                        className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-secondary/50 text-muted-foreground"
-                      >
-                        <Shield className="h-5 w-5" />
-                        Admin Panel
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </div>
-              )}
+              {/* Admin Link - Only show for admins */}
+              {/* In a real app, this would check user role */}
+              <div className="pt-2">
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild className="w-full">
+                    <Link
+                      href="/admin"
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-secondary/50 text-muted-foreground"
+                    >
+                      <Shield className="h-5 w-5" />
+                      Admin Panel
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </div>
             </SidebarMenu>
           </SidebarContent>
         </Sidebar>
 
-          {/* Main Content - Pages handle their own header and content */}
-          <div className="flex-1 flex flex-col">{children}</div>
-        </div>
-      </SidebarProvider>
-    </ProtectedRoute>
+        {/* Main Content - Pages handle their own header and content */}
+        <div className="flex-1 flex flex-col">{children}</div>
+      </div>
+    </SidebarProvider>
   );
 }
