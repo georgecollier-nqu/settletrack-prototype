@@ -2,7 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -26,16 +32,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { 
-  Copy, 
-  X, 
-  Edit2, 
-  Save, 
+import {
+  Copy,
+  X,
+  Edit2,
+  Save,
   ChevronLeft,
   AlertCircle,
   CheckCircle,
   User,
-  Calendar
+  Calendar,
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -101,7 +107,8 @@ const mockModelOutputs = {
       preOpDiagnosis: "Severe osteoarthritis of the left knee",
       postOpDiagnosis: "Status post left total knee arthroplasty",
       complications: "Yes",
-      complicationDetails: "Post-operative infection treated with IV antibiotics",
+      complicationDetails:
+        "Post-operative infection treated with IV antibiotics",
       readmission: "Yes",
       readmissionReason: "SSI - Surgical site infection",
     },
@@ -129,7 +136,8 @@ const mockChangeLog = [
     id: "2",
     fieldName: "complicationDetails",
     previousValue: "Post-op infection requiring antibiotics",
-    newValue: "Post-operative infection requiring IV antibiotics (7-day course)",
+    newValue:
+      "Post-operative infection requiring IV antibiotics (7-day course)",
     annotation: "Added specific treatment duration from medical records",
     user: "Sarah Miller",
     createdAt: new Date("2024-01-15T11:35:00"),
@@ -186,8 +194,14 @@ export default function QCReviewPage() {
   };
 
   const getFieldDifference = (field: string) => {
-    const geminiValue = mockModelOutputs.gemini.outputData[field as keyof typeof mockModelOutputs.gemini.outputData];
-    const gptValue = mockModelOutputs.gpt.outputData[field as keyof typeof mockModelOutputs.gpt.outputData];
+    const geminiValue =
+      mockModelOutputs.gemini.outputData[
+        field as keyof typeof mockModelOutputs.gemini.outputData
+      ];
+    const gptValue =
+      mockModelOutputs.gpt.outputData[
+        field as keyof typeof mockModelOutputs.gpt.outputData
+      ];
     return geminiValue !== gptValue;
   };
 
@@ -196,12 +210,18 @@ export default function QCReviewPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => router.push("/admin/qc")}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => router.push("/admin/qc")}
+          >
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <div>
             <h1 className="text-2xl font-semibold">QC Review: CASE-2024-001</h1>
-            <p className="text-muted-foreground">Compare model outputs and make corrections</p>
+            <p className="text-muted-foreground">
+              Compare model outputs and make corrections
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -235,7 +255,9 @@ export default function QCReviewPage() {
             </div>
             <div>
               <Label className="text-muted-foreground">Started</Label>
-              <p className="font-medium">{format(new Date(), "MMM d, yyyy HH:mm")}</p>
+              <p className="font-medium">
+                {format(new Date(), "MMM d, yyyy HH:mm")}
+              </p>
             </div>
             <div>
               <Label className="text-muted-foreground">Models</Label>
@@ -262,7 +284,8 @@ export default function QCReviewPage() {
             <CardHeader>
               <CardTitle>Side-by-Side Comparison</CardTitle>
               <CardDescription>
-                Fields with differences are highlighted. Click &quot;Duplicate &amp; Edit&quot; to create an editable version.
+                Fields with differences are highlighted. Click &quot;Duplicate
+                &amp; Edit&quot; to create an editable version.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -270,17 +293,37 @@ export default function QCReviewPage() {
                 <div className="space-y-6">
                   {Object.entries(fieldNames).map(([fieldKey, fieldLabel]) => {
                     const isDifferent = getFieldDifference(fieldKey);
-                    const geminiValue = mockModelOutputs.gemini.outputData[fieldKey as keyof typeof mockModelOutputs.gemini.outputData] || "";
-                    const gptValue = mockModelOutputs.gpt.outputData[fieldKey as keyof typeof mockModelOutputs.gpt.outputData] || "";
-                    const geminiConfidence = mockModelOutputs.gemini.confidence[fieldKey as keyof typeof mockModelOutputs.gemini.confidence];
-                    const gptConfidence = mockModelOutputs.gpt.confidence[fieldKey as keyof typeof mockModelOutputs.gpt.confidence];
+                    const geminiValue =
+                      mockModelOutputs.gemini.outputData[
+                        fieldKey as keyof typeof mockModelOutputs.gemini.outputData
+                      ] || "";
+                    const gptValue =
+                      mockModelOutputs.gpt.outputData[
+                        fieldKey as keyof typeof mockModelOutputs.gpt.outputData
+                      ] || "";
+                    const geminiConfidence =
+                      mockModelOutputs.gemini.confidence[
+                        fieldKey as keyof typeof mockModelOutputs.gemini.confidence
+                      ];
+                    const gptConfidence =
+                      mockModelOutputs.gpt.confidence[
+                        fieldKey as keyof typeof mockModelOutputs.gpt.confidence
+                      ];
 
                     return (
-                      <div key={fieldKey} className={`space-y-2 ${isDifferent ? 'p-4 border rounded-lg border-orange-200 bg-orange-50' : ''}`}>
+                      <div
+                        key={fieldKey}
+                        className={`space-y-2 ${isDifferent ? "p-4 border rounded-lg border-orange-200 bg-orange-50" : ""}`}
+                      >
                         <div className="flex items-center gap-2">
-                          <Label className="text-base font-medium">{fieldLabel}</Label>
+                          <Label className="text-base font-medium">
+                            {fieldLabel}
+                          </Label>
                           {isDifferent && (
-                            <Badge variant="outline" className="text-orange-600">
+                            <Badge
+                              variant="outline"
+                              className="text-orange-600"
+                            >
                               <AlertCircle className="h-3 w-3 mr-1" />
                               Different
                             </Badge>
@@ -289,7 +332,9 @@ export default function QCReviewPage() {
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-1">
                             <div className="flex items-center justify-between">
-                              <Label className="text-sm text-muted-foreground">Gemini</Label>
+                              <Label className="text-sm text-muted-foreground">
+                                Gemini
+                              </Label>
                               {geminiConfidence && (
                                 <Badge variant="secondary" className="text-xs">
                                   {(geminiConfidence * 100).toFixed(0)}% conf
@@ -302,7 +347,9 @@ export default function QCReviewPage() {
                           </div>
                           <div className="space-y-1">
                             <div className="flex items-center justify-between">
-                              <Label className="text-sm text-muted-foreground">GPT-4</Label>
+                              <Label className="text-sm text-muted-foreground">
+                                GPT-4
+                              </Label>
                               {gptConfidence && (
                                 <Badge variant="secondary" className="text-xs">
                                   {(gptConfidence * 100).toFixed(0)}% conf
@@ -329,62 +376,81 @@ export default function QCReviewPage() {
             <CardHeader>
               <CardTitle>Edit Output</CardTitle>
               <CardDescription>
-                Make corrections to the duplicated output. All changes require an annotation.
+                Make corrections to the duplicated output. All changes require
+                an annotation.
               </CardDescription>
             </CardHeader>
             <CardContent>
               {editMode ? (
                 <ScrollArea className="h-[600px] pr-4">
                   <div className="space-y-6">
-                    {Object.entries(fieldNames).map(([fieldKey, fieldLabel]) => {
-                      const currentValue = editedData[fieldKey] || "";
-                      const originalValue = mockModelOutputs.gemini.outputData[fieldKey as keyof typeof mockModelOutputs.gemini.outputData] || "";
-                      const hasChanged = currentValue !== originalValue;
+                    {Object.entries(fieldNames).map(
+                      ([fieldKey, fieldLabel]) => {
+                        const currentValue = editedData[fieldKey] || "";
+                        const originalValue =
+                          mockModelOutputs.gemini.outputData[
+                            fieldKey as keyof typeof mockModelOutputs.gemini.outputData
+                          ] || "";
+                        const hasChanged = currentValue !== originalValue;
 
-                      return (
-                        <div key={fieldKey} className="space-y-2">
-                          <div className="flex items-center gap-2">
-                            <Label>{fieldLabel}</Label>
-                            {hasChanged && (
-                              <Badge variant="outline" className="text-blue-600">
-                                <Edit2 className="h-3 w-3 mr-1" />
-                                Modified
-                              </Badge>
-                            )}
-                          </div>
-                          <div className="space-y-2">
-                            <Textarea
-                              value={currentValue}
-                              onChange={(e) => setEditedData({ ...editedData, [fieldKey]: e.target.value })}
-                              className="min-h-[60px]"
-                            />
-                            {hasChanged && (
-                              <div className="space-y-2">
-                                <Input
-                                  placeholder="Annotation for this change (required)"
-                                  value={changeAnnotation}
-                                  onChange={(e) => setChangeAnnotation(e.target.value)}
-                                />
-                                <Button
-                                  size="sm"
-                                  onClick={() => handleSaveEdit(fieldKey, currentValue)}
-                                  disabled={!changeAnnotation}
+                        return (
+                          <div key={fieldKey} className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <Label>{fieldLabel}</Label>
+                              {hasChanged && (
+                                <Badge
+                                  variant="outline"
+                                  className="text-blue-600"
                                 >
-                                  <Save className="h-3 w-3 mr-1" />
-                                  Save Change
-                                </Button>
-                              </div>
-                            )}
+                                  <Edit2 className="h-3 w-3 mr-1" />
+                                  Modified
+                                </Badge>
+                              )}
+                            </div>
+                            <div className="space-y-2">
+                              <Textarea
+                                value={currentValue}
+                                onChange={(e) =>
+                                  setEditedData({
+                                    ...editedData,
+                                    [fieldKey]: e.target.value,
+                                  })
+                                }
+                                className="min-h-[60px]"
+                              />
+                              {hasChanged && (
+                                <div className="space-y-2">
+                                  <Input
+                                    placeholder="Annotation for this change (required)"
+                                    value={changeAnnotation}
+                                    onChange={(e) =>
+                                      setChangeAnnotation(e.target.value)
+                                    }
+                                  />
+                                  <Button
+                                    size="sm"
+                                    onClick={() =>
+                                      handleSaveEdit(fieldKey, currentValue)
+                                    }
+                                    disabled={!changeAnnotation}
+                                  >
+                                    <Save className="h-3 w-3 mr-1" />
+                                    Save Change
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      },
+                    )}
                   </div>
                 </ScrollArea>
               ) : (
                 <div className="text-center py-12">
                   <p className="text-muted-foreground mb-4">
-                    Click &quot;Duplicate &amp; Edit&quot; to create an editable version of the output
+                    Click &quot;Duplicate &amp; Edit&quot; to create an editable
+                    version of the output
                   </p>
                   <Button onClick={handleDuplicateAndEdit}>
                     <Copy className="h-4 w-4 mr-2" />
@@ -421,10 +487,16 @@ export default function QCReviewPage() {
                   {mockChangeLog.map((change) => (
                     <TableRow key={change.id}>
                       <TableCell className="font-medium">
-                        {fieldNames[change.fieldName as keyof typeof fieldNames]}
+                        {
+                          fieldNames[
+                            change.fieldName as keyof typeof fieldNames
+                          ]
+                        }
                       </TableCell>
                       <TableCell className="max-w-[200px]">
-                        <p className="truncate text-sm">{change.previousValue}</p>
+                        <p className="truncate text-sm">
+                          {change.previousValue}
+                        </p>
                       </TableCell>
                       <TableCell className="max-w-[200px]">
                         <p className="truncate text-sm">{change.newValue}</p>
@@ -441,7 +513,9 @@ export default function QCReviewPage() {
                       <TableCell>
                         <div className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
-                          <span className="text-sm">{format(change.createdAt, "MMM d, HH:mm")}</span>
+                          <span className="text-sm">
+                            {format(change.createdAt, "MMM d, HH:mm")}
+                          </span>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -476,7 +550,10 @@ export default function QCReviewPage() {
                 />
               </div>
               <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => router.push("/admin/qc")}>
+                <Button
+                  variant="outline"
+                  onClick={() => router.push("/admin/qc")}
+                >
                   Cancel
                 </Button>
                 <Button onClick={() => setShowApprovalDialog(true)}>
@@ -494,7 +571,8 @@ export default function QCReviewPage() {
           <DialogHeader>
             <DialogTitle>Approve Review</DialogTitle>
             <DialogDescription>
-              Are you sure you want to approve this review? This will mark it as complete and save all changes.
+              Are you sure you want to approve this review? This will mark it as
+              complete and save all changes.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -508,7 +586,10 @@ export default function QCReviewPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowApprovalDialog(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setShowApprovalDialog(false)}
+            >
               Cancel
             </Button>
             <Button onClick={handleApproveReview}>
@@ -535,7 +616,10 @@ export default function QCReviewPage() {
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowRejectDialog(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setShowRejectDialog(false)}
+            >
               Cancel
             </Button>
             <Button variant="destructive" onClick={handleRejectReview}>

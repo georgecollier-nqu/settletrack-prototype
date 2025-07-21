@@ -1,19 +1,19 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Bug } from "lucide-react"
-import { ReportIssueDialog } from "./report-issue-dialog"
-import { cn } from "@/lib/utils"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Bug } from "lucide-react";
+import { ReportIssueDialog } from "./report-issue-dialog";
+import { cn } from "@/lib/utils";
 
 interface ReportIssueButtonProps {
-  caseId: string
-  fieldPath?: string
-  currentValue?: string
-  className?: string
-  variant?: "default" | "outline" | "ghost" | "link"
-  size?: "default" | "sm" | "lg" | "icon"
-  showLabel?: boolean
+  caseId: string;
+  fieldPath?: string;
+  currentValue?: string;
+  className?: string;
+  variant?: "default" | "outline" | "ghost" | "link";
+  size?: "default" | "sm" | "lg" | "icon";
+  showLabel?: boolean;
 }
 
 export function ReportIssueButton({
@@ -23,9 +23,9 @@ export function ReportIssueButton({
   className,
   variant = "ghost",
   size = "sm",
-  showLabel = true
+  showLabel = true,
 }: ReportIssueButtonProps) {
-  const [dialogOpen, setDialogOpen] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   return (
     <>
@@ -48,5 +48,5 @@ export function ReportIssueButton({
         currentValue={currentValue}
       />
     </>
-  )
+  );
 }

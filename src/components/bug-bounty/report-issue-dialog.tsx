@@ -1,21 +1,34 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { toast } from "sonner"
-import { Bug, Loader2 } from "lucide-react"
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
+import { Bug, Loader2 } from "lucide-react";
 
 interface ReportIssueDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  caseId: string
-  fieldPath?: string
-  currentValue?: string
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  caseId: string;
+  fieldPath?: string;
+  currentValue?: string;
 }
 
 export function ReportIssueDialog({
@@ -24,45 +37,46 @@ export function ReportIssueDialog({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   caseId,
   fieldPath = "",
-  currentValue = ""
+  currentValue = "",
 }: ReportIssueDialogProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     issueType: "",
     fieldPath: fieldPath,
     currentValue: currentValue,
     description: "",
     suggestedValue: "",
-    email: ""
-  })
+    email: "",
+  });
 
   const handleSubmit = async () => {
     if (!formData.issueType || !formData.description) {
-      toast.error("Please select an issue type and provide a description")
-      return
+      toast.error("Please select an issue type and provide a description");
+      return;
     }
 
-    setIsSubmitting(true)
-    
+    setIsSubmitting(true);
+
     // Simulate submission for prototype
     setTimeout(() => {
       toast.success("Issue Reported Successfully", {
-        description: "Thank you for helping improve our data quality. We'll review your report shortly.",
-      })
-      
-      onOpenChange(false)
+        description:
+          "Thank you for helping improve our data quality. We'll review your report shortly.",
+      });
+
+      onOpenChange(false);
       setFormData({
         issueType: "",
         fieldPath: "",
         currentValue: "",
         description: "",
         suggestedValue: "",
-        email: ""
-      })
-      
-      setIsSubmitting(false)
-    }, 1000)
-  }
+        email: "",
+      });
+
+      setIsSubmitting(false);
+    }, 1000);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -73,16 +87,19 @@ export function ReportIssueDialog({
             Report Data Issue
           </DialogTitle>
           <DialogDescription>
-            Help us improve data accuracy by reporting errors or inconsistencies.
+            Help us improve data accuracy by reporting errors or
+            inconsistencies.
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="grid gap-4 py-4">
           <div className="space-y-2">
             <Label htmlFor="issue-type">Issue Type *</Label>
             <Select
               value={formData.issueType}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, issueType: value }))}
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, issueType: value }))
+              }
             >
               <SelectTrigger id="issue-type">
                 <SelectValue placeholder="Select issue type" />
@@ -91,8 +108,12 @@ export function ReportIssueDialog({
                 <SelectItem value="incorrect_value">Incorrect Value</SelectItem>
                 <SelectItem value="missing_data">Missing Data</SelectItem>
                 <SelectItem value="wrong_citation">Wrong Citation</SelectItem>
-                <SelectItem value="calculation_error">Calculation Error</SelectItem>
-                <SelectItem value="formatting_issue">Formatting Issue</SelectItem>
+                <SelectItem value="calculation_error">
+                  Calculation Error
+                </SelectItem>
+                <SelectItem value="formatting_issue">
+                  Formatting Issue
+                </SelectItem>
                 <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>
@@ -128,18 +149,30 @@ export function ReportIssueDialog({
               id="description"
               placeholder="Please describe the issue in detail..."
               value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }))
+              }
               rows={4}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="suggested-value">Suggested Correction (Optional)</Label>
+            <Label htmlFor="suggested-value">
+              Suggested Correction (Optional)
+            </Label>
             <Input
               id="suggested-value"
               placeholder="What should the correct value be?"
               value={formData.suggestedValue}
-              onChange={(e) => setFormData(prev => ({ ...prev, suggestedValue: e.target.value }))}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  suggestedValue: e.target.value,
+                }))
+              }
             />
           </div>
 
@@ -150,7 +183,9 @@ export function ReportIssueDialog({
               type="email"
               placeholder="your@email.com"
               value={formData.email}
-              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, email: e.target.value }))
+              }
             />
             <p className="text-xs text-muted-foreground">
               Provide your email if you&apos;d like updates on this issue
@@ -159,17 +194,14 @@ export function ReportIssueDialog({
         </div>
 
         <DialogFooter>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={isSubmitting}
           >
             Cancel
           </Button>
-          <Button 
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-          >
+          <Button onClick={handleSubmit} disabled={isSubmitting}>
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -182,5 +214,5 @@ export function ReportIssueDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

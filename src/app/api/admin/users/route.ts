@@ -30,17 +30,17 @@ export async function GET(request: NextRequest) {
 
     // Filter users
     let filteredUsers = users;
-    
+
     if (firmId) {
       filteredUsers = filteredUsers.filter((user) => user.firmId === firmId);
     }
-    
+
     if (search) {
       filteredUsers = filteredUsers.filter(
         (user) =>
           user.firstName.toLowerCase().includes(search.toLowerCase()) ||
           user.lastName.toLowerCase().includes(search.toLowerCase()) ||
-          user.email.toLowerCase().includes(search.toLowerCase())
+          user.email.toLowerCase().includes(search.toLowerCase()),
       );
     }
 
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching users:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
       if (!firmId || !newUsers || !Array.isArray(newUsers)) {
         return NextResponse.json(
           { error: "Missing required fields: firmId, users (array)" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -122,13 +122,13 @@ export async function POST(request: NextRequest) {
           errors,
           message: `${createdUsers.length} users created successfully`,
         },
-        { status: 201 }
+        { status: 201 },
       );
     } catch (error) {
       console.error("Error creating users in bulk:", error);
       return NextResponse.json(
         { error: "Internal server error" },
-        { status: 500 }
+        { status: 500 },
       );
     }
   }
@@ -152,10 +152,11 @@ export async function POST(request: NextRequest) {
     // Validate required fields
     if (!firmId || !firstName || !lastName || !email || !role) {
       return NextResponse.json(
-        { 
-          error: "Missing required fields: firmId, firstName, lastName, email, role" 
+        {
+          error:
+            "Missing required fields: firmId, firstName, lastName, email, role",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -164,7 +165,7 @@ export async function POST(request: NextRequest) {
     if (existingUser) {
       return NextResponse.json(
         { error: "User with this email already exists" },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -190,19 +191,19 @@ export async function POST(request: NextRequest) {
     const setupLink = `https://settletrack.com/setup-account?token=${newUser.id}&email=${email}`;
 
     return NextResponse.json(
-      { 
-        user: newUser, 
+      {
+        user: newUser,
         setupLink,
         temporaryPassword,
-        message: "User created successfully. Setup email sent." 
+        message: "User created successfully. Setup email sent.",
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Error creating user:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

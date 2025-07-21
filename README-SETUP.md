@@ -31,6 +31,7 @@ setup-dev.bat
 ```
 
 These scripts will:
+
 1. ✅ Check prerequisites (Node.js, npm)
 2. 📦 Install all dependencies
 3. 🔧 Create and configure environment variables
@@ -87,10 +88,12 @@ The application will be available at [http://localhost:3000](http://localhost:30
 Key environment variables to configure:
 
 ### Required
+
 - `NEXTAUTH_SECRET` - Authentication secret (generate with `openssl rand -base64 32`)
 - `DATABASE_URL` - Database connection string (if using a database)
 
 ### Optional but Recommended
+
 - `NEXT_PUBLIC_APP_URL` - Application URL (default: http://localhost:3000)
 - `OPENAI_API_KEY` - For AI features
 - `STRIPE_SECRET_KEY` & `STRIPE_PUBLISHABLE_KEY` - For billing features
@@ -149,6 +152,7 @@ npm run lint
 ## Support
 
 If you encounter any issues:
+
 1. Check the error message carefully
 2. Ensure all prerequisites are installed
 3. Try the manual setup steps
