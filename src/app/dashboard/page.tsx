@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/contexts/user-context";
 import {
   Card,
   CardContent,
@@ -22,6 +23,7 @@ import {
 } from "lucide-react";
 
 export default function DashboardPage() {
+  const { user } = useUser();
   const [searchQuery, setSearchQuery] = useState("");
 
   const savedSearches = [
@@ -52,7 +54,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-3xl font-serif font-bold">
-                Welcome back, John
+                Welcome back, {user?.firstName || "User"}
               </h2>
               <p className="text-muted-foreground mt-1">
                 Here&apos;s what&apos;s happening with your settlement research
@@ -109,9 +111,9 @@ export default function DashboardPage() {
                     <p className="text-sm text-muted-foreground">
                       Total Settlements
                     </p>
-                    <p className="text-2xl font-bold mt-1">$487M</p>
-                    <p className="text-xs text-success mt-1">
-                      All platform cases
+                    <p className="text-2xl font-bold mt-1">$287.5M</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Firm-wide total
                     </p>
                   </div>
                   <div className="p-3 bg-secondary rounded-lg">
@@ -128,9 +130,9 @@ export default function DashboardPage() {
                     <p className="text-sm text-muted-foreground">
                       Recent Settlements
                     </p>
-                    <p className="text-2xl font-bold mt-1">$125M</p>
+                    <p className="text-2xl font-bold mt-1">$45.2M</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Last 12 months
+                      Last year
                     </p>
                   </div>
                   <div className="p-3 bg-secondary rounded-lg">
@@ -187,9 +189,9 @@ export default function DashboardPage() {
             {/* Activity Feed */}
             <Card>
               <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
+                <CardTitle>Your Recent Activity</CardTitle>
                 <CardDescription>
-                  Your searches and cases viewed
+                  Your personal activity history
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -200,10 +202,9 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm">
-                        You searched for
+                        You searched for{" "}
                         <span className="font-medium">
-                          {" "}
-                          &quot;California data breach settlements&quot;
+                          &quot;Data Breach California 2024&quot;
                         </span>
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
@@ -217,12 +218,11 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm">
-                        You viewed case:{" "}
-                        <span className="font-medium">Wilson v. DataCorp</span>{" "}
-                        - $15.2M settlement
+                        You viewed case{" "}
+                        <span className="font-medium">Johnson v. TechCorp</span>
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
-                        2 hours ago
+                        4 hours ago
                       </p>
                     </div>
                   </div>
@@ -232,10 +232,9 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm">
-                        You saved a new search:
+                        You saved search{" "}
                         <span className="font-medium">
-                          {" "}
-                          &quot;2024 Class Action Settlements&quot;
+                          &quot;Class Action &gt; $10M&quot;
                         </span>
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
