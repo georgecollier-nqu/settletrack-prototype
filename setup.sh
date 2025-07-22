@@ -116,10 +116,6 @@ else
     echo "✅ .env file already exists"
 fi
 
-# Build the project
-echo "🔨 Building the project..."
-npm run build
-
 # Run any database migrations or setup if needed
 # (Add database setup commands here if applicable)
 
