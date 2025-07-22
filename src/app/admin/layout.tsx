@@ -4,6 +4,7 @@ import { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { AdminRoleProvider, useAdminRole } from "@/contexts/admin-role-context";
 import {
   SidebarProvider,
   Sidebar,
@@ -27,8 +28,9 @@ interface AdminLayoutProps {
   children: ReactNode;
 }
 
-export default function AdminLayout({ children }: AdminLayoutProps) {
+function AdminLayoutContent({ children }: AdminLayoutProps) {
   const pathname = usePathname();
+  const { role } = useAdminRole();
 
   const isActivePath = (path: string) => {
     if (path === "/admin" && pathname === "/admin") return true;
@@ -65,25 +67,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </SidebarHeader>
           <SidebarContent className="px-3 py-4">
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild className="w-full">
-                  <Link href="/admin" className={getActiveClasses("/admin")}>
-                    <BarChart className="h-5 w-5" />
-                    Analytics
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild className="w-full">
-                  <Link
-                    href="/admin/users"
-                    className={getActiveClasses("/admin/users")}
-                  >
-                    <Users className="h-5 w-5" />
-                    Users
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              {/* Common menu items for both roles */}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild className="w-full">
                   <Link
@@ -95,39 +79,67 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild className="w-full">
-                  <Link
-                    href="/admin/organizations"
-                    className={getActiveClasses("/admin/organizations")}
-                  >
-                    <Building className="h-5 w-5" />
-                    Organizations
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild className="w-full">
-                  <Link
-                    href="/admin/plans"
-                    className={getActiveClasses("/admin/plans")}
-                  >
-                    <CreditCard className="h-5 w-5" />
-                    Plans
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild className="w-full">
-                  <Link
-                    href="/admin/import"
-                    className={getActiveClasses("/admin/import")}
-                  >
-                    <Upload className="h-5 w-5" />
-                    Import
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+
+              {/* Supervisor-only menu items */}
+              {role === "supervisor" && (
+                <>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild className="w-full">
+                      <Link
+                        href="/admin"
+                        className={getActiveClasses("/admin")}
+                      >
+                        <BarChart className="h-5 w-5" />
+                        Analytics
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild className="w-full">
+                      <Link
+                        href="/admin/users"
+                        className={getActiveClasses("/admin/users")}
+                      >
+                        <Users className="h-5 w-5" />
+                        Users
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild className="w-full">
+                      <Link
+                        href="/admin/organizations"
+                        className={getActiveClasses("/admin/organizations")}
+                      >
+                        <Building className="h-5 w-5" />
+                        Organizations
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild className="w-full">
+                      <Link
+                        href="/admin/plans"
+                        className={getActiveClasses("/admin/plans")}
+                      >
+                        <CreditCard className="h-5 w-5" />
+                        Plans
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild className="w-full">
+                      <Link
+                        href="/admin/import"
+                        className={getActiveClasses("/admin/import")}
+                      >
+                        <Upload className="h-5 w-5" />
+                        Import
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </>
+              )}
 
               {/* Return to main app */}
               <div className="mt-auto pt-4 border-t">
@@ -151,5 +163,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <div className="flex-1 flex flex-col">{children}</div>
       </div>
     </SidebarProvider>
+  );
+}
+
+export default function AdminLayout({ children }: AdminLayoutProps) {
+  return (
+    <AdminRoleProvider>
+      <AdminLayoutContent>{children}</AdminLayoutContent>
+    </AdminRoleProvider>
   );
 }
