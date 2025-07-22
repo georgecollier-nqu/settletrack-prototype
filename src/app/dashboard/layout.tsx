@@ -4,6 +4,8 @@ import { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useUser } from "@/contexts/user-context";
+import { RoleSwitcher } from "@/components/role-switcher";
 import {
   SidebarProvider,
   Sidebar,
@@ -23,7 +25,7 @@ import {
   LayoutDashboard,
   HelpCircle,
   Shield,
-  Building,
+  Building2,
 } from "lucide-react";
 
 interface DashboardLayoutProps {
@@ -32,7 +34,7 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
-  const isTeamLeader = true; // This would come from auth context
+  const { isAdmin } = useUser();
 
   const isActivePath = (path: string) => {
     if (path === "/dashboard" && pathname === "/dashboard") return true;
@@ -112,7 +114,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               {/* Separator */}
               <div className="my-4 border-t" />
 
-              {isTeamLeader && (
+              {isAdmin && (
                 <>
                   <SidebarMenuItem>
                     <SidebarMenuButton asChild className="w-full">
@@ -142,7 +144,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                         href="/dashboard/firm-details"
                         className={getActiveClasses("/dashboard/firm-details")}
                       >
-                        <Building className="h-5 w-5" />
+                        <Building2 className="h-5 w-5" />
                         Firm Details
                       </Link>
                     </SidebarMenuButton>
@@ -177,27 +179,31 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 </SidebarMenuItem>
               </div>
 
-              {/* Admin Link - Only show for admins */}
-              {/* In a real app, this would check user role */}
-              <div className="pt-2">
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild className="w-full">
-                    <Link
-                      href="/admin"
-                      className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-secondary/50 text-muted-foreground"
-                    >
-                      <Shield className="h-5 w-5" />
-                      Admin Panel
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              </div>
+              {/* Admin Link - Only show for firm admins */}
+              {isAdmin && (
+                <div className="pt-2">
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild className="w-full">
+                      <Link
+                        href="/admin"
+                        className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-secondary/50 text-muted-foreground"
+                      >
+                        <Shield className="h-5 w-5" />
+                        Admin Panel
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </div>
+              )}
             </SidebarMenu>
           </SidebarContent>
         </Sidebar>
 
         {/* Main Content - Pages handle their own header and content */}
         <div className="flex-1 flex flex-col">{children}</div>
+
+        {/* Role Switcher for Demo */}
+        <RoleSwitcher />
       </div>
     </SidebarProvider>
   );

@@ -1014,6 +1014,23 @@ export const filterOptions = {
     "Labaton Sucharow LLP",
     "Hausfeld LLP",
   ],
+  industries: [
+    "Technology",
+    "Healthcare",
+    "Financial Services",
+    "Retail",
+    "Education",
+    "Manufacturing",
+    "Energy",
+    "Transportation",
+    "Telecommunications",
+    "Hospitality",
+    "Insurance",
+    "Real Estate",
+    "Media & Entertainment",
+    "Government",
+    "Non-Profit",
+  ],
 };
 
 export interface SavedSearch {
