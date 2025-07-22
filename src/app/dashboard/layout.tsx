@@ -23,6 +23,7 @@ import {
   LayoutDashboard,
   HelpCircle,
   Shield,
+  Building,
 } from "lucide-react";
 
 interface DashboardLayoutProps {
@@ -132,6 +133,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                       >
                         <CreditCard className="h-5 w-5" />
                         Billing
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild className="w-full">
+                      <Link
+                        href="/dashboard/firm-details"
+                        className={getActiveClasses("/dashboard/firm-details")}
+                      >
+                        <Building className="h-5 w-5" />
+                        Firm Details
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
