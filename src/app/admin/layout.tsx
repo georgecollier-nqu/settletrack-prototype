@@ -4,6 +4,8 @@ import { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { AdminRoleProvider, useAdminRole } from "@/contexts/admin-role-context";
+import { AdminRoleSwitcher } from "@/components/admin-role-switcher";
 import {
   SidebarProvider,
   Sidebar,
@@ -24,7 +26,7 @@ import {
   CheckSquare,
   Flag,
 } from "lucide-react";
-import { AdminAuthProvider, useAdminAuth } from "@/contexts/AdminAuthContext";
+import { AdminAuthProvider } from "@/contexts/AdminAuthContext";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -32,7 +34,7 @@ interface AdminLayoutProps {
 
 function AdminLayoutContent({ children }: AdminLayoutProps) {
   const pathname = usePathname();
-  const { isHumanSupervisor } = useAdminAuth();
+  const { role } = useAdminRole();
 
   const isActivePath = (path: string) => {
     if (path === "/admin" && pathname === "/admin") return true;
@@ -69,25 +71,46 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
           </SidebarHeader>
           <SidebarContent className="px-3 py-4">
             <SidebarMenu>
-              {/* QC Workflow - Available to all admin users */}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild className="w-full">
-                  <Link
-                    href="/admin/qc-workflow"
-                    className={getActiveClasses("/admin/qc-workflow")}
-                  >
-                    <CheckSquare className="h-5 w-5" />
-                    QC Workflow
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              {/* Supervisor-only menu items */}
-              {isHumanSupervisor && (
+              {/* Show menu based on selected role */}
+              {role === "reviewer" ? (
+                /* Reviewer menu items - QC workflow only */
                 <>
+                  <p className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                    Quality Control
+                  </p>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild className="w-full">
+                      <Link
+                        href="/admin/qc-workflow"
+                        className={getActiveClasses("/admin/qc-workflow")}
+                      >
+                        <CheckSquare className="h-5 w-5" />
+                        QC Workflow
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </>
+              ) : (
+                /* Supervisor menu items - Full admin access */
+                <>
+                  <p className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                    QC Management
+                  </p>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild className="w-full">
+                      <Link
+                        href="/admin/qc-workflow"
+                        className={getActiveClasses("/admin/qc-workflow")}
+                      >
+                        <CheckSquare className="h-5 w-5" />
+                        QC Workflow
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+
                   <div className="my-4 border-t pt-4">
                     <p className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-                      Supervisor Tools
+                      Administration
                     </p>
                   </div>
 
@@ -192,6 +215,9 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
         {/* Main Content - Pages handle their own header and content */}
         <div className="flex-1 flex flex-col">{children}</div>
       </div>
+
+      {/* Floating Role Switcher */}
+      <AdminRoleSwitcher />
     </SidebarProvider>
   );
 }
@@ -199,7 +225,9 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
 export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <AdminAuthProvider>
-      <AdminLayoutContent>{children}</AdminLayoutContent>
+      <AdminRoleProvider>
+        <AdminLayoutContent>{children}</AdminLayoutContent>
+      </AdminRoleProvider>
     </AdminAuthProvider>
   );
 }
