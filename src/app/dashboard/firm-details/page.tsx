@@ -61,12 +61,7 @@ export default function FirmDetailsPage() {
 
   return (
     <>
-      <DashboardHeader title="Firm Details">
-        <Button onClick={handleSave} disabled={isSaving}>
-          <Save className="h-4 w-4 mr-2" />
-          Save Changes
-        </Button>
-      </DashboardHeader>
+      <DashboardHeader title="Firm Details" />
 
       {/* Content */}
       <main className="flex-1 overflow-y-auto bg-muted/30 p-6">
@@ -128,6 +123,13 @@ export default function FirmDetailsPage() {
                     className="bg-muted"
                   />
                 </div>
+              </div>
+
+              <div className="flex justify-end pt-4">
+                <Button onClick={handleSave} disabled={isSaving}>
+                  <Save className="h-4 w-4 mr-2" />
+                  Save Changes
+                </Button>
               </div>
             </CardContent>
           </Card>
