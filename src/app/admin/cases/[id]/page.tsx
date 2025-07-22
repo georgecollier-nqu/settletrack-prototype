@@ -27,20 +27,23 @@ import {
 import { AdminHeader } from "@/components/admin-header";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function CaseDetailsPage() {
+  const router = useRouter();
   const {
-    router,
     adminNotes,
     setAdminNotes,
     handleApprove,
     handleReject,
     handleRequestInfo,
-  } = useCaseReview();
+    navigateToPreviousCase,
+    navigateToNextCase,
+  } = useCaseReview(mockCaseData);
 
   const {
-    showDialog,
-    editData,
+    showEditDialog,
+    editFieldData,
     editValues,
     setEditValues,
     handleEdit,
@@ -68,18 +71,13 @@ export default function CaseDetailsPage() {
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Case Title and Navigation */}
           <CaseTitleSection
-            caseId={mockCaseData.id.value}
-            caseName={mockCaseData.name.value}
+            caseData={mockCaseData}
+            onPrevious={navigateToPreviousCase}
+            onNext={navigateToNextCase}
           />
 
           {/* Status Banner */}
-          {mockCaseData.status === "flagged" && (
-            <CaseStatusBanner
-              status={mockCaseData.status}
-              flaggedBy={mockCaseData.flaggedBy}
-              flagReason={mockCaseData.flagReason}
-            />
-          )}
+          <CaseStatusBanner caseData={mockCaseData} />
 
           {/* Documents Section */}
           <DocumentsSection documents={mockDocuments} />
@@ -543,10 +541,7 @@ export default function CaseDetailsPage() {
           </div>
 
           {/* Admin Notes */}
-          <AdminNotesSection
-            adminNotes={adminNotes}
-            onNotesChange={setAdminNotes}
-          />
+          <AdminNotesSection value={adminNotes} onChange={setAdminNotes} />
 
           {/* Actions */}
           <ActionButtons
@@ -559,9 +554,9 @@ export default function CaseDetailsPage() {
 
       {/* Edit Dialog */}
       <EditFieldDialog
-        open={showDialog}
+        open={showEditDialog}
         onOpenChange={closeDialog}
-        editData={editData}
+        editFieldData={editFieldData}
         editValues={editValues}
         onEditValuesChange={setEditValues}
         onSave={handleSaveEdit}
