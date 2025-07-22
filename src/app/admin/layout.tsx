@@ -26,7 +26,7 @@ import {
   CheckSquare,
   Flag,
 } from "lucide-react";
-import { AdminAuthProvider, useAdminAuth } from "@/contexts/AdminAuthContext";
+import { AdminAuthProvider } from "@/contexts/AdminAuthContext";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -35,7 +35,6 @@ interface AdminLayoutProps {
 function AdminLayoutContent({ children }: AdminLayoutProps) {
   const pathname = usePathname();
   const { role } = useAdminRole();
-  const { isHumanSupervisor } = useAdminAuth();
 
   const isActivePath = (path: string) => {
     if (path === "/admin" && pathname === "/admin") return true;
@@ -72,8 +71,9 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
           </SidebarHeader>
           <SidebarContent className="px-3 py-4">
             <SidebarMenu>
-              {/* Reviewer menu items - QC workflow only */}
-              {role === "reviewer" && !isHumanSupervisor && (
+              {/* Show menu based on selected role */}
+              {role === "reviewer" ? (
+                /* Reviewer menu items - QC workflow only */
                 <>
                   <p className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
                     Quality Control
@@ -89,22 +89,9 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild className="w-full">
-                      <Link
-                        href="/admin/qc"
-                        className={getActiveClasses("/admin/qc")}
-                      >
-                        <FileText className="h-5 w-5" />
-                        QC Reviews
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
                 </>
-              )}
-
-              {/* Supervisor menu items - Full admin access */}
-              {(role === "supervisor" || isHumanSupervisor) && (
+              ) : (
+                /* Supervisor menu items - Full admin access */
                 <>
                   <p className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
                     QC Management
@@ -117,17 +104,6 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
                       >
                         <CheckSquare className="h-5 w-5" />
                         QC Workflow
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild className="w-full">
-                      <Link
-                        href="/admin/qc"
-                        className={getActiveClasses("/admin/qc")}
-                      >
-                        <FileText className="h-5 w-5" />
-                        QC Reviews
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
