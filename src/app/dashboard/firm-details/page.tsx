@@ -21,7 +21,8 @@ import {
 } from "@/components/ui/select";
 import { useUser } from "@/contexts/user-context";
 import { toast } from "sonner";
-import { Building2, Shield, Users, Save } from "lucide-react";
+import { DashboardHeader } from "@/components/dashboard-header";
+import { Shield, Users, Save } from "lucide-react";
 
 export default function FirmDetailsPage() {
   const { user, isAdmin } = useUser();
@@ -59,28 +60,16 @@ export default function FirmDetailsPage() {
   };
 
   return (
-    <div className="flex-1">
-      {/* Header */}
-      <div className="border-b bg-white">
-        <div className="flex items-center justify-between px-8 py-6">
-          <div>
-            <h1 className="text-2xl font-semibold flex items-center gap-2">
-              <Building2 className="h-6 w-6" />
-              Firm Details
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              Manage your firm&apos;s information and security settings
-            </p>
-          </div>
-          <Button onClick={handleSave} disabled={isSaving}>
-            <Save className="h-4 w-4 mr-2" />
-            Save Changes
-          </Button>
-        </div>
-      </div>
+    <>
+      <DashboardHeader title="Firm Details">
+        <Button onClick={handleSave} disabled={isSaving}>
+          <Save className="h-4 w-4 mr-2" />
+          Save Changes
+        </Button>
+      </DashboardHeader>
 
       {/* Content */}
-      <div className="p-8">
+      <main className="flex-1 overflow-y-auto bg-muted/30 p-6">
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Firm Information */}
           <Card>
@@ -217,7 +206,7 @@ export default function FirmDetailsPage() {
             </CardContent>
           </Card>
         </div>
-      </div>
-    </div>
+      </main>
+    </>
   );
 }
