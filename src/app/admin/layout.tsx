@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { AdminRoleProvider, useAdminRole } from "@/contexts/admin-role-context";
+import { AdminRoleSwitcher } from "@/components/admin-role-switcher";
 import {
   SidebarProvider,
   Sidebar,
@@ -194,6 +195,9 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
         {/* Main Content - Pages handle their own header and content */}
         <div className="flex-1 flex flex-col">{children}</div>
       </div>
+
+      {/* Floating Role Switcher */}
+      <AdminRoleSwitcher />
     </SidebarProvider>
   );
 }
