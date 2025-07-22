@@ -73,7 +73,7 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
           <SidebarContent className="px-3 py-4">
             <SidebarMenu>
               {/* Reviewer menu items - QC workflow only */}
-              {role === "reviewer" && (
+              {role === "reviewer" && !isHumanSupervisor && (
                 <>
                   <p className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
                     Quality Control
