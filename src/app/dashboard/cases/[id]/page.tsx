@@ -39,8 +39,11 @@ import {
   CheckCircle,
   Building,
   Gavel,
+  Flag,
 } from "lucide-react";
 import { mockCases } from "@/lib/mock-data";
+import { FlagDialog } from "@/components/flag-dialog";
+import { FlagIndicator } from "@/components/flag-indicator";
 
 interface CaseDetailsPageProps {
   params: Promise<{
@@ -64,6 +67,7 @@ export default function CaseDetailsPage({ params }: CaseDetailsPageProps) {
 
 function CaseDetailsPageContent({ caseId }: { caseId: string }) {
   const [showComparisonDialog, setShowComparisonDialog] = useState(false);
+  const [showFlagDialog, setShowFlagDialog] = useState(false);
 
   // Find the case by ID
   const case_ = mockCases.find((c) => c.id === caseId);
@@ -135,7 +139,10 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
               Back
             </Button>
             <div>
-              <h1 className="text-xl font-serif font-bold">{case_.name}</h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-serif font-bold">{case_.name}</h1>
+                <FlagIndicator caseId={case_.id} />
+              </div>
               <p className="text-sm text-muted-foreground">{case_.docketId}</p>
             </div>
           </div>
@@ -170,6 +177,10 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
                 </div>
               </DialogContent>
             </Dialog>
+            <Button variant="outline" onClick={() => setShowFlagDialog(true)}>
+              <Flag className="mr-2 h-4 w-4" />
+              Flag Issue
+            </Button>
           </div>
         </div>
       </header>
@@ -839,6 +850,14 @@ function CaseDetailsPageContent({ caseId }: { caseId: string }) {
           </div>
         </div>
       </main>
+
+      {/* Flag Dialog */}
+      <FlagDialog
+        open={showFlagDialog}
+        onOpenChange={setShowFlagDialog}
+        caseId={case_.id}
+        caseName={case_.name}
+      />
     </>
   );
 }

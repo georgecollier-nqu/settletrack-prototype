@@ -22,7 +22,10 @@ import {
   Building,
   CreditCard,
   Upload,
+  CheckSquare,
+  Flag,
 } from "lucide-react";
+import { AdminAuthProvider, useAdminAuth } from "@/contexts/AdminAuthContext";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -31,6 +34,7 @@ interface AdminLayoutProps {
 function AdminLayoutContent({ children }: AdminLayoutProps) {
   const pathname = usePathname();
   const { role } = useAdminRole();
+  const { isHumanSupervisor } = useAdminAuth();
 
   const isActivePath = (path: string) => {
     if (path === "/admin" && pathname === "/admin") return true;
@@ -67,22 +71,28 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
           </SidebarHeader>
           <SidebarContent className="px-3 py-4">
             <SidebarMenu>
-              {/* Common menu items for both roles */}
+              {/* QC Workflow - Available to all admin users */}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild className="w-full">
                   <Link
-                    href="/admin/cases"
-                    className={getActiveClasses("/admin/cases")}
+                    href="/admin/qc-workflow"
+                    className={getActiveClasses("/admin/qc-workflow")}
                   >
-                    <FileText className="h-5 w-5" />
-                    Cases
+                    <CheckSquare className="h-5 w-5" />
+                    QC Workflow
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
               {/* Supervisor-only menu items */}
-              {role === "supervisor" && (
+              {(role === "supervisor" || isHumanSupervisor) && (
                 <>
+                  <div className="my-4 border-t pt-4">
+                    <p className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                      Supervisor Tools
+                    </p>
+                  </div>
+
                   <SidebarMenuItem>
                     <SidebarMenuButton asChild className="w-full">
                       <Link
@@ -102,6 +112,28 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
                       >
                         <Users className="h-5 w-5" />
                         Users
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild className="w-full">
+                      <Link
+                        href="/admin/cases"
+                        className={getActiveClasses("/admin/cases")}
+                      >
+                        <FileText className="h-5 w-5" />
+                        Cases
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild className="w-full">
+                      <Link
+                        href="/admin/flags"
+                        className={getActiveClasses("/admin/flags")}
+                      >
+                        <Flag className="h-5 w-5" />
+                        Flagged Issues
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -168,8 +200,10 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
-    <AdminRoleProvider>
-      <AdminLayoutContent>{children}</AdminLayoutContent>
-    </AdminRoleProvider>
+    <AdminAuthProvider>
+      <AdminRoleProvider>
+        <AdminLayoutContent>{children}</AdminLayoutContent>
+      </AdminRoleProvider>
+    </AdminAuthProvider>
   );
 }
