@@ -326,20 +326,21 @@ export default function QCWorkflowDetailPage() {
     );
   };
 
-  const getConfidenceBadge = (confidence?: number) => {
-    if (!confidence) return null;
-    const variant =
-      confidence >= 0.9
-        ? "default"
-        : confidence >= 0.8
-          ? "secondary"
-          : "outline";
-    return (
-      <Badge variant={variant} className="text-xs">
-        {Math.round(confidence * 100)}%
-      </Badge>
-    );
-  };
+  // Confidence badge removed per requirements
+  // const getConfidenceBadge = (confidence?: number) => {
+  //   if (!confidence) return null;
+  //   const variant =
+  //     confidence >= 0.9
+  //       ? "default"
+  //       : confidence >= 0.8
+  //         ? "secondary"
+  //         : "outline";
+  //   return (
+  //     <Badge variant={variant} className="text-xs">
+  //       {Math.round(confidence * 100)}%
+  //     </Badge>
+  //   );
+  // };
 
   return (
     <TooltipProvider>
@@ -466,9 +467,6 @@ export default function QCWorkflowDetailPage() {
                       <div className="flex items-center gap-2">
                         {getModelIcon("gemini")}
                         <span className="font-medium">Gemini Output</span>
-                        {getConfidenceBadge(
-                          currentComparison.geminiOutput.confidence,
-                        )}
                       </div>
                       <Button
                         variant={
@@ -539,9 +537,6 @@ export default function QCWorkflowDetailPage() {
                       <div className="flex items-center gap-2">
                         {getModelIcon("gpt")}
                         <span className="font-medium">GPT-4 Output</span>
-                        {getConfidenceBadge(
-                          currentComparison.gptOutput.confidence,
-                        )}
                       </div>
                       <Button
                         variant={

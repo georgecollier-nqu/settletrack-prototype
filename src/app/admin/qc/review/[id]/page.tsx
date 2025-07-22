@@ -301,14 +301,7 @@ export default function QCReviewPage() {
                       mockModelOutputs.gpt.outputData[
                         fieldKey as keyof typeof mockModelOutputs.gpt.outputData
                       ] || "";
-                    const geminiConfidence =
-                      mockModelOutputs.gemini.confidence[
-                        fieldKey as keyof typeof mockModelOutputs.gemini.confidence
-                      ];
-                    const gptConfidence =
-                      mockModelOutputs.gpt.confidence[
-                        fieldKey as keyof typeof mockModelOutputs.gpt.confidence
-                      ];
+                    // Confidence values removed per requirements
 
                     return (
                       <div
@@ -335,11 +328,6 @@ export default function QCReviewPage() {
                               <Label className="text-sm text-muted-foreground">
                                 Gemini
                               </Label>
-                              {geminiConfidence && (
-                                <Badge variant="secondary" className="text-xs">
-                                  {(geminiConfidence * 100).toFixed(0)}% conf
-                                </Badge>
-                              )}
                             </div>
                             <div className="p-3 border rounded-md bg-background">
                               <p className="text-sm">{geminiValue || "-"}</p>
@@ -350,11 +338,6 @@ export default function QCReviewPage() {
                               <Label className="text-sm text-muted-foreground">
                                 GPT-4
                               </Label>
-                              {gptConfidence && (
-                                <Badge variant="secondary" className="text-xs">
-                                  {(gptConfidence * 100).toFixed(0)}% conf
-                                </Badge>
-                              )}
                             </div>
                             <div className="p-3 border rounded-md bg-background">
                               <p className="text-sm">{gptValue || "-"}</p>
