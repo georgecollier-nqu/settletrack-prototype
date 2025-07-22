@@ -72,25 +72,69 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
           </SidebarHeader>
           <SidebarContent className="px-3 py-4">
             <SidebarMenu>
-              {/* QC Workflow - Available to all admin users */}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild className="w-full">
-                  <Link
-                    href="/admin/qc-workflow"
-                    className={getActiveClasses("/admin/qc-workflow")}
-                  >
-                    <CheckSquare className="h-5 w-5" />
-                    QC Workflow
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              {/* Reviewer menu items - QC workflow only */}
+              {role === "reviewer" && (
+                <>
+                  <p className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                    Quality Control
+                  </p>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild className="w-full">
+                      <Link
+                        href="/admin/qc-workflow"
+                        className={getActiveClasses("/admin/qc-workflow")}
+                      >
+                        <CheckSquare className="h-5 w-5" />
+                        QC Workflow
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild className="w-full">
+                      <Link
+                        href="/admin/qc"
+                        className={getActiveClasses("/admin/qc")}
+                      >
+                        <FileText className="h-5 w-5" />
+                        QC Reviews
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </>
+              )}
 
-              {/* Supervisor-only menu items */}
+              {/* Supervisor menu items - Full admin access */}
               {(role === "supervisor" || isHumanSupervisor) && (
                 <>
+                  <p className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                    QC Management
+                  </p>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild className="w-full">
+                      <Link
+                        href="/admin/qc-workflow"
+                        className={getActiveClasses("/admin/qc-workflow")}
+                      >
+                        <CheckSquare className="h-5 w-5" />
+                        QC Workflow
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild className="w-full">
+                      <Link
+                        href="/admin/qc"
+                        className={getActiveClasses("/admin/qc")}
+                      >
+                        <FileText className="h-5 w-5" />
+                        QC Reviews
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+
                   <div className="my-4 border-t pt-4">
                     <p className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-                      Supervisor Tools
+                      Administration
                     </p>
                   </div>
 
