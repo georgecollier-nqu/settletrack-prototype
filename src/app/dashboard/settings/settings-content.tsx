@@ -49,9 +49,6 @@ export default function SettingsContent() {
     lastName: "Doe",
     email: "john@lawfirm.com",
     jobTitle: "Managing Partner",
-    firmName: "Smith & Associates Law Firm",
-    firmAddress: "123 Legal Street, New York, NY 10001",
-    firmPhone: "(555) 123-4567",
   });
 
   const {
@@ -228,16 +225,6 @@ export default function SettingsContent() {
               Profile Information
             </button>
             <button
-              onClick={() => setActiveTab("firm")}
-              className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-                activeTab === "firm"
-                  ? "border-[#2E7D5B] text-[#2E7D5B]"
-                  : "border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300"
-              }`}
-            >
-              Firm Details
-            </button>
-            <button
               onClick={() => setActiveTab("security")}
               className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
                 activeTab === "security"
@@ -346,102 +333,6 @@ export default function SettingsContent() {
                             })
                           }
                         />
-                      </div>
-                    </div>
-
-                    <div className="flex justify-end">
-                      <Button onClick={handleSaveProfile} disabled={isSaving}>
-                        {isSaving ? (
-                          <>
-                            <Save className="mr-2 h-4 w-4 animate-spin" />
-                            Saving...
-                          </>
-                        ) : (
-                          <>
-                            <Save className="mr-2 h-4 w-4" />
-                            Save Changes
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
-
-            {/* Firm Tab */}
-            {activeTab === "firm" && (
-              <div className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Firm Information</CardTitle>
-                    <CardDescription>
-                      Manage your firm&apos;s details and preferences
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="firmName">Firm Name</Label>
-                        <Input
-                          id="firmName"
-                          value={profileData.firmName}
-                          onChange={(e) =>
-                            setProfileData({
-                              ...profileData,
-                              firmName: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="firmAddress">Address</Label>
-                        <Input
-                          id="firmAddress"
-                          value={profileData.firmAddress}
-                          onChange={(e) =>
-                            setProfileData({
-                              ...profileData,
-                              firmAddress: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="firmPhone">Phone Number</Label>
-                        <Input
-                          id="firmPhone"
-                          type="tel"
-                          value={profileData.firmPhone}
-                          onChange={(e) =>
-                            setProfileData({
-                              ...profileData,
-                              firmPhone: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
-
-                    <Separator />
-
-                    <div>
-                      <h4 className="text-sm font-medium mb-4">
-                        Data & Privacy
-                      </h4>
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div className="space-y-0.5">
-                            <Label className="text-base">
-                              Marketing Communications
-                            </Label>
-                            <p className="text-sm text-muted-foreground">
-                              Receive updates about new features and best
-                              practices
-                            </p>
-                          </div>
-                          <Switch />
-                        </div>
                       </div>
                     </div>
 
